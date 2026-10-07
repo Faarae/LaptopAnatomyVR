@@ -1,0 +1,433 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    background-color: #04150F;
+    color: #F8FAFC;
+    font-family: 'Inter', sans-serif;
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3, h4, .font-display {
+    font-family: 'Space Grotesk', sans-serif;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   GLOBAL AMBIENT BACKGROUND & ENVIRONMENT
+   ───────────────────────────────────────────────────────────── */
+
+/* Technical Crosshair Grid */
+.tech-grid-pattern {
+  background-size: 56px 56px;
+  background-image: 
+    radial-gradient(circle, rgba(34, 197, 94, 0.12) 1px, transparent 1px),
+    linear-gradient(to right, rgba(34, 197, 94, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(34, 197, 94, 0.03) 1px, transparent 1px);
+}
+
+/* Slow Ambient Grid Drift (Section 20) */
+@keyframes grid-drift {
+  0%, 100% {
+    transform: translate(0px, 0px);
+  }
+  50% {
+    transform: translate(14px, 10px);
+  }
+}
+
+.animate-grid-drift {
+  animation: grid-drift 16s ease-in-out infinite;
+}
+
+/* Slow Floating Digital Particles (Section 23) */
+@keyframes float-up-particle {
+  0% {
+    transform: translateY(0px) scale(0.8);
+    opacity: 0.1;
+  }
+  50% {
+    opacity: 0.7;
+    transform: translateY(-24px) scale(1.1);
+  }
+  100% {
+    transform: translateY(-50px) scale(0.8);
+    opacity: 0.1;
+  }
+}
+
+.animate-particle-1 {
+  animation: float-up-particle 8s ease-in-out infinite;
+}
+.animate-particle-2 {
+  animation: float-up-particle 11s ease-in-out 2s infinite;
+}
+.animate-particle-3 {
+  animation: float-up-particle 9s ease-in-out 4s infinite;
+}
+
+/* Circuit Photon Pulse along paths (Section 21) */
+@keyframes photon-travel {
+  0% {
+    offset-distance: 0%;
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    offset-distance: 100%;
+    opacity: 0;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   HERO & LAPTOP MOTION SYSTEM
+   ───────────────────────────────────────────────────────────── */
+
+/* Subtle 5s Idle Float */
+@keyframes laptop-idle-float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.animate-laptop-float {
+  animation: laptop-idle-float 5s ease-in-out infinite;
+}
+
+/* Ambient Radial Glow Pulse */
+@keyframes ambient-glow-pulse {
+  0%, 100% {
+    opacity: 0.15;
+    transform: scale(0.98);
+  }
+  50% {
+    opacity: 0.28;
+    transform: scale(1.04);
+  }
+}
+
+.animate-ambient-pulse {
+  animation: ambient-glow-pulse 4.5s ease-in-out infinite;
+}
+
+/* Vertical Technology Scanline on Laptop Screen */
+@keyframes screen-scanline {
+  0% {
+    top: -10%;
+    opacity: 0;
+  }
+  15% {
+    opacity: 0.75;
+  }
+  85% {
+    opacity: 0.75;
+  }
+  100% {
+    top: 110%;
+    opacity: 0;
+  }
+}
+
+.animate-scanline {
+  animation: screen-scanline 3.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+/* Light Sweep across "Your Laptop" text */
+@keyframes text-light-sweep {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.animate-text-sweep {
+  background-size: 200% auto;
+  animation: text-light-sweep 4s linear infinite;
+}
+
+/* Staggered Hotspot Pulsing Rings */
+@keyframes hotspot-pulse-wave {
+  0% {
+    transform: scale(0.9);
+    opacity: 0.8;
+  }
+  70% {
+    transform: scale(1.6);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+}
+
+.animate-hotspot-wave {
+  animation: hotspot-pulse-wave 2.2s infinite cubic-bezier(0.4, 0, 0.6, 1);
+}
+
+/* SVG Line Dash Flow */
+@keyframes svg-dash-flow {
+  to {
+    stroke-dashoffset: -20;
+  }
+}
+
+.animate-dash-flow {
+  stroke-dasharray: 4, 4;
+  animation: svg-dash-flow 1.2s linear infinite;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   COMPONENT HARDWARE IDLE ANIMATIONS
+   ───────────────────────────────────────────────────────────── */
+
+/* Cooling Fan Slow Rotation */
+@keyframes fan-spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-fan-spin {
+  animation: fan-spin-slow 7s linear infinite;
+}
+
+/* RAM Horizontal Scanning Trace */
+@keyframes ram-scan-beam {
+  0% {
+    transform: translateX(-100%);
+  }
+  50%, 100% {
+    transform: translateX(250%);
+  }
+}
+
+.animate-ram-scan {
+  animation: ram-scan-beam 2.8s ease-in-out infinite;
+}
+
+/* Data LED Blink */
+@keyframes data-blink {
+  0%, 100% {
+    opacity: 0.25;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.animate-data-blink {
+  animation: data-blink 1.2s ease-in-out infinite;
+}
+
+/* Subtle Breathing Pulse */
+@keyframes breathe-pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  50% {
+    transform: scale(1.06);
+    opacity: 1;
+  }
+}
+
+.animate-breathe {
+  animation: breathe-pulse 2.5s ease-in-out infinite;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   CHALLENGE LAB & INTERACTION FEEDBACK
+   ───────────────────────────────────────────────────────────── */
+
+/* Incorrect Answer Shake */
+@keyframes shake-warning {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-5px); }
+  40%, 80% { transform: translateX(5px); }
+}
+
+.animate-shake {
+  animation: shake-warning 0.35s ease-in-out;
+}
+
+/* Snap Pop Success Animation */
+@keyframes snap-pop {
+  0% { transform: scale(0.92); }
+  50% { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+
+.animate-snap {
+  animation: snap-pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Concentric Green Floor Reflection */
+.concentric-floor-glow {
+  background: radial-gradient(circle at 50% 50%, rgba(34, 197, 94, 0.22) 0%, rgba(34, 197, 94, 0.08) 40%, transparent 70%);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   TACTICAL HUD & GAME SYSTEMS (Challenge Lab & Mini-Games)
+   ───────────────────────────────────────────────────────────── */
+
+/* Technical Circuit Grid Overlay */
+.cyber-circuit-grid {
+  background-size: 28px 28px;
+  background-image: 
+    linear-gradient(to right, rgba(78, 222, 163, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(78, 222, 163, 0.04) 1px, transparent 1px);
+}
+
+/* Dense Telemetry Matrix */
+.pcb-grid-dense {
+  background-size: 16px 16px;
+  background-image: 
+    radial-gradient(#4edea3 1px, transparent 1px);
+}
+
+/* Laser Flow for Connector Cables */
+@keyframes laser-dash-flow {
+  to { stroke-dashoffset: -32; }
+}
+.neon-dash-flow {
+  stroke-dasharray: 6, 6;
+  animation: laser-dash-flow 1.5s linear infinite;
+}
+
+/* Reticle Spin for Find Component */
+@keyframes reticle-rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+.animate-reticle-spin {
+  animation: reticle-rotate 12s linear infinite;
+}
+
+/* Amber Urgency Pulse */
+@keyframes amber-glow-pulse {
+  0%, 100% { 
+    box-shadow: 0 0 0 0 rgba(250, 204, 21, 0.4); 
+    border-color: rgba(250, 204, 21, 0.5);
+  }
+  50% { 
+    box-shadow: 0 0 16px 4px rgba(250, 204, 21, 0.6); 
+    border-color: rgba(250, 204, 21, 0.9);
+  }
+}
+.animate-amber-pulse {
+  animation: amber-glow-pulse 2s ease-in-out infinite;
+}
+
+/* Red Emergency Pulse for Speed Challenge Under 5s */
+@keyframes emergency-pulse {
+  0%, 100% { 
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.5); 
+    color: #ef4444;
+  }
+  50% { 
+    box-shadow: 0 0 20px 6px rgba(239, 68, 68, 0.7); 
+    color: #fca5a5;
+  }
+}
+.animate-emergency-pulse {
+  animation: emergency-pulse 0.8s ease-in-out infinite;
+}
+
+/* Chamfered Tech Clip Path */
+.clip-chamfer {
+  clip-path: polygon(
+    0 8px, 
+    8px 0, 
+    calc(100% - 8px) 0, 
+    100% 8px, 
+    100% calc(100% - 8px), 
+    calc(100% - 8px) 100%, 
+    8px 100%, 
+    0 calc(100% - 8px)
+  );
+}
+
+.clip-chamfer-lg {
+  clip-path: polygon(
+    0 14px, 
+    14px 0, 
+    calc(100% - 14px) 0, 
+    100% 14px, 
+    100% calc(100% - 14px), 
+    calc(100% - 14px) 100%, 
+    14px 100%, 
+    0 calc(100% - 14px)
+  );
+}
+
+/* Isometric Board Perspective */
+.isometric-stage {
+  transform: perspective(1000px) rotateX(34deg) rotateZ(-12deg);
+  transform-style: preserve-3d;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+
+/* ─────────────────────────────────────────────────────────────
+   REDUCE MOTION SUPPORT (Section 41)
+   ───────────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .animate-grid-drift,
+  .animate-particle-1,
+  .animate-particle-2,
+  .animate-particle-3,
+  .animate-laptop-float,
+  .animate-ambient-pulse,
+  .animate-scanline,
+  .animate-text-sweep,
+  .animate-hotspot-wave,
+  .animate-dash-flow,
+  .animate-fan-spin,
+  .animate-ram-scan,
+  .animate-data-blink,
+  .animate-breathe,
+  .animate-shake,
+  .animate-snap {
+    animation: none !important;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #04150F;
+}
+::-webkit-scrollbar-thumb {
+  background: #0F2E20;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #22C55E;
+}
