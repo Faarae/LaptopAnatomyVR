@@ -53,7 +53,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen overflow-x-hidden bg-[#04150F] text-[#F8FAFC] flex flex-col font-sans select-none relative">
+    <div className="h-screen max-h-screen overflow-hidden bg-[#04150F] text-[#F8FAFC] flex flex-col font-sans select-none relative">
       
       {/* Reusable Multi-Layer Ambient Interactive Technology Background (Sections 14-25, 29) */}
       <ImmersiveBackground activePage={currentPage} mousePos={mousePos} />
@@ -71,7 +71,7 @@ export default function App() {
           transform: isTransitioning ? 'scale(0.985)' : 'scale(1)',
           transition: 'opacity 0.25s ease-out, transform 0.25s ease-out',
         }}
-        className="flex-1 flex flex-col relative z-10"
+        className="flex-1 flex flex-col relative z-10 overflow-hidden"
       >
         {displayPage === 'landing' && (
           <LandingPage onNavigate={handleNavigate} />

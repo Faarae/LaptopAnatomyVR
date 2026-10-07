@@ -1,124 +1,74 @@
 # Laptop Anatomy VR 💻🥽
 
-**Laptop Anatomy VR** adalah aplikasi edukasi berbasis Virtual Reality (VR) yang dirancang untuk mengenalkan arsitektur dan komponen internal laptop kepada pengguna secara interaktif. Proyek ini dikembangkan untuk kebutuhan UTS mata kuliah **Realitas Berkembang**.
+**Laptop Anatomy VR** adalah aplikasi edukasi interaktif berbasis web (dipersiapkan untuk Virtual Reality / WebXR) yang dirancang untuk mengenalkan arsitektur dan komponen internal laptop kepada pengguna melalui visualisasi 3D WebGL, eksplorasi motherboard interaktif, dan sistem kuis taktis.
+
+Proyek ini dikembangkan untuk kebutuhan evaluasi UTS mata kuliah **Realitas Berkembang**.
 
 ---
 
-## 🎯 Lingkup Pengembangan Saat Ini (Phase 1)
+## 🎯 Fitur & Modul Utama Aplikasi
 
-Sesuai dengan batasan instruksi pengembangan:
-* ✅ **Landing Page**: Pengenalan platform dengan navigasi utama dan hero visual bertema teknologi.
-* ✅ **Main Menu**: Pusat navigasi interaktif (*Explore Laptop, Component Library, How It Works, About*).
-* ✅ **Laptop Selection**: Pemilihan kategori laptop (*Entry Level, Gaming, Creator*) berbasis card UI.
-* ✅ **Laptop Detail & 3D Placeholder**: Area viewport khusus berlabel **"3D Model Coming Soon"** dan **"3D MODEL PLACEHOLDER"** yang terisolasi dan siap menerima canvas WebGL/Three.js/WebXR di masa mendatang tanpa merombak tata letak UI.
-* ✅ **Component Library**: Katalog 8 komponen inti laptop (*CPU, GPU, RAM, SSD, Motherboard, Battery, Cooling Fan, Wi-Fi Card*).
-* ✅ **How It Works**: Panduan 3 langkah alur edukasi (*Step 01, Step 02, Step 03*).
-* ✅ **About**: Informasi misi edukasi, target pengguna, dan arsitektur sistem.
-* 🚫 **Scope Non-Goals**: Belum memuat objek 3D, animasi exploded view, physics, maupun sistem kuis interaktif (disiapkan untuk fase berikutnya).
+* ✅ **Landing Page Imersif**: Pengenalan platform dengan 3D mouse parallax, floating idle animation, screen scanline beam, hotspot pulsa bertahap, dan 7-layer ambient technology background.
+* ✅ **Seamless Header & Branding**: Menggunakan logo resmi [`LAVR-logo.svg`](public/LAVR-logo.svg) pada navbar dan favicon browser, header transparan menyatu dengan hero, serta dropdown navigasi hierarkis (*Explore ▾* dan *Challenge ▾*).
+* ✅ **Laptop Explorer (Selection & Detail)**:
+  * Pemilihan laptop berbasis 3D tilt cards (*Entry Level, Gaming, Creator*).
+  * Sub-halaman detail laptop dengan **Fullscreen WebGL Background (`100vh`)** ditenagai Three.js 60 FPS.
+  * Floating HUD Cards: Profil laptop & klik spesifikasi interaktif di kiri, serta dossier arsitektur pin di kanan.
+  * Mengklik spesifikasi internal (CPU, GPU, RAM, SSD, Cooling, Battery) secara otomatis mengarahkan kamera 3D ke pin motherboard terkait.
+* ✅ **Mesin 3D Motherboard WebGL (10 Pin Anotasi)**:
+  * 10 pin spasial interaktif berhalo cahaya sesuai skema fisik (*PCIe, Fan, Storage, RAM Dual-Channel, VRM Heatsink, Wireless PCI, Primary Memory, CPU Socket LGA, Southbridge & CMOS, Secondary PCI*).
+  * Kontrol Orbit 360°, zoom, raycasting hover/klik, auto-rotate, wireframe, dan preset sudut pandang (*Isometric, Top-Down, I/O Profile*).
+* ✅ **Challenge Lab (5 Interactive Mini-Games)**:
+  * **01 Quick Quiz**: Kuis 10 soal acak dari 20 bank soal dengan **Panggung Inspector Model 3D Komponen Fisik** (dapat diputar 360°), combo streak multiplier, feedback arsitektur, grade rating, dan rekor di `localStorage`.
+  * **02 Match It**: Pemasangan bus data dan bandwidth antar-komponen.
+  * **03 Drag & Place**: Pemasangan komponen dengan **preview model 3D** saat komponen diangkat.
+  * **04 Find Component**: Misi pencarian spasial 10 pin langsung pada papan motherboard 3D WebGL.
+  * **05 Speed Challenge**: Tantangan identifikasi kilat berbatas waktu.
+* ✅ **Component Library**: Katalog 8 komponen inti dengan animasi idle hardware (*fan rotate, cpu breathe, ram scan, ssd blink, battery pulse*).
+* ✅ **Strict Zero-Scroll**: Seluruh halaman dikunci pas dalam 1 layar tampilan (`100vh`, `overflow: hidden`) tanpa scrollbar vertikal.
 
 ---
 
-## 🎨 UI/UX Design System & Color Palette
-
-Antarmuka menggunakan estetika **Dark Futuristic Technology**:
+## 🎨 Palet Warna & Desain Sistem
 
 | Elemen | Hex Code | Keterangan |
 | :--- | :--- | :--- |
-| **Primary Background** | `#0B1020` | Cyber dark background |
-| **Secondary Background** | `#111827` | Viewport & section background |
-| **Card Background** | `#172033` | Glassmorphism card container |
-| **Primary Accent** | `#38BDF8` | Cyan neon accent & primary interactive glow |
-| **Secondary Accent** | `#818CF8` | Indigo neon accent |
-| **Main Text** | `#F8FAFC` | High-contrast readable typography |
-| **Secondary Text** | `#94A3B8` | Muted technical descriptions |
+| **Primary Background** | `#04150F` | Deep forest dark canvas |
+| **Secondary Background** | `#061C14` | Viewport & section gradient |
+| **Card Background** | `#0C2017` / `#0D2B1D` | Translucent glassmorphism container |
+| **Primary Accent** | `#22C55E` | Emerald green neon glow |
+| **Secondary Accent** | `#FACC15` | Cyber gold / warning telemetry |
+| **Main Text** | `#FFFFFF` | High-contrast display typography |
+| **Secondary Text** | `#86EFAC` / `#94A3B8` | Monospace & muted technical labels |
 
-* **Typography**: Space Grotesk (Headings & Display), Inter (Body & UI text).
-* **Button States**: Default, Hover (glow & elevation), Active (scale click effect), Disabled (40% opacity, pointer-events disabled).
-
----
-
-## 📁 Arsitektur Proyek (Decoupled & Scalable)
-
-```text
-UTS/
-├── dist/                             # Production build siap deploy
-├── src/
-│   ├── data/
-│   │   ├── laptopData.js             # Data model kategori laptop & spesifikasi
-│   │   └── componentData.js          # Data katalog 8 komponen internal laptop
-│   ├── components/
-│   │   ├── common/
-│   │   │   ├── Button.jsx            # Standar button (default, hover, active, disabled)
-│   │   │   └── Navbar.jsx            # Dynamic breadcrumb & header
-│   │   ├── placeholder3d/
-│   │   │   └── Model3DPlaceholder.jsx# Viewport terisolasi (#vr-3d-viewport-target)
-│   │   └── pages/
-│   │       ├── LandingPage.jsx       # Hero, CTA Start Exploring & How It Works
-│   │       ├── MainMenu.jsx          # Menu navigasi 4 modul
-│   │       ├── LaptopSelection.jsx   # Pemilihan 3 kartu laptop
-│   │       ├── LaptopDetail.jsx      # Detail laptop + 3D Viewport + Specs
-│   │       ├── ComponentLibrary.jsx  # Grid 8 kartu komponen
-│   │       ├── HowItWorks.jsx        # Step 01, Step 02, Step 03 visual guide
-│   │       └── About.jsx             # Tentang aplikasi & tujuan edukasi
-│   ├── styles/
-│   │   └── index.css                 # Cyber grid, glow, & Tailwind configuration
-│   ├── App.jsx                       # State router & navigator
-│   └── main.jsx                      # React mount entry
-├── index.html                        # Shell HTML dengan font Space Grotesk & Inter
-├── tailwind.config.js                # Token warna & styling
-├── vite.config.js                    # Konfigurasi bundler Vite
-└── package.json                      # Dependensi & skrip
-```
+* **Tipografi**: Space Grotesk (Headings & Display), Inter (Body & UI text), JetBrains Mono (Technical Telemetry).
 
 ---
 
-## 🚀 Cara Menjalankan Proyek
+## 🚀 Panduan Menjalankan Aplikasi
 
-### 1. Menjalankan di Mode Development
-Pastikan [Node.js](https://nodejs.org/) telah terpasang, lalu jalankan di terminal:
-
-```bash
-npm install
-npm run dev
-```
-Buka browser pada alamat yang ditampilkan (biasanya `http://localhost:5173/`).
-
-### 2. Membangun Versi Produksi
-Untuk mengompilasi file statis siap saji:
-
-```bash
-npm run build
-```
-Hasil build akan tersimpan di dalam folder `dist/`.
-
-### 3. Menjalankan Preview Versi Produksi
-```bash
-npm run preview
-```
+1. **Clone / Buka Direktori Proyek**:
+   ```bash
+   cd "d:\Belajar\Realitas Berkembang\UTS"
+   ```
+2. **Install Dependensi**:
+   ```bash
+   npm install
+   ```
+3. **Jalankan Development Server**:
+   ```bash
+   npm run dev
+   ```
+   Akses di browser: `http://localhost:5173` atau `http://localhost:5174`.
+4. **Build Produksi**:
+   ```bash
+   npm run build
+   npm run preview
+   ```
 
 ---
 
-## 🔄 Alur Navigasi Aplikasi
+## 📄 Laporan Proyek Lengkap
 
-```text
-Landing Page
-     │
-     ├── Start Exploring ─────────┐
-     └── How It Works ──┐         │
-                        │         ▼
-                        │     Main Menu
-                        │         │
-                        ├─────────┼───────────────┬────────────┐
-                        ▼         ▼               ▼            ▼
-                     How It    Explore        Component      About
-                     Works     Laptop         Library
-                                  │
-                                  ▼
-                            Laptop Selection
-                                  │
-                                  ▼
-                            Laptop Detail
-                                  │
-                                  ▼
-                         3D Model Placeholder
-```
+* Laporan progress mendalam dapat dilihat pada [PROGRESS.md](PROGRESS.md).
+* Laporan khusus sistem Challenge Lab & 5 Mini-Game dapat dilihat pada [CHALLENGE_LAB_REPORT.md](CHALLENGE_LAB_REPORT.md).

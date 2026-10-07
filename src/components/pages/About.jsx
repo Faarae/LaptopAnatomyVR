@@ -28,8 +28,8 @@ export default function About({ onNavigate }) {
   ];
 
   return (
-    <div className="min-h-[calc(100vh-5rem)] flex items-center justify-center px-6 sm:px-10 lg:px-14 py-10 bg-transparent">
-      <div className="max-w-6xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+    <div className="h-[calc(100vh-4.5rem)] max-h-[calc(100vh-4.5rem)] overflow-hidden flex items-center justify-center px-6 sm:px-10 lg:px-14 py-4 bg-transparent">
+      <div className="max-w-6xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
         
         {/* ─────────────────────────────────────────────────────────────
             LEFT COLUMN: ABOUT TEXT & 3 FEATURE POINTS

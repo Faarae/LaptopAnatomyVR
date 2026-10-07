@@ -124,7 +124,7 @@ export default function LandingPage({ onNavigate }) {
       ref={heroRef}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      className="relative min-h-[calc(100vh-5rem)] flex items-center justify-center px-6 sm:px-10 lg:px-14 py-8 overflow-hidden bg-transparent"
+      className="relative h-[calc(100vh-4.5rem)] max-h-[calc(100vh-4.5rem)] flex items-center justify-center px-6 sm:px-10 lg:px-14 py-4 overflow-hidden bg-transparent"
     >
       {/* Background Soft Pulsing Radial Light */}
       <div 

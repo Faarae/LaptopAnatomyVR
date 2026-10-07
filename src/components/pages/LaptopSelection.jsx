@@ -145,10 +145,10 @@ function InteractiveLaptopCard({
  */
 export default function LaptopSelection({ onSelectLaptop, onNavigate }) {
   return (
-    <div className="min-h-[calc(100vh-5rem)] flex flex-col justify-between px-6 sm:px-10 lg:px-14 py-10 bg-transparent">
+    <div className="h-[calc(100vh-4.5rem)] max-h-[calc(100vh-4.5rem)] overflow-hidden flex flex-col justify-center px-6 sm:px-10 lg:px-14 py-4 bg-transparent">
       <div className="max-w-6xl mx-auto w-full">
         {/* Page Header */}
-        <div className="text-center mb-12">
+        <div className="text-center mb-6">
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-display text-white tracking-tight mb-3">
             Choose Your Laptop
           </h1>
@@ -195,7 +195,7 @@ export default function LaptopSelection({ onSelectLaptop, onNavigate }) {
         </div>
 
         {/* Bottom Comparison Prompt */}
-        <div className="mt-12 text-center">
+        <div className="mt-6 text-center">
           <p className="text-xs sm:text-sm font-sans text-slate-400">
             Can’t decide?{' '}
             <button

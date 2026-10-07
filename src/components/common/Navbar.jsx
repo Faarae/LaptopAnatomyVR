@@ -79,8 +79,13 @@ export default function Navbar({ currentPage, onNavigate }) {
            ───────────────────────────────────────────────────────────── */}
         <button
           onClick={() => onNavigate('landing')}
-          className="text-left group transition-all duration-200 focus:outline-none"
+          className="text-left group transition-all duration-200 focus:outline-none flex items-center gap-2.5"
         >
+          <img 
+            src="/LAVR-logo.svg" 
+            alt="Laptop Anatomy VR" 
+            className="w-8 h-8 rounded-xl object-contain drop-shadow-[0_0_12px_rgba(34,197,94,0.4)] group-hover:scale-105 transition-transform duration-200"
+          />
           <span className="font-display font-bold text-lg sm:text-xl text-white tracking-wide group-hover:text-[#4ADE80] group-hover:drop-shadow-[0_0_12px_rgba(74,222,128,0.5)] transition-all">
             Laptop Anatomy VR
           </span>

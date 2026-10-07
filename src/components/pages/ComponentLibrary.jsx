@@ -117,20 +117,20 @@ export default function ComponentLibrary({ onNavigate }) {
   ];
 
   return (
-    <div className="min-h-[calc(100vh-5rem)] flex flex-col justify-between px-6 sm:px-10 lg:px-14 py-10 bg-transparent">
+    <div className="h-[calc(100vh-4.5rem)] max-h-[calc(100vh-4.5rem)] overflow-hidden flex flex-col justify-center px-6 sm:px-10 lg:px-14 py-3 bg-transparent">
       <div className="max-w-6xl mx-auto w-full">
         {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-display text-white tracking-tight mb-3">
+        <div className="text-center mb-5">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold font-display text-white tracking-tight mb-1">
             Explore the Components
           </h1>
-          <p className="text-sm sm:text-base text-slate-400 font-sans">
-            Learn about each component and its function.
+          <p className="text-xs sm:text-sm text-slate-400 font-sans">
+            Learn about each internal component and its computing function.
           </p>
         </div>
 
         {/* 8 Cards in 4 Columns x 2 Rows Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
           {componentsList.map((comp, idx) => {
             const Icon = comp.icon;
             const isHovered = hoveredCard === comp.id;
@@ -141,14 +141,14 @@ export default function ComponentLibrary({ onNavigate }) {
                 onMouseEnter={() => setHoveredCard(comp.id)}
                 onMouseLeave={() => setHoveredCard(null)}
                 style={{
-                  transform: isHovered ? 'translateY(-6px)' : 'translateY(0)',
-                  transition: 'transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), border-color 0.25s, box-shadow 0.25s',
+                  transform: isHovered ? 'translateY(-4px)' : 'translateY(0)',
+                  transition: 'transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), border-color 0.2s, box-shadow 0.2s',
                 }}
                 className={`
-                  group rounded-2xl bg-[#0C2017]/80 p-6 flex flex-col justify-between relative overflow-hidden select-none cursor-pointer
-                  border transition-all duration-300
+                  group rounded-xl bg-[#0C2017]/85 p-3.5 sm:p-4 flex flex-col justify-between relative overflow-hidden select-none cursor-pointer
+                  border transition-all duration-200
                   ${isHovered 
-                    ? 'border-[#4ADE80] shadow-[0_10px_30px_rgba(0,0,0,0.85),0_0_20px_rgba(74,222,128,0.25)]' 
+                    ? 'border-[#4ADE80] shadow-[0_8px_20px_rgba(0,0,0,0.85),0_0_15px_rgba(74,222,128,0.2)]' 
                     : 'border-[#22C55E]/20'
                   }
                 `}
@@ -162,23 +162,23 @@ export default function ComponentLibrary({ onNavigate }) {
                 />
 
                 <div>
-                  {/* Neon Green Icon Box with slight tilt on hover */}
+                  {/* Icon Box */}
                   <div 
                     className={`
-                      w-14 h-14 rounded-xl bg-[#071710] border flex items-center justify-center text-[#4ADE80] mb-5 transition-all duration-300
+                      w-9 h-9 rounded-lg bg-[#071710] border flex items-center justify-center text-[#4ADE80] mb-2.5 transition-all duration-200
                       ${isHovered 
-                        ? 'border-[#4ADE80] shadow-[0_0_15px_rgba(74,222,128,0.35)] scale-110 -rotate-3' 
-                        : 'border-[#22C55E]/30 scale-100 rotate-0'
+                        ? 'border-[#4ADE80] shadow-[0_0_12px_rgba(74,222,128,0.35)] scale-105' 
+                        : 'border-[#22C55E]/30 scale-100'
                       }
                     `}
                   >
-                    <Icon className={`w-7 h-7 ${comp.iconClass}`} />
+                    <Icon className={`w-5 h-5 ${comp.iconClass}`} />
                   </div>
 
                   {/* Component Title */}
                   <h3 
                     className={`
-                      text-xl font-bold font-display mb-2 transition-colors duration-200
+                      text-sm sm:text-base font-bold font-display mb-1 transition-colors duration-200
                       ${isHovered ? 'text-[#4ADE80]' : 'text-white'}
                     `}
                   >
@@ -186,17 +186,17 @@ export default function ComponentLibrary({ onNavigate }) {
                   </h3>
 
                   {/* Component Description */}
-                  <p className="text-xs sm:text-sm text-slate-300 font-sans leading-relaxed mb-6">
+                  <p className="text-[11px] text-slate-300 font-sans leading-relaxed mb-2 line-clamp-2">
                     {comp.desc}
                   </p>
                 </div>
 
-                {/* Arrow at Bottom Right with glide animation */}
-                <div className="flex justify-end pt-2 border-t border-slate-800/80">
+                {/* Arrow at Bottom Right */}
+                <div className="flex justify-end pt-1.5 border-t border-slate-800/80">
                   <ArrowRight 
                     className={`
-                      w-4 h-4 text-[#4ADE80] transition-transform duration-200
-                      ${isHovered ? 'translate-x-1.5 text-[#FACC15]' : 'translate-x-0'}
+                      w-3.5 h-3.5 text-[#4ADE80] transition-transform duration-200
+                      ${isHovered ? 'translate-x-1 text-[#FACC15]' : 'translate-x-0'}
                     `} 
                   />
                 </div>

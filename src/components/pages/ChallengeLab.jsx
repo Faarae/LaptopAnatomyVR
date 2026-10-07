@@ -39,6 +39,12 @@ export default function ChallengeLab({ onNavigate, initialTab = 'hub' }) {
 
   // Key to restart a game instance
   const [gameKey, setGameKey] = useState(0);
+  const [curTactileStep, setCurTactileStep] = useState(1);
+
+  // Reset step on game change or restart
+  useEffect(() => {
+    setCurTactileStep(1);
+  }, [activeGame, gameKey]);
 
   const handleScoreAdd = (points) => {
     setScoreDelta(points);
@@ -51,11 +57,13 @@ export default function ChallengeLab({ onNavigate, initialTab = 'hub' }) {
 
   const handlePlayAgain = () => {
     setCompletionData(null);
+    setCurTactileStep(1);
     setGameKey(k => k + 1);
   };
 
   const handleBackToHub = () => {
     setCompletionData(null);
+    setCurTactileStep(1);
     setActiveGame('hub');
   };
 
@@ -77,7 +85,7 @@ export default function ChallengeLab({ onNavigate, initialTab = 'hub' }) {
       title: "FIND COMPONENT",
       mission: "04 / 05",
       hintText: "Scan the motherboard: RAM modules sit beside the CPU socket, while the NVMe SSD card lies parallel with high-speed PCIe traces.",
-      totalSteps: 3,
+      totalSteps: 5,
     },
     speed: {
       title: "SPEED CHALLENGE",
@@ -90,7 +98,7 @@ export default function ChallengeLab({ onNavigate, initialTab = 'hub' }) {
   const curConfig = gameConfigs[activeGame] || gameConfigs.match;
 
   return (
-    <div className="w-full min-h-[calc(100vh-5rem)] flex flex-col justify-between bg-transparent text-white select-none relative">
+    <div className="w-full h-[calc(100vh-4.5rem)] max-h-[calc(100vh-4.5rem)] overflow-hidden flex flex-col justify-between bg-transparent text-white select-none relative">
       
       {/* ─────────────────────────────────────────────────────────────
           1. CHALLENGE LAB MAIN LANDING HUB
@@ -108,7 +116,7 @@ export default function ChallengeLab({ onNavigate, initialTab = 'hub' }) {
           2. HARDWARE QUIZ SUB-PAGE (Full Q&A System)
          ───────────────────────────────────────────────────────────── */}
       {activeGame === 'quiz' && (
-        <div className="w-full max-w-5xl mx-auto py-6 sm:py-8 px-4 sm:px-6 flex-1 flex flex-col justify-center animate-in fade-in duration-300">
+        <div className="w-full max-w-5xl mx-auto py-2 px-4 sm:px-6 flex-1 flex flex-col justify-center overflow-hidden animate-in fade-in duration-300">
           <QuickQuizGame
             key={gameKey}
             onScoreChange={handleScoreAdd}
@@ -122,12 +130,13 @@ export default function ChallengeLab({ onNavigate, initialTab = 'hub' }) {
           3. TACTILE MINI-GAME SUB-PAGES (Match, Drag, Find, Speed)
          ───────────────────────────────────────────────────────────── */}
       {activeGame !== 'hub' && activeGame !== 'quiz' && (
-        <div className="w-full max-w-5xl mx-auto py-6 sm:py-8 px-4 sm:px-6 flex-1 flex flex-col justify-center animate-in fade-in duration-300">
+        <div className="w-full max-w-5xl mx-auto py-2 px-4 sm:px-6 flex-1 flex flex-col justify-center overflow-hidden animate-in fade-in duration-300">
           <GameShell
             title={curConfig.title}
             mission={curConfig.mission}
             score={sessionScore}
             scoreDelta={scoreDelta}
+            currentStep={curTactileStep}
             totalSteps={curConfig.totalSteps}
             hintText={curConfig.hintText}
             onBackToHub={handleBackToHub}
@@ -153,6 +162,7 @@ export default function ChallengeLab({ onNavigate, initialTab = 'hub' }) {
                 key={gameKey}
                 onScoreChange={handleScoreAdd}
                 onComplete={handleGameComplete}
+                onStepChange={(step) => setCurTactileStep(step)}
               />
             )}
 

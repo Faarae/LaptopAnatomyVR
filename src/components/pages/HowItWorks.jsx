@@ -11,14 +11,14 @@ import { ArrowRight, Laptop, Layers, Eye } from 'lucide-react';
  */
 export default function HowItWorks({ onNavigate }) {
   return (
-    <div className="min-h-[calc(100vh-5rem)] flex flex-col justify-between px-6 sm:px-10 lg:px-14 py-10 bg-transparent">
+    <div className="h-[calc(100vh-4.5rem)] max-h-[calc(100vh-4.5rem)] overflow-hidden flex flex-col justify-center px-6 sm:px-10 lg:px-14 py-3 bg-transparent">
       <div className="max-w-6xl mx-auto w-full">
         {/* Header */}
-        <div className="text-center mb-10">
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-display text-white tracking-tight mb-3">
+        <div className="text-center mb-4">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold font-display text-white tracking-tight mb-1">
             How It Works
           </h1>
-          <p className="text-sm sm:text-base text-slate-400 font-sans">
+          <p className="text-xs sm:text-sm text-slate-400 font-sans">
             Three simple steps to start your learning journey.
           </p>
         </div>
@@ -26,27 +26,27 @@ export default function HowItWorks({ onNavigate }) {
         {/* ─────────────────────────────────────────────────────────────
             STEPPER TIMELINE: (01) ─── (02) ─── (03)
            ───────────────────────────────────────────────────────────── */}
-        <div className="relative max-w-2xl mx-auto flex items-center justify-between mb-12 px-6">
+        <div className="relative max-w-2xl mx-auto flex items-center justify-between mb-5 px-6">
           {/* Dotted Connecting Line */}
           <div className="absolute inset-x-12 top-1/2 -translate-y-1/2 border-t-2 border-dashed border-[#22C55E]/40 z-0" />
 
           {/* Step 01 Node */}
           <div className="relative z-10 flex flex-col items-center">
-            <div className="w-11 h-11 rounded-full bg-[#06130D] border-2 border-[#FACC15] text-[#FACC15] font-display font-bold text-sm flex items-center justify-center shadow-[0_0_15px_rgba(250,204,21,0.5)]">
+            <div className="w-9 h-9 rounded-full bg-[#06130D] border-2 border-[#FACC15] text-[#FACC15] font-display font-bold text-xs flex items-center justify-center shadow-[0_0_12px_rgba(250,204,21,0.5)]">
               01
             </div>
           </div>
 
           {/* Step 02 Node */}
           <div className="relative z-10 flex flex-col items-center">
-            <div className="w-11 h-11 rounded-full bg-[#06130D] border-2 border-[#FACC15] text-[#FACC15] font-display font-bold text-sm flex items-center justify-center shadow-[0_0_15px_rgba(250,204,21,0.5)]">
+            <div className="w-9 h-9 rounded-full bg-[#06130D] border-2 border-[#FACC15] text-[#FACC15] font-display font-bold text-xs flex items-center justify-center shadow-[0_0_12px_rgba(250,204,21,0.5)]">
               02
             </div>
           </div>
 
           {/* Step 03 Node */}
           <div className="relative z-10 flex flex-col items-center">
-            <div className="w-11 h-11 rounded-full bg-[#06130D] border-2 border-[#FACC15] text-[#FACC15] font-display font-bold text-sm flex items-center justify-center shadow-[0_0_15px_rgba(250,204,21,0.5)]">
+            <div className="w-9 h-9 rounded-full bg-[#06130D] border-2 border-[#FACC15] text-[#FACC15] font-display font-bold text-xs flex items-center justify-center shadow-[0_0_12px_rgba(250,204,21,0.5)]">
               03
             </div>
           </div>
@@ -55,7 +55,7 @@ export default function HowItWorks({ onNavigate }) {
         {/* ─────────────────────────────────────────────────────────────
             3 VISUAL STEP CARDS
            ───────────────────────────────────────────────────────────── */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-6 mb-6">
           
           {/* Card 01: Choose Your Laptop */}
           <div className="rounded-2xl bg-[#0C2017]/80 border border-[#22C55E]/20 p-6 flex flex-col justify-between hover:border-[#4ADE80] transition-all duration-300">

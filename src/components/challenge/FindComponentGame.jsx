@@ -1,238 +1,192 @@
 import React, { useState } from 'react';
-import { Crosshair, CheckCircle2, ArrowRight, Sparkles, Wifi, Cpu, MemoryStick as Memory, HardDrive } from 'lucide-react';
+import { 
+  Crosshair, CheckCircle2, ArrowRight, Sparkles, AlertTriangle, 
+  RotateCcw, Compass, Box, Trophy, Lightbulb, MapPin 
+} from 'lucide-react';
+import Motherboard3DViewer from '../3d/Motherboard3DViewer';
+import { MOTHERBOARD_PINS, getPinByNumber } from '../../data/motherboardPins';
 
 /**
  * FindComponentGame
- * Mini-game 04: Spatial Discovery & Component Locator on the Motherboard PCB.
- * Features an interactive motherboard digital twin, live coordinates, and educational Quick Take drawers.
+ * Mini-game 04: Spatial Discovery & 3D Component Locator on the Motherboard.
+ * Features an interactive 3D Motherboard Digital Twin, 100% raycasting click detection,
+ * and educational Quick Take dossiers.
  */
-export default function FindComponentGame({ onScoreChange, onComplete }) {
+export default function FindComponentGame({ onScoreChange, onComplete, onStepChange }) {
   const missions = [
     {
-      targetId: 'ram',
-      title: 'Tap the RAM Module on the board',
-      hint: 'Look for the 262-pin elongated memory stick near the central processor socket.',
-      quickTakeTitle: 'What is RAM? (Quick Take)',
-      quickTakeText: 'Random Access Memory (RAM) acts as your laptop’s ultra-fast desk space. When you open browser tabs or games, active code lives here so the CPU never has to fetch it from the slower storage drive.',
-      specs: '16GB DDR5 • 5600 MT/s • Dual-Rank',
-    },
-    {
-      targetId: 'ssd',
-      title: 'Locate the M.2 NVMe SSD on the board',
-      hint: 'Search for the slim rectangular storage stick secured by a single standoff screw.',
-      quickTakeTitle: 'What is an NVMe SSD? (Quick Take)',
-      quickTakeText: 'Non-Volatile Memory Express (NVMe) solid-state storage connects directly over high-speed PCIe lanes, achieving transfer rates exceeding 7,000 MB/s without moving mechanical parts.',
-      specs: '1TB NVMe • PCIe Gen4 x4 • 7000 MB/s',
-    },
-    {
-      targetId: 'cpu',
-      title: 'Find the Central CPU Socket & Heat Spreader',
-      hint: 'Identify the large central silicon socket with the metallic integrated heat spreader lid.',
+      targetPin: 8,
+      title: 'Locate the Central CPU Socket (Socket LGA) on the 3D Board',
+      targetName: 'CPU Socket LGA',
+      hint: 'Look for the metallic Integrated Heat Spreader (IHS) and tension lever near the top-right of the motherboard.',
       quickTakeTitle: 'What is the CPU Socket? (Quick Take)',
-      quickTakeText: 'The CPU socket connects thousands of microscopic gold pins between the motherboard traces and the processor silicon die, routing power and memory bus lanes with nanosecond synchronization.',
-      specs: 'Socket BGA-1744 • 14 Cores • 125W TDP',
+      quickTakeText: 'The CPU socket connects thousands of microscopic spring-loaded pins between the motherboard traces and the processor silicon die, routing power and memory bus lanes with nanosecond synchronization.',
+      specs: 'Socket LGA-1700 • 14 Cores • 125W TDP',
+    },
+    {
+      targetPin: 4,
+      title: 'Locate the 4X Dual-Channel RAM Slots',
+      targetName: 'Dual-Channel RAM DIMMs',
+      hint: 'Search for the long yellow and black DIMM slots positioned along the right side of the board with end retention latches.',
+      quickTakeTitle: 'What is RAM? (Quick Take)',
+      quickTakeText: 'Random Access Memory (RAM) acts as your laptop’s ultra-fast workspace. Populating matching color slots activates dual-channel memory interleaving, doubling communication bandwidth to the memory controller.',
+      specs: '4X DDR5 DIMM • 128-bit Bus • 5600 MT/s',
+    },
+    {
+      targetPin: 1,
+      title: 'Locate the 1X PCIe x16 Discrete GPU Expansion Slot',
+      targetName: 'PCIe x16 Slot',
+      hint: 'Look for the long dark expansion slot running vertically down the center of the board with a retention clip at the end.',
+      quickTakeTitle: 'What is the PCIe x16 Slot? (Quick Take)',
+      quickTakeText: 'The PCIe x16 slot provides dedicated point-to-point serial communication directly to discrete graphics cards (GPU) without sharing data lines with other devices, achieving up to 64 GB/s bandwidth.',
+      specs: 'PCIe Gen 5.0 x16 • 64 GB/s Bandwidth • 75W Slot Power',
+    },
+    {
+      targetPin: 5,
+      title: 'Locate the VRM Heat Sink & Back Panel Connections',
+      targetName: 'VRM Heatsink & I/O Stack',
+      hint: 'Inspect the dense extruded aluminum cooling fins along the top rear edge covering the MOSFET power stages.',
+      quickTakeTitle: 'What is the VRM Heat Sink? (Quick Take)',
+      quickTakeText: 'Extruded aluminum fins conduct intense thermal energy away from voltage chokes and MOSFET power stages that convert 12V incoming power down to clean ~1.2V CPU core voltage.',
+      specs: 'Anodized Aluminum • 180 cm² Fin Area • 105°C Rating',
+    },
+    {
+      targetPin: 9,
+      title: 'Locate the Southbridge Chipset (PCH) & CMOS Coin Battery',
+      targetName: 'Southbridge & CMOS Battery',
+      hint: 'Identify the lower-left chipset heatsink next to the shiny circular silver CR2032 lithium coin cell holder.',
+      quickTakeTitle: 'What is the Southbridge & CMOS Battery? (Quick Take)',
+      quickTakeText: 'The Southbridge (Platform Controller Hub) manages lower-speed I/O interfaces like SATA drives, USB, and audio. The 3V coin cell powers the Real-Time Clock (RTC) and BIOS memory even when unplugged.',
+      specs: 'Platform Controller Hub • CR2032 3V Lithium • DMI Bus',
     },
   ];
 
   const [missionIndex, setMissionIndex] = useState(0);
   const [discovered, setDiscovered] = useState(false);
-  const [cursorCoord, setCursorCoord] = useState({ x: 340, y: 160 });
   const [shakeWrong, setShakeWrong] = useState(false);
+  const [wrongFeedback, setWrongFeedback] = useState(null);
+  const [totalScore, setTotalScore] = useState(0);
 
   const curMission = missions[missionIndex];
 
-  const handleMouseMoveBoard = (e) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = Math.round(e.clientX - rect.left);
-    const y = Math.round(e.clientY - rect.top);
-    setCursorCoord({ x, y });
-  };
-
-  const handleComponentClick = (id) => {
+  const handlePinSelect = (pin) => {
     if (discovered) return;
 
-    if (id === curMission.targetId) {
+    if (pin.pinNumber === curMission.targetPin) {
       setDiscovered(true);
-      onScoreChange?.(100);
+      setWrongFeedback(null);
+      const points = 100;
+      setTotalScore(prev => prev + points);
+      onScoreChange?.(points);
     } else {
       setShakeWrong(true);
-      setTimeout(() => setShakeWrong(false), 500);
+      setWrongFeedback(`Salah: Anda menekan Pin #${pin.pinNumber} (${pin.shortName}). Target yang dicari: ${curMission.targetName}!`);
+      setTimeout(() => setShakeWrong(false), 700);
     }
   };
 
   const handleContinue = () => {
     if (missionIndex + 1 < missions.length) {
-      setMissionIndex(prev => prev + 1);
+      const nextIdx = missionIndex + 1;
+      setMissionIndex(nextIdx);
       setDiscovered(false);
+      setWrongFeedback(null);
+      onStepChange?.(nextIdx + 1);
     } else {
-      // All discovered!
+      // All 5 discovered!
       onComplete?.({
-        score: 450,
+        score: totalScore,
         accuracy: "100%",
-        timeSpent: "00:46",
+        timeSpent: "01:15",
       });
     }
   };
 
   return (
-    <div className="w-full h-full max-w-5xl mx-auto px-4 py-2 flex flex-col justify-between select-none">
+    <div className="w-full max-w-4xl mx-auto flex flex-col justify-between select-none">
       
-      {/* Top Mission Headline */}
-      <div className="text-center shrink-0">
-        <div className="inline-flex items-center gap-2 px-3 py-0.5 rounded-full bg-[#082216]/90 border border-[#22C55E]/40 text-[#4ADE80] text-[10px] font-mono tracking-widest uppercase mb-1">
+      {/* 1. Top Mission Headline */}
+      <div className="text-center shrink-0 mb-2">
+        <div className="inline-flex items-center gap-2 px-3 py-0.5 rounded-full bg-[#082216]/90 border border-[#22C55E]/40 text-[#4ADE80] text-[11px] font-mono tracking-widest uppercase mb-1 shadow-[0_0_12px_rgba(34,197,94,0.15)]">
           <Crosshair className="w-3.5 h-3.5 text-[#FACC15]" />
-          <span>DISCOVERY {missionIndex + 1} OF {missions.length}</span>
+          <span>MISI {missionIndex + 1} DARI {missions.length} // TARGET SPASIAL</span>
         </div>
 
-        <h2 className="text-base sm:text-xl font-bold font-display text-white">
-          MISSION: <span className="text-[#4ADE80] underline decoration-[#22C55E]/50 underline-offset-4">{curMission.title}</span>
+        <h2 className="text-sm sm:text-lg font-bold font-display text-white">
+          CARI: <span className="text-[#4ADE80] underline decoration-[#22C55E]/50 underline-offset-4">{curMission.title}</span>
         </h2>
-        <p className="text-xs text-slate-300 font-sans mt-0.5">
-          {curMission.hint}
+        
+        <p className="text-[11px] sm:text-xs text-slate-300 font-sans mt-0.5 max-w-2xl mx-auto">
+          💡 {curMission.hint}
         </p>
+
+        {wrongFeedback && !discovered && (
+          <div className="mt-1.5 inline-flex items-center gap-1.5 px-3 py-0.5 rounded-xl bg-red-950/90 border border-red-500/60 text-red-300 text-[11px] font-mono animate-shake">
+            <AlertTriangle className="w-3.5 h-3.5 text-red-400 shrink-0" />
+            <span>{wrongFeedback}</span>
+          </div>
+        )}
       </div>
 
-      {/* Central Interactive Motherboard Digital Twin Workbench */}
+      {/* 2. Central 3D Motherboard Viewport */}
       <div 
-        onMouseMove={handleMouseMoveBoard}
         className={`
-          relative w-full max-w-4xl mx-auto h-[240px] sm:h-[280px] lg:h-[300px] rounded-2xl bg-[#061710] border border-[#22C55E]/30 overflow-hidden my-auto flex items-center justify-center shadow-[0_12px_35px_rgba(0,0,0,0.85)]
+          relative w-full rounded-2xl bg-[#061710] border border-[#22C55E]/30 overflow-hidden shadow-[0_8px_30px_rgba(0,0,0,0.8)]
           ${shakeWrong ? 'animate-shake border-red-500' : ''}
         `}
       >
-        {/* PCB Background Circuit Grid */}
-        <div className="absolute inset-0 cyber-circuit-grid opacity-50 pointer-events-none" />
+        <Motherboard3DViewer
+          highlightPinNumber={discovered ? curMission.targetPin : null}
+          onPinClick={handlePinSelect}
+          showModal={false}
+          showPinStrip={false}
+          heightClass="h-[270px] sm:h-[320px] md:h-[350px]"
+        />
 
-        {/* Live Coordinate Overlay HUD */}
-        <div className="absolute top-3 left-3 text-[9px] font-mono text-slate-400 select-none pointer-events-none space-y-0.5">
-          <div>SCALE: 1:1.2 DIGITAL TWIN</div>
-          <div className="text-[#4ADE80]">RETICLE X: {cursorCoord.x}px | Y: {cursorCoord.y}px</div>
-          <div>BOARD_REV: TITAN_X16</div>
+        {/* Floating Quick Pin Selector Strip at Bottom of 3D Canvas */}
+        <div className="absolute bottom-2 left-2 right-2 z-10 flex items-center justify-center gap-1 sm:gap-1.5 py-1 px-2 rounded-xl bg-[#071911]/85 backdrop-blur-md border border-[#22C55E]/20 overflow-x-auto">
+          <span className="text-[9px] font-mono text-slate-400 uppercase tracking-wider hidden sm:inline mr-1">
+            KLIK PIN:
+          </span>
+          {MOTHERBOARD_PINS.map((pin) => {
+            const isTarget = discovered && pin.pinNumber === curMission.targetPin;
+            return (
+              <button
+                key={pin.id}
+                onClick={() => handlePinSelect(pin)}
+                className={`
+                  w-6 h-6 sm:w-7 sm:h-7 rounded-lg font-mono text-[11px] font-bold transition-all shrink-0 flex items-center justify-center
+                  ${isTarget
+                    ? 'bg-[#22C55E] text-[#06140d] shadow-[0_0_12px_rgba(34,197,94,0.8)] scale-110'
+                    : 'bg-[#0B2519]/90 text-slate-300 border border-slate-700/60 hover:border-[#22C55E] hover:text-[#4ADE80] active:scale-95'
+                  }
+                `}
+                title={`Pin #${pin.pinNumber}: ${pin.shortName}`}
+              >
+                {pin.pinNumber}
+              </button>
+            );
+          })}
         </div>
-
-        {/* Motherboard Physical Layout */}
-        <div className="relative w-full max-w-2xl h-52 sm:h-56 rounded-xl bg-[#092218] border border-[#22C55E]/40 p-4 shadow-inner flex items-center justify-between">
-          
-          {/* 1. COMPONENT A: CPU Socket & Heat Spreader */}
-          <div
-            onClick={() => handleComponentClick('cpu')}
-            className={`
-              relative w-32 sm:w-36 h-32 sm:h-36 rounded-xl border-2 p-2.5 flex flex-col justify-between cursor-pointer transition-all duration-200
-              ${curMission.targetId === 'cpu' && discovered
-                ? 'bg-[#0E3B27] border-[#22C55E] shadow-[0_0_20px_rgba(34,197,94,0.5)] scale-105'
-                : 'bg-[#0B2A1E]/80 border-[#22C55E]/30 hover:border-[#4ADE80] hover:scale-102'
-              }
-            `}
-          >
-            <div className="flex justify-between items-center text-[9px] font-mono text-slate-400">
-              <span className="text-[#FACC15] font-bold">A • CPU DIE</span>
-              <span>125W</span>
-            </div>
-
-            <div className="w-full h-16 rounded bg-[#103325] border border-[#22C55E]/40 flex flex-col items-center justify-center my-auto">
-              <Cpu className="w-6 h-6 text-[#4ADE80]" />
-              <span className="text-[9px] font-mono text-white font-bold mt-1">CORE i7</span>
-            </div>
-
-            <div className="text-[8px] font-mono text-slate-400 text-center">
-              LGA-1744 SOCKET
-            </div>
-          </div>
-
-          {/* 2. COMPONENT B: RAM SO-DIMM Stick (The Target) */}
-          <div
-            onClick={() => handleComponentClick('ram')}
-            className={`
-              relative w-28 sm:w-32 h-40 sm:h-44 rounded-xl border-2 p-2.5 flex flex-col justify-between cursor-pointer transition-all duration-200
-              ${curMission.targetId === 'ram' && discovered
-                ? 'bg-[#0E3B27] border-[#22C55E] shadow-[0_0_20px_rgba(34,197,94,0.5)] scale-105'
-                : 'bg-[#0B2A1E]/80 border-[#22C55E]/30 hover:border-[#4ADE80] hover:scale-102'
-              }
-            `}
-          >
-            <div className="flex justify-between items-center text-[9px] font-mono text-slate-400">
-              <span className="text-[#4ADE80] font-bold">B • RAM STICK</span>
-              <span>262-PIN</span>
-            </div>
-
-            <div className="w-full h-24 rounded bg-[#103325] border border-[#22C55E]/40 flex flex-col items-center justify-around py-1 my-auto">
-              <div className="flex gap-1">
-                <div className="w-5 h-5 bg-[#04150F] rounded text-[7px] font-mono text-[#4ADE80] flex items-center justify-center">DDR</div>
-                <div className="w-5 h-5 bg-[#04150F] rounded text-[7px] font-mono text-[#4ADE80] flex items-center justify-center">DDR</div>
-              </div>
-              <div className="w-3 h-1 bg-[#FACC15] rounded-xs" />
-              <Memory className="w-5 h-5 text-[#4ADE80]" />
-            </div>
-
-            <div className="text-[8px] font-mono text-slate-400 text-center">
-              DDR5 5600 MT/s
-            </div>
-          </div>
-
-          {/* 3. COMPONENT C & D: NVMe SSD + Wi-Fi Card Stack */}
-          <div className="flex flex-col gap-2.5 h-full justify-between">
-            
-            {/* COMPONENT C: M.2 NVMe SSD */}
-            <div
-              onClick={() => handleComponentClick('ssd')}
-              className={`
-                relative w-40 sm:w-48 h-18 sm:h-20 rounded-xl border-2 p-2 flex items-center justify-between cursor-pointer transition-all duration-200
-                ${curMission.targetId === 'ssd' && discovered
-                  ? 'bg-[#0E3B27] border-[#22C55E] shadow-[0_0_20px_rgba(34,197,94,0.5)] scale-105'
-                  : 'bg-[#0B2A1E]/80 border-[#22C55E]/30 hover:border-[#4ADE80] hover:scale-102'
-                }
-              `}
-            >
-              <div className="flex items-center gap-2">
-                <HardDrive className="w-5 h-5 text-[#4ADE80]" />
-                <div>
-                  <div className="text-[9px] font-mono font-bold text-white">C • M.2 NVMe SSD</div>
-                  <div className="text-[8px] font-mono text-slate-400">PCIe Gen4 x4</div>
-                </div>
-              </div>
-              <div className="w-2.5 h-2.5 rounded-full border border-[#22C55E] flex items-center justify-center">
-                <div className="w-1 h-1 bg-[#22C55E] rounded-full" />
-              </div>
-            </div>
-
-            {/* COMPONENT D: Wi-Fi 6E Wireless Module */}
-            <div
-              onClick={() => handleComponentClick('wifi')}
-              className="relative w-40 sm:w-48 h-14 rounded-xl border border-[#22C55E]/30 bg-[#0B2A1E]/80 p-2 flex items-center justify-between cursor-pointer hover:border-[#4ADE80] transition-all"
-            >
-              <div className="flex items-center gap-2">
-                <Wifi className="w-4 h-4 text-[#FACC15]" />
-                <div>
-                  <div className="text-[9px] font-mono font-bold text-white">D • Wi-Fi 6E + BT</div>
-                  <div className="text-[8px] font-mono text-slate-400">AX211 M.2 E-Key</div>
-                </div>
-              </div>
-              <div className="text-[8px] font-mono text-[#4ADE80]">ANT-1</div>
-            </div>
-
-          </div>
-
-        </div>
-
       </div>
 
-      {/* Bottom Educational "Quick Take" Drawer (Appears upon discovering target) */}
-      <div className="min-h-[72px] sm:min-h-[78px] shrink-0 pt-1">
+      {/* 3. Bottom Educational "Quick Take" Drawer */}
+      <div className="min-h-[72px] sm:min-h-[76px] shrink-0 pt-2">
         {discovered ? (
-          <div className="w-full p-2.5 sm:p-3 rounded-xl bg-[#09281B]/95 border border-[#22C55E]/50 flex items-center justify-between gap-4 animate-in fade-in slide-in-from-bottom-2 duration-300 shadow-[0_8px_20px_rgba(0,0,0,0.8)]">
-            <div className="flex items-start gap-3">
-              <div className="w-9 h-9 rounded-lg bg-[#22C55E]/20 border border-[#22C55E] flex items-center justify-center text-[#4ADE80] shrink-0 mt-0.5">
+          <div className="w-full p-2.5 sm:p-3 rounded-xl bg-[#09281B]/95 border border-[#22C55E]/60 flex items-center justify-between gap-3 animate-in fade-in slide-in-from-bottom-2 duration-300 shadow-[0_4px_20px_rgba(0,0,0,0.8)]">
+            <div className="flex items-start gap-2.5">
+              <div className="w-9 h-9 rounded-xl bg-[#22C55E]/20 border border-[#22C55E] flex items-center justify-center text-[#4ADE80] shrink-0 mt-0.5 shadow-[0_0_12px_rgba(34,197,94,0.4)]">
                 <CheckCircle2 className="w-5 h-5" />
               </div>
               <div>
                 <div className="flex items-center gap-2">
                   <span className="text-[10px] font-mono font-bold text-[#4ADE80] uppercase tracking-wider">
-                    TARGET ACQUIRED! +100 XP
+                    TARGET DITEMUKAN! +100 XP
                   </span>
-                  <span className="text-[10px] font-mono text-slate-400">• {curMission.specs}</span>
+                  <span className="text-[10px] font-mono text-slate-400 hidden sm:inline">• {curMission.specs}</span>
                 </div>
                 <h4 className="text-xs sm:text-sm font-display font-bold text-white">{curMission.quickTakeTitle}</h4>
-                <p className="text-[11px] text-slate-300 font-sans leading-tight mt-0.5">
+                <p className="text-[11px] text-slate-300 font-sans leading-snug line-clamp-2 max-w-xl">
                   {curMission.quickTakeText}
                 </p>
               </div>
@@ -240,15 +194,16 @@ export default function FindComponentGame({ onScoreChange, onComplete }) {
 
             <button
               onClick={handleContinue}
-              className="px-4 py-2 rounded-lg bg-[#22C55E] hover:bg-[#4ADE80] text-[#04150F] text-xs font-mono font-bold transition-all flex items-center gap-1.5 shrink-0 shadow-[0_0_15px_rgba(34,197,94,0.4)] active:scale-95"
+              className="px-4 py-2 rounded-xl bg-[#22C55E] hover:bg-[#4ADE80] text-[#04150F] text-xs font-mono font-bold transition-all flex items-center gap-1.5 shrink-0 shadow-[0_0_15px_rgba(34,197,94,0.4)] active:scale-95"
             >
-              <span>{missionIndex + 1 < missions.length ? 'NEXT TARGET' : 'COMPLETE'}</span>
+              <span>{missionIndex + 1 < missions.length ? 'TARGET BERIKUTNYA' : 'SELESAI MISI'}</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </div>
         ) : (
-          <div className="w-full text-center text-[11px] font-mono text-slate-400">
-            Click on the motherboard PCB where you believe the target hardware component is located.
+          <div className="w-full text-center text-[11px] font-mono text-slate-400 bg-[#061710]/80 py-2 px-3 rounded-xl border border-slate-800 flex items-center justify-center gap-2">
+            <Compass className="w-3.5 h-3.5 text-[#22C55E]" />
+            <span>Putar motherboard 3D atau klik langsung bola pin bercahaya / tombol nomor pin <strong>{curMission.targetName}</strong>.</span>
           </div>
         )}
       </div>

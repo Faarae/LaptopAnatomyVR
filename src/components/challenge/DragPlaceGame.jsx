@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Cpu, MemoryStick as Memory, HardDrive, CheckCircle2, Info, Bolt, ShieldCheck, Sparkles } from 'lucide-react';
+import { Cpu, MemoryStick as Memory, HardDrive, CheckCircle2, Info, Bolt, ShieldCheck, Sparkles, Box } from 'lucide-react';
+import Component3DViewer from '../3d/Component3DViewer';
 
 /**
  * DragPlaceGame
@@ -282,43 +283,56 @@ export default function DragPlaceGame({ onScoreChange, onComplete }) {
               <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-[#0A291A] text-[#4ADE80]">ONLINE</span>
             </div>
 
-            <div className="space-y-2 text-[10px] font-mono">
-              <div>
-                <div className="flex justify-between text-slate-300">
-                  <span>LGA Pin Alignment</span>
-                  <span className={installedSlots.cpu ? 'text-[#4ADE80] font-bold' : 'text-[#FACC15]'}>
-                    {installedSlots.cpu ? 'Seated 100%' : 'Pending'}
-                  </span>
+            {activeItem ? (
+              <div className="flex flex-col gap-1.5 my-1 animate-in fade-in duration-200">
+                <div className="flex items-center justify-between text-[10px] font-mono">
+                  <span className="text-[#FACC15] font-bold">3D MOUNT PREVIEW:</span>
+                  <span className="text-[#4ADE80] font-bold uppercase">{activeItem}</span>
                 </div>
-                <div className="w-full h-1.5 rounded-full bg-slate-800 mt-1 overflow-hidden">
-                  <div className={`h-full transition-all duration-500 ${installedSlots.cpu ? 'w-full bg-[#22C55E]' : 'w-1/3 bg-[#FACC15]'}`} />
-                </div>
+                <Component3DViewer type={activeItem} heightClass="h-[125px]" />
+                <span className="text-[9px] font-mono text-[#FACC15] text-center block">
+                  Drag or tap matching socket on motherboard!
+                </span>
               </div>
+            ) : (
+              <div className="space-y-2 text-[10px] font-mono">
+                <div>
+                  <div className="flex justify-between text-slate-300">
+                    <span>LGA Pin Alignment</span>
+                    <span className={installedSlots.cpu ? 'text-[#4ADE80] font-bold' : 'text-[#FACC15]'}>
+                      {installedSlots.cpu ? 'Seated 100%' : 'Pending'}
+                    </span>
+                  </div>
+                  <div className="w-full h-1.5 rounded-full bg-slate-800 mt-1 overflow-hidden">
+                    <div className={`h-full transition-all duration-500 ${installedSlots.cpu ? 'w-full bg-[#22C55E]' : 'w-1/3 bg-[#FACC15]'}`} />
+                  </div>
+                </div>
 
-              <div>
-                <div className="flex justify-between text-slate-300">
-                  <span>DDR5 SO-DIMM Bus</span>
-                  <span className={installedSlots.ram ? 'text-[#4ADE80] font-bold' : 'text-[#FACC15]'}>
-                    {installedSlots.ram ? 'Dual Channel' : 'Standby'}
-                  </span>
+                <div>
+                  <div className="flex justify-between text-slate-300">
+                    <span>DDR5 SO-DIMM Bus</span>
+                    <span className={installedSlots.ram ? 'text-[#4ADE80] font-bold' : 'text-[#FACC15]'}>
+                      {installedSlots.ram ? 'Dual Channel' : 'Standby'}
+                    </span>
+                  </div>
+                  <div className="w-full h-1.5 rounded-full bg-slate-800 mt-1 overflow-hidden">
+                    <div className={`h-full transition-all duration-500 ${installedSlots.ram ? 'w-full bg-[#22C55E]' : 'w-1/3 bg-[#FACC15]'}`} />
+                  </div>
                 </div>
-                <div className="w-full h-1.5 rounded-full bg-slate-800 mt-1 overflow-hidden">
-                  <div className={`h-full transition-all duration-500 ${installedSlots.ram ? 'w-full bg-[#22C55E]' : 'w-1/3 bg-[#FACC15]'}`} />
-                </div>
-              </div>
 
-              <div>
-                <div className="flex justify-between text-slate-300">
-                  <span>NVMe Standoff Screw</span>
-                  <span className={installedSlots.ssd ? 'text-[#4ADE80] font-bold' : 'text-[#FACC15]'}>
-                    {installedSlots.ssd ? 'Torqued' : 'Open'}
-                  </span>
-                </div>
-                <div className="w-full h-1.5 rounded-full bg-slate-800 mt-1 overflow-hidden">
-                  <div className={`h-full transition-all duration-500 ${installedSlots.ssd ? 'w-full bg-[#22C55E]' : 'w-1/3 bg-[#FACC15]'}`} />
+                <div>
+                  <div className="flex justify-between text-slate-300">
+                    <span>NVMe Standoff Screw</span>
+                    <span className={installedSlots.ssd ? 'text-[#4ADE80] font-bold' : 'text-[#FACC15]'}>
+                      {installedSlots.ssd ? 'Torqued' : 'Open'}
+                    </span>
+                  </div>
+                  <div className="w-full h-1.5 rounded-full bg-slate-800 mt-1 overflow-hidden">
+                    <div className={`h-full transition-all duration-500 ${installedSlots.ssd ? 'w-full bg-[#22C55E]' : 'w-1/3 bg-[#FACC15]'}`} />
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
           </div>
 
           {/* Micro Tip */}
