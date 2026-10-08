@@ -37,7 +37,10 @@ export default function Motherboard3DViewer({
   const controlsRef = useRef(null);
   const pinMeshesRef = useRef([]);
   const animFrameRef = useRef(null);
-  const targetCamPosRef = useRef(null);
+  const activePinRef = useRef(activePin);
+  useEffect(() => {
+    activePinRef.current = activePin;
+  }, [activePin]);
 
   // Sync external highlightPinNumber
   useEffect(() => {
@@ -204,14 +207,30 @@ export default function Motherboard3DViewer({
         }
       }
 
-      // Rotate pin rings & pulse glow
+      // Animate 3D V-Arrow Indicators (Timbul & Bersinar Sepanjang Bentuknya saat ditekan)
+      const activePinNum = activePinRef.current?.pinNumber;
       pinMeshesRef.current.forEach((group) => {
-        const ring = group.getObjectByName('pinRing');
-        const glow = group.getObjectByName('pinGlow');
-        if (ring) ring.rotation.z += delta * 1.5;
-        if (glow) {
-          const pulse = 1 + Math.sin(elapsedTime * 4 + group.userData.pinData.pinNumber) * 0.18;
-          glow.scale.set(pulse, pulse, pulse);
+        const pinData = group.userData.pinData;
+        const isSelected = activePinNum === pinData.pinNumber;
+
+        const arrowGroup = group.getObjectByName('arrowGroup');
+        const vMesh = group.getObjectByName('vArrowMesh');
+
+        if (arrowGroup) {
+          const bob = Math.sin(elapsedTime * 3.5 + pinData.pinNumber * 0.7) * 0.05;
+          arrowGroup.position.y = (isSelected ? 0.32 : 0) + bob;
+        }
+
+        if (vMesh && vMesh.material) {
+          if (isSelected) {
+            vMesh.scale.set(1.38, 1.38, 1.38);
+            vMesh.material.emissiveIntensity = 2.6 + Math.sin(elapsedTime * 6) * 0.6;
+            vMesh.material.emissive.setHex(0x34d399);
+          } else {
+            vMesh.scale.set(1.0, 1.0, 1.0);
+            vMesh.material.emissiveIntensity = 0.75;
+            vMesh.material.emissive.setHex(0x059669);
+          }
         }
       });
 
@@ -473,53 +492,63 @@ export default function Motherboard3DViewer({
 
   const create3DPinMarker = (pin) => {
     const group = new THREE.Group();
-    group.position.set(pin.position3D.x, pin.position3D.y + 0.35, pin.position3D.z);
-    group.userData = { pinData: pin };
+    const baseY = pin.position3D.y + 0.35;
+    group.position.set(pin.position3D.x, baseY, pin.position3D.z);
+    group.userData = { pinData: pin, baseY };
 
-    const sphere = new THREE.Mesh(
-      new THREE.SphereGeometry(0.24, 16, 16),
-      new THREE.MeshStandardMaterial({
-        color: 0x5bc47a,
-        emissive: 0x2f6543,
-        emissiveIntensity: 0.6,
-        roughness: 0.2
-      })
-    );
-    sphere.userData = { pinData: pin };
-    group.add(sphere);
+    // ── 3D DOWNWARD 'V' CHEVRON ARROW (Huruf V Tanpa Bayangan) ──
+    const arrowGroup = new THREE.Group();
+    arrowGroup.name = 'arrowGroup';
+    arrowGroup.userData = { pinData: pin };
 
-    const ringGeo = new THREE.RingGeometry(0.28, 0.38, 24);
-    const ringMat = new THREE.MeshBasicMaterial({
-      color: 0x45b8a5,
-      side: THREE.DoubleSide,
-      transparent: true,
-      opacity: 0.85
+    // 2D Shape of Huruf V pointing down
+    const vShape = new THREE.Shape();
+    vShape.moveTo(-0.34, 0.48);  // Top-left outer
+    vShape.lineTo(0.0, 0.0);      // Bottom point of V (points directly at component)
+    vShape.lineTo(0.34, 0.48);   // Top-right outer
+    vShape.lineTo(0.18, 0.48);   // Top-right inner
+    vShape.lineTo(0.0, 0.22);     // Inner valley
+    vShape.lineTo(-0.18, 0.48);  // Top-left inner
+    vShape.closePath();
+
+    const extrudeSettings = {
+      depth: 0.08,
+      bevelEnabled: true,
+      bevelSegments: 3,
+      steps: 1,
+      bevelSize: 0.02,
+      bevelThickness: 0.02,
+    };
+    const vGeo = new THREE.ExtrudeGeometry(vShape, extrudeSettings);
+    vGeo.center();
+
+    // Vibrant material with NO shadows (engga ada bayangan)
+    const vMat = new THREE.MeshStandardMaterial({
+      color: 0x10b981,
+      emissive: 0x059669,
+      emissiveIntensity: 0.9,
+      roughness: 0.2,
+      metalness: 0.4,
     });
-    const ring = new THREE.Mesh(ringGeo, ringMat);
-    ring.rotation.x = Math.PI / 2;
-    ring.name = 'pinRing';
-    ring.userData = { pinData: pin };
-    group.add(ring);
+    const vMesh = new THREE.Mesh(vGeo, vMat);
+    vMesh.name = 'vArrowMesh';
+    vMesh.castShadow = false;
+    vMesh.receiveShadow = false;
+    vMesh.rotation.x = -Math.PI / 7;
+    vMesh.position.y = 0.32;
+    vMesh.userData = { pinData: pin };
+    arrowGroup.add(vMesh);
 
-    const glowGeo = new THREE.SphereGeometry(0.34, 16, 16);
-    const glowMat = new THREE.MeshBasicMaterial({
-      color: 0x5bc47a,
-      transparent: true,
-      opacity: 0.25
-    });
-    const glow = new THREE.Mesh(glowGeo, glowMat);
-    glow.name = 'pinGlow';
-    glow.userData = { pinData: pin };
-    group.add(glow);
-
-    const stalk = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.03, 0.03, 0.45, 8),
-      new THREE.MeshStandardMaterial({ color: 0x45b8a5, metalness: 0.8 })
+    // Large invisible raycast hitbox for effortless clicking
+    const hitBox = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.8, 0.8, 1.8, 12),
+      new THREE.MeshBasicMaterial({ visible: false })
     );
-    stalk.position.y = -0.25;
-    stalk.userData = { pinData: pin };
-    group.add(stalk);
+    hitBox.position.y = 0.3;
+    hitBox.userData = { pinData: pin };
+    group.add(hitBox);
 
+    group.add(arrowGroup);
     return group;
   };
 

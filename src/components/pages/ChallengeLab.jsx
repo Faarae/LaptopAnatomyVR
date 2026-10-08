@@ -169,9 +169,24 @@ export default function ChallengeLab({ onNavigate, initialTab = 'hub' }) {
       )}
 
       {/* ─────────────────────────────────────────────────────────────
-          4. TACTILE MINI-GAME PLAYING SUB-PAGES (Match, Drag, Find, Speed)
+          4. FULLSCREEN 3D DRAG & PLACE WORKBENCH (Like Laptop Explore)
          ───────────────────────────────────────────────────────────── */}
-      {activeGame !== 'hub' && activeGame !== 'quiz' && gameMode === 'playing' && (
+      {activeGame === 'drag' && gameMode === 'playing' && (
+        <div className="relative w-full h-[calc(100vh-4.5rem)] max-h-[calc(100vh-4.5rem)] overflow-hidden select-none bg-slate-100 animate-in fade-in duration-300">
+          <DragPlaceGame
+            key={gameKey}
+            onScoreChange={handleScoreAdd}
+            onComplete={handleGameComplete}
+            onBackToBriefing={handleBackToBriefing}
+            sessionScore={sessionScore}
+          />
+        </div>
+      )}
+
+      {/* ─────────────────────────────────────────────────────────────
+          5. TACTILE MINI-GAME PLAYING SUB-PAGES (Match, Find, Speed, Identify)
+         ───────────────────────────────────────────────────────────── */}
+      {activeGame !== 'hub' && activeGame !== 'quiz' && activeGame !== 'drag' && gameMode === 'playing' && (
         <div className="w-full max-w-5xl mx-auto py-2 px-4 sm:px-6 flex-1 flex flex-col justify-center overflow-hidden animate-in fade-in duration-300">
           <GameShell
             title={curConfig.title}
@@ -185,14 +200,6 @@ export default function ChallengeLab({ onNavigate, initialTab = 'hub' }) {
           >
             {activeGame === 'match' && (
               <MatchItGame
-                key={gameKey}
-                onScoreChange={handleScoreAdd}
-                onComplete={handleGameComplete}
-              />
-            )}
-
-            {activeGame === 'drag' && (
-              <DragPlaceGame
                 key={gameKey}
                 onScoreChange={handleScoreAdd}
                 onComplete={handleGameComplete}

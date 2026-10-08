@@ -19,6 +19,8 @@ export const MOTHERBOARD_PINS = [
   {
     id: 'pcie-slot',
     pinNumber: 1,
+    threeType: 'pcie',
+    imageName: 'pin-1.jpg',
     name: '1X PCIe Slot (Peripheral Component Interconnect Express)',
     shortName: 'PCIe x16 Slot',
     category: 'Expansion Bus',
@@ -39,6 +41,8 @@ export const MOTHERBOARD_PINS = [
   {
     id: 'fan-connectors',
     pinNumber: 2,
+    threeType: 'fan',
+    imageName: 'pin-2.jpg',
     name: '2X 3-Pin Case Fan Connectors',
     shortName: 'Fan Headers',
     category: 'Thermal & Power',
@@ -59,6 +63,8 @@ export const MOTHERBOARD_PINS = [
   {
     id: 'ata-controller',
     pinNumber: 3,
+    threeType: 'ssd',
+    imageName: 'pin-3.jpg',
     name: 'ATA / Storage Bus Controller',
     shortName: 'Storage Controller',
     category: 'Storage & I/O',
@@ -79,6 +85,8 @@ export const MOTHERBOARD_PINS = [
   {
     id: 'ram-slots-secondary',
     pinNumber: 4,
+    threeType: 'ram',
+    imageName: 'pin-4.jpg',
     name: '4X Dual-Channel Memory Slots (DDR RAM)',
     shortName: 'RAM DIMM Slots',
     category: 'High-Speed Memory',
@@ -99,6 +107,8 @@ export const MOTHERBOARD_PINS = [
   {
     id: 'heatsink-vrm',
     pinNumber: 5,
+    threeType: 'heatsink',
+    imageName: 'pin-5.jpg',
     name: 'VRM Heat Sink & Back Panel Connections',
     shortName: 'VRM Heatsink & I/O',
     category: 'Thermal & Connectivity',
@@ -119,6 +129,8 @@ export const MOTHERBOARD_PINS = [
   {
     id: 'wireless-pci',
     pinNumber: 6,
+    threeType: 'wifi',
+    imageName: 'pin-6.jpg',
     name: 'Wireless Chipset Subsystem & 3X PCI Slots',
     shortName: 'Wireless & PCI Bus',
     category: 'Networking & Legacy Bus',
@@ -139,6 +151,8 @@ export const MOTHERBOARD_PINS = [
   {
     id: 'memory-primary-bank',
     pinNumber: 7,
+    threeType: 'ram',
+    imageName: 'pin-7.jpg',
     name: 'Primary Memory Slots (DDR Channel A/B)',
     shortName: 'DDR Channel Bank',
     category: 'High-Speed Memory',
@@ -159,6 +173,8 @@ export const MOTHERBOARD_PINS = [
   {
     id: 'cpu-socket',
     pinNumber: 8,
+    threeType: 'cpu',
+    imageName: 'pin-8.jpg',
     name: 'Central CPU Socket (LGA Socket with Tension Lever)',
     shortName: 'CPU Socket LGA',
     category: 'Compute Core',
@@ -179,6 +195,8 @@ export const MOTHERBOARD_PINS = [
   {
     id: 'southbridge-cmos',
     pinNumber: 9,
+    threeType: 'battery',
+    imageName: 'pin-9.jpg',
     name: 'Southbridge Chipset (PCH) & CMOS Coin Cell Battery',
     shortName: 'Southbridge / PCH & CMOS',
     category: 'System Logic & RTC',
@@ -199,6 +217,8 @@ export const MOTHERBOARD_PINS = [
   {
     id: 'pci-expansion',
     pinNumber: 10,
+    threeType: 'pcie',
+    imageName: 'pin-10.jpg',
     name: 'Secondary PCI Expansion Slot',
     shortName: 'PCI Slot 2',
     category: 'Expansion Bus',

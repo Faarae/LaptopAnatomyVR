@@ -19,10 +19,16 @@ import { RotateCw, Compass } from 'lucide-react';
  */
 export default function Component3DViewer({
   type = 'cpu', // 'cpu' | 'ram' | 'ssd' | 'gpu' | 'heatsink' | 'fan' | 'battery' | 'socket' | 'pcie'
+  componentId, // fallback alias for type
   className = '',
   heightClass = 'h-[240px] sm:h-[280px]',
   autoRotateSpeed = 1.4,
+  hideControls = false,
+  hideHint = false,
+  interactive = true,
+  cameraDistance,
 }) {
+  const modelType = componentId || type || 'cpu';
   const containerRef = useRef(null);
   const canvasRef = useRef(null);
   const [isRotating, setIsRotating] = useState(true);
@@ -30,21 +36,25 @@ export default function Component3DViewer({
   const controlsRef = useRef(null);
   const animFrameRef = useRef(null);
 
+  // Auto-detect compact thumbnail mode
+  const isCompact = hideControls || hideHint || heightClass.includes('h-12') || heightClass.includes('h-14') || heightClass.includes('h-16') || heightClass.includes('h-20') || heightClass.includes('h-24');
+
   useEffect(() => {
     const canvas = canvasRef.current;
     const container = containerRef.current;
     if (!canvas || !container) return;
 
-    const width = container.clientWidth;
-    const height = container.clientHeight;
+    const width = container.clientWidth || 200;
+    const height = container.clientHeight || 200;
 
     // 1. Scene
     const scene = new THREE.Scene();
     scene.background = null; // Transparent so it inherits surrounding light card surface
 
-    // 2. Camera
+    // 2. Camera - adjust distance closer for compact thumbnails
     const camera = new THREE.PerspectiveCamera(40, width / height, 0.1, 50);
-    camera.position.set(0, 3.2, 5.2);
+    const dist = cameraDistance || (isCompact ? 3.6 : 5.4);
+    camera.position.set(0, dist * 0.58, dist);
 
     // 3. Renderer with pure transparent background
     const renderer = new THREE.WebGLRenderer({
@@ -64,8 +74,10 @@ export default function Component3DViewer({
     controls.dampingFactor = 0.05;
     controls.autoRotate = isRotating;
     controls.autoRotateSpeed = autoRotateSpeed;
-    controls.minDistance = 2.5;
-    controls.maxDistance = 12;
+    controls.minDistance = 2.0;
+    controls.maxDistance = 14;
+    controls.enableZoom = !isCompact && interactive;
+    controls.enablePan = false;
     controlsRef.current = controls;
 
     // 5. Lighting
@@ -85,17 +97,37 @@ export default function Component3DViewer({
     tealFill.position.set(4, -2, 3);
     scene.add(tealFill);
 
-    // 6. Build Component Model based on type
+    // 6. Build Component Model based on modelType
     const modelGroup = new THREE.Group();
-    buildComponentModel(modelGroup, type);
+    buildComponentModel(modelGroup, modelType);
+
+    // Compute bounding box and center modelGroup perfectly at (0, 0, 0)
+    const bbox = new THREE.Box3().setFromObject(modelGroup);
+    const bCenter = new THREE.Vector3();
+    bbox.getCenter(bCenter);
+    modelGroup.position.sub(bCenter); // Shifts geometry so its true center is at origin
+
+    const bSize = new THREE.Vector3();
+    bbox.getSize(bSize);
+    const maxDim = Math.max(bSize.x, bSize.y, bSize.z, 1.2);
+
+    const fov = camera.fov * (Math.PI / 180);
+    const autoDist = ((maxDim / 2) / Math.tan(fov / 2)) * 1.45;
+    const finalDist = cameraDistance || Math.max(autoDist, 3.4);
+
+    camera.position.set(0, finalDist * 0.42, finalDist * 0.9);
+    camera.lookAt(0, 0, 0);
+    controls.target.set(0, 0, 0);
+
     scene.add(modelGroup);
 
-    // Subtle clean ground shadow plate
-    const shadowGeo = new THREE.CircleGeometry(1.8, 32);
+    // Subtle clean ground shadow plate placed directly below centered model
+    const shadowRadius = Math.max(bSize.x, bSize.z) * 0.85;
+    const shadowGeo = new THREE.CircleGeometry(shadowRadius, 32);
     const shadowMat = new THREE.MeshBasicMaterial({ color: 0x0f172a, transparent: true, opacity: 0.08 });
     const shadowPlate = new THREE.Mesh(shadowGeo, shadowMat);
     shadowPlate.rotation.x = -Math.PI / 2;
-    shadowPlate.position.y = -1.2;
+    shadowPlate.position.y = -(bSize.y / 2) - 0.12;
     scene.add(shadowPlate);
 
     // 7. Animation loop
@@ -122,7 +154,7 @@ export default function Component3DViewer({
       cancelAnimationFrame(animFrameRef.current);
       renderer.dispose();
     };
-  }, [type, isRotating]);
+  }, [modelType, isRotating, isCompact, cameraDistance]);
 
   /**
    * Builds the 3D model geometry & materials for the specified component
@@ -562,23 +594,27 @@ export default function Component3DViewer({
       <canvas ref={canvasRef} className="w-full h-full block cursor-grab active:cursor-grabbing" />
 
       {/* Floating 3D Controls HUD */}
-      <div className="absolute top-2.5 right-2.5 flex items-center gap-1.5 p-1 rounded-xl bg-white/90 border border-slate-200 shadow-xs backdrop-blur-md">
-        <button
-          onClick={() => setIsRotating(!isRotating)}
-          className={`p-1.5 rounded-lg text-xs transition-all ${
-            isRotating ? 'bg-emerald-50 text-emerald-700 font-bold' : 'text-slate-500 hover:text-slate-800'
-          }`}
-          title="Toggle Auto-Rotate"
-        >
-          <RotateCw className="w-3.5 h-3.5" />
-        </button>
-      </div>
+      {!hideControls && !isCompact && (
+        <div className="absolute top-2.5 right-2.5 flex items-center gap-1.5 p-1 rounded-xl bg-white/90 border border-slate-200 shadow-xs backdrop-blur-md">
+          <button
+            onClick={() => setIsRotating(!isRotating)}
+            className={`p-1.5 rounded-lg text-xs transition-all ${
+              isRotating ? 'bg-emerald-50 text-emerald-700 font-bold' : 'text-slate-500 hover:text-slate-800'
+            }`}
+            title="Toggle Auto-Rotate"
+          >
+            <RotateCw className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      )}
 
       {/* Bottom Hint */}
-      <div className="absolute bottom-2 left-2 pointer-events-none text-[10px] font-mono text-slate-500 flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-white/90 border border-slate-200/80 shadow-2xs font-medium">
-        <Compass className="w-3 h-3 text-emerald-600" />
-        <span>3D Model: Drag to orbit • Scroll to zoom</span>
-      </div>
+      {!hideHint && !isCompact && (
+        <div className="absolute bottom-2 left-2 pointer-events-none text-[10px] font-mono text-slate-500 flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-white/90 border border-slate-200/80 shadow-2xs font-medium">
+          <Compass className="w-3 h-3 text-emerald-600" />
+          <span>3D Model: Drag to orbit • Scroll to zoom</span>
+        </div>
+      )}
     </div>
   );
 }

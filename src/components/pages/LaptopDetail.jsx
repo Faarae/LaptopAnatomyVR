@@ -3,8 +3,10 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { 
   ArrowLeft, Cpu, Sparkles, HardDrive, Fan, Battery, Layers, 
-  CheckCircle2, Compass, RotateCw, Eye, Zap, Info, Box, ExternalLink 
+  CheckCircle2, Compass, RotateCw, Eye, Zap, Info, Box, ExternalLink,
+  Camera, Image as ImageIcon
 } from 'lucide-react';
+import Component3DViewer from '../3d/Component3DViewer';
 import { getLaptopById } from '../../data/laptopData';
 import { MOTHERBOARD_PINS, getPinByNumber } from '../../data/motherboardPins';
 
@@ -25,6 +27,13 @@ export default function LaptopDetail({ laptopId, onNavigate }) {
   const [hoveredPin, setHoveredPin] = useState(null);
   const [isAutoRotate, setIsAutoRotate] = useState(false);
   const [cameraView, setCameraView] = useState('isometric');
+  const [photoError, setPhotoError] = useState(false);
+
+  const selectedPinNumberRef = useRef(selectedPinNumber);
+  useEffect(() => {
+    selectedPinNumberRef.current = selectedPinNumber;
+    setPhotoError(false);
+  }, [selectedPinNumber]);
 
   const canvasRef = useRef(null);
   const containerRef = useRef(null);
@@ -195,14 +204,32 @@ export default function LaptopDetail({ laptopId, onNavigate }) {
         }
       }
 
-      // Rotate pins halo & pulse
+      // Animate 3D V-Arrow Indicators (Timbul & Bersinar Sepanjang Bentuknya saat ditekan)
+      const activePinNum = selectedPinNumberRef.current;
       pinMeshesRef.current.forEach((group) => {
-        const ring = group.getObjectByName('pinRing');
-        const glow = group.getObjectByName('pinGlow');
-        if (ring) ring.rotation.z += delta * 1.5;
-        if (glow) {
-          const pulse = 1 + Math.sin(elapsedTime * 4 + group.userData.pinData.pinNumber) * 0.18;
-          glow.scale.set(pulse, pulse, pulse);
+        const pinData = group.userData.pinData;
+        const isSelected = activePinNum === pinData.pinNumber;
+
+        const arrowGroup = group.getObjectByName('arrowGroup');
+        const vMesh = group.getObjectByName('vArrowMesh');
+
+        if (arrowGroup) {
+          const bob = Math.sin(elapsedTime * 3.5 + pinData.pinNumber * 0.7) * 0.05;
+          // Timbul: Menjulang naik ke atas saat pin ditekan / aktif
+          arrowGroup.position.y = (isSelected ? 0.32 : 0) + bob;
+        }
+
+        if (vMesh && vMesh.material) {
+          if (isSelected) {
+            // Timbul membesar sepanjang bentuk huruf V & bersinar terang
+            vMesh.scale.set(1.38, 1.38, 1.38);
+            vMesh.material.emissiveIntensity = 2.6 + Math.sin(elapsedTime * 6) * 0.6;
+            vMesh.material.emissive.setHex(0x34d399);
+          } else {
+            vMesh.scale.set(1.0, 1.0, 1.0);
+            vMesh.material.emissiveIntensity = 0.75;
+            vMesh.material.emissive.setHex(0x059669);
+          }
         }
       });
 
@@ -490,46 +517,64 @@ export default function LaptopDetail({ laptopId, onNavigate }) {
 
   const create3DPinMarker = (pin) => {
     const group = new THREE.Group();
-    group.position.set(pin.position3D.x, pin.position3D.y + 0.35, pin.position3D.z);
-    group.userData = { pinData: pin };
+    const baseY = pin.position3D.y + 0.35;
+    group.position.set(pin.position3D.x, baseY, pin.position3D.z);
+    group.userData = { pinData: pin, baseY };
 
-    const sphere = new THREE.Mesh(
-      new THREE.SphereGeometry(0.24, 16, 16),
-      new THREE.MeshStandardMaterial({
-        color: 0x5bc47a,
-        emissive: 0x2f6543,
-        emissiveIntensity: 0.6,
-        roughness: 0.2
-      })
+    // ── 3D DOWNWARD 'V' CHEVRON ARROW (Huruf V Tanpa Bayangan) ──
+    const arrowGroup = new THREE.Group();
+    arrowGroup.name = 'arrowGroup';
+    arrowGroup.userData = { pinData: pin };
+
+    // 2D Shape of Huruf V pointing down
+    const vShape = new THREE.Shape();
+    vShape.moveTo(-0.34, 0.48);  // Top-left outer
+    vShape.lineTo(0.0, 0.0);      // Bottom point of V (points directly at component)
+    vShape.lineTo(0.34, 0.48);   // Top-right outer
+    vShape.lineTo(0.18, 0.48);   // Top-right inner
+    vShape.lineTo(0.0, 0.22);     // Inner valley
+    vShape.lineTo(-0.18, 0.48);  // Top-left inner
+    vShape.closePath();
+
+    const extrudeSettings = {
+      depth: 0.08,
+      bevelEnabled: true,
+      bevelSegments: 3,
+      steps: 1,
+      bevelSize: 0.02,
+      bevelThickness: 0.02,
+    };
+    const vGeo = new THREE.ExtrudeGeometry(vShape, extrudeSettings);
+    vGeo.center();
+
+    // Vibrant material with NO shadows (engga ada bayangan)
+    const vMat = new THREE.MeshStandardMaterial({
+      color: 0x10b981,
+      emissive: 0x059669,
+      emissiveIntensity: 0.9,
+      roughness: 0.2,
+      metalness: 0.4,
+    });
+    const vMesh = new THREE.Mesh(vGeo, vMat);
+    vMesh.name = 'vArrowMesh';
+    vMesh.castShadow = false;
+    vMesh.receiveShadow = false;
+    // Tilted slightly toward isometric camera so the V shape is 100% distinct
+    vMesh.rotation.x = -Math.PI / 7;
+    vMesh.position.y = 0.32;
+    vMesh.userData = { pinData: pin };
+    arrowGroup.add(vMesh);
+
+    // Large invisible raycast hitbox for effortless clicking
+    const hitBox = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.8, 0.8, 1.8, 12),
+      new THREE.MeshBasicMaterial({ visible: false })
     );
-    sphere.userData = { pinData: pin };
-    group.add(sphere);
+    hitBox.position.y = 0.3;
+    hitBox.userData = { pinData: pin };
+    group.add(hitBox);
 
-    const ring = new THREE.Mesh(
-      new THREE.RingGeometry(0.28, 0.38, 24),
-      new THREE.MeshBasicMaterial({ color: 0x45b8a5, side: THREE.DoubleSide, transparent: true, opacity: 0.85 })
-    );
-    ring.rotation.x = Math.PI / 2;
-    ring.name = 'pinRing';
-    ring.userData = { pinData: pin };
-    group.add(ring);
-
-    const glow = new THREE.Mesh(
-      new THREE.SphereGeometry(0.34, 16, 16),
-      new THREE.MeshBasicMaterial({ color: 0x5bc47a, transparent: true, opacity: 0.25 })
-    );
-    glow.name = 'pinGlow';
-    glow.userData = { pinData: pin };
-    group.add(glow);
-
-    const stalk = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.03, 0.03, 0.45, 8),
-      new THREE.MeshStandardMaterial({ color: 0x45b8a5, metalness: 0.8 })
-    );
-    stalk.position.y = -0.25;
-    stalk.userData = { pinData: pin };
-    group.add(stalk);
-
+    group.add(arrowGroup);
     return group;
   };
 
@@ -698,6 +743,73 @@ export default function LaptopDetail({ laptopId, onNavigate }) {
               <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200">
                 {activePin.category}
               </span>
+            </div>
+
+            {/* Floating 3D Component Model Card */}
+            <div className="rounded-xl overflow-hidden border border-slate-200/90 bg-slate-900/5 shadow-xs">
+              <div className="flex items-center justify-between px-3 py-1.5 bg-slate-100/90 border-b border-slate-200/70">
+                <span className="text-[10px] font-mono uppercase tracking-wider text-emerald-700 font-bold flex items-center gap-1.5">
+                  <Box className="w-3 h-3 text-emerald-600" />
+                  Model 3D Interaktif
+                </span>
+                <span className="text-[9px] font-mono text-slate-500 bg-white px-1.5 py-0.5 rounded border border-slate-200">
+                  Bisa Diputar 360°
+                </span>
+              </div>
+              <div className="h-36 w-full relative bg-slate-50/70 rounded-b-xl overflow-hidden flex items-center justify-center">
+                <Component3DViewer
+                  type={activePin.threeType || 'cpu'}
+                  autoRotate={true}
+                  heightClass="h-full"
+                  hideControls={true}
+                  hideHint={true}
+                  className="w-full h-full"
+                />
+              </div>
+            </div>
+
+            {/* Box Foto Fisik Riil Komponen */}
+            <div className="rounded-xl overflow-hidden border border-slate-200/90 bg-white shadow-xs">
+              <div className="flex items-center justify-between px-3 py-1.5 bg-slate-100/90 border-b border-slate-200/70">
+                <span className="text-[10px] font-mono uppercase tracking-wider text-slate-700 font-bold flex items-center gap-1.5">
+                  <Camera className="w-3 h-3 text-emerald-600" />
+                  Foto Fisik Riil Komponen
+                </span>
+                <span className="text-[9px] font-mono text-slate-500">
+                  {activePin.imageName || `pin-${activePin.pinNumber}.jpg`}
+                </span>
+              </div>
+
+              {!photoError ? (
+                <div className="relative group bg-slate-100 flex items-center justify-center min-h-[110px] max-h-[130px] overflow-hidden">
+                  <img
+                    src={`/images/components/${activePin.imageName || `pin-${activePin.pinNumber}.jpg`}`}
+                    alt={activePin.shortName}
+                    onError={() => setPhotoError(true)}
+                    className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
+                  />
+                  <div className="absolute bottom-1 right-1.5 bg-black/60 text-white text-[8px] font-mono px-1.5 py-0.5 rounded backdrop-blur-xs">
+                    Foto Asli
+                  </div>
+                </div>
+              ) : (
+                <div className="p-3 bg-amber-50/50 border border-dashed border-amber-300/80 rounded-b-xl flex flex-col items-center text-center gap-1.5">
+                  <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center text-amber-700 shrink-0">
+                    <ImageIcon className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <span className="text-[11px] font-bold text-amber-900 block font-sans">
+                      Foto Fisik Belum Dimasukkan
+                    </span>
+                    <span className="text-[9px] font-mono text-slate-600 block mt-0.5">
+                      Simpan file foto di: <code className="bg-amber-100/80 text-amber-950 font-bold px-1 py-0.5 rounded">public/images/components/{activePin.imageName || `pin-${activePin.pinNumber}.jpg`}</code>
+                    </span>
+                  </div>
+                  <p className="text-[9px] text-slate-500 leading-tight">
+                    Format: JPG / PNG (Rasio 16:9). Cek <code className="text-emerald-700">PANDUAN_FOTO_KOMPONEN.md</code>.
+                  </p>
+                </div>
+              )}
             </div>
 
             {/* Architecture Role */}
