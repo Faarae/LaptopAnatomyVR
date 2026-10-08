@@ -66,8 +66,8 @@ export default function Motherboard3DViewer({
     // 1. Scene
     const scene = new THREE.Scene();
     sceneRef.current = scene;
-    scene.background = new THREE.Color(0x04130b);
-    scene.fog = new THREE.FogExp2(0x04130b, 0.032);
+    scene.background = new THREE.Color(0xf8fafc);
+    scene.fog = new THREE.FogExp2(0xf8fafc, 0.02);
 
     // 2. Camera
     const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
@@ -108,13 +108,13 @@ export default function Motherboard3DViewer({
     mainLight.shadow.mapSize.height = 1024;
     scene.add(mainLight);
 
-    const greenFill = new THREE.PointLight(0x22c55e, 2.2, 20);
+    const greenFill = new THREE.PointLight(0x5bc47a, 2.0, 20);
     greenFill.position.set(-6, 5, -4);
     scene.add(greenFill);
 
-    const goldFill = new THREE.PointLight(0xfacc15, 1.8, 20);
-    goldFill.position.set(6, 4, 6);
-    scene.add(goldFill);
+    const tealFill = new THREE.PointLight(0x45b8a5, 1.8, 20);
+    tealFill.position.set(6, 4, 6);
+    scene.add(tealFill);
 
     // 6. Build Motherboard Geometry
     buildMotherboardBoard(scene);
@@ -249,19 +249,19 @@ export default function Motherboard3DViewer({
   const buildMotherboardBoard = (scene) => {
     pinMeshesRef.current = [];
 
-    // PCB Main Board (Dark Forest Green with gold contacts)
+    // PCB Main Board (Dark Neutral Surface with high-tech traces)
     const pcbGeo = new THREE.BoxGeometry(10, 0.2, 10);
     const pcbMat = new THREE.MeshStandardMaterial({
-      color: 0x0c2518,
-      roughness: 0.45,
+      color: 0x151d1b,
+      roughness: 0.5,
       metalness: 0.2,
     });
     const pcb = new THREE.Mesh(pcbGeo, pcbMat);
     pcb.receiveShadow = true;
     scene.add(pcb);
 
-    // Decorative Ground traces / Bus lines grid
-    const gridHelper = new THREE.GridHelper(9.6, 24, 0x22c55e, 0x113b24);
+    // Decorative Ground traces / Bus lines grid (Teal & dark neutral)
+    const gridHelper = new THREE.GridHelper(9.6, 24, 0x45b8a5, 0x1a2e29);
     gridHelper.position.y = 0.11;
     scene.add(gridHelper);
 
@@ -316,7 +316,7 @@ export default function Motherboard3DViewer({
     ramBank1.position.set(2.2, 0.3, 1.0);
     scene.add(ramBank1);
 
-    const ramBank2 = createRamSlots(2, 0x22c55e, 0x1e293b);
+    const ramBank2 = createRamSlots(2, 0x45b8a5, 0x1e293b);
     ramBank2.position.set(3.4, 0.3, 1.8);
     scene.add(ramBank2);
 
@@ -479,8 +479,8 @@ export default function Motherboard3DViewer({
     const sphere = new THREE.Mesh(
       new THREE.SphereGeometry(0.24, 16, 16),
       new THREE.MeshStandardMaterial({
-        color: 0x22c55e,
-        emissive: 0x15803d,
+        color: 0x5bc47a,
+        emissive: 0x2f6543,
         emissiveIntensity: 0.6,
         roughness: 0.2
       })
@@ -490,7 +490,7 @@ export default function Motherboard3DViewer({
 
     const ringGeo = new THREE.RingGeometry(0.28, 0.38, 24);
     const ringMat = new THREE.MeshBasicMaterial({
-      color: 0xfacc15,
+      color: 0x45b8a5,
       side: THREE.DoubleSide,
       transparent: true,
       opacity: 0.85
@@ -503,7 +503,7 @@ export default function Motherboard3DViewer({
 
     const glowGeo = new THREE.SphereGeometry(0.34, 16, 16);
     const glowMat = new THREE.MeshBasicMaterial({
-      color: 0x4ade80,
+      color: 0x5bc47a,
       transparent: true,
       opacity: 0.25
     });
@@ -514,7 +514,7 @@ export default function Motherboard3DViewer({
 
     const stalk = new THREE.Mesh(
       new THREE.CylinderGeometry(0.03, 0.03, 0.45, 8),
-      new THREE.MeshStandardMaterial({ color: 0xfacc15, metalness: 0.8 })
+      new THREE.MeshStandardMaterial({ color: 0x45b8a5, metalness: 0.8 })
     );
     stalk.position.y = -0.25;
     stalk.userData = { pinData: pin };
@@ -561,26 +561,26 @@ export default function Motherboard3DViewer({
   return (
     <div 
       ref={containerRef}
-      className={`relative w-full rounded-2xl bg-[#04130b] border border-[#22C55E]/30 overflow-hidden shadow-[0_12px_45px_rgba(0,0,0,0.85)] flex flex-col ${heightClass} ${className}`}
+      className={`relative w-full rounded-2xl bg-slate-50 border border-slate-200/90 overflow-hidden shadow-sm flex flex-col ${heightClass} ${className}`}
     >
       {/* HUD Header Bar */}
-      <div className="flex flex-wrap items-center justify-between px-4 sm:px-5 py-2.5 border-b border-[#22C55E]/20 bg-[#0C2419]/90 backdrop-blur-md gap-2 shrink-0 z-20">
+      <div className="flex flex-wrap items-center justify-between px-4 sm:px-5 py-2.5 border-b border-slate-200 bg-white/95 backdrop-blur-md gap-2 shrink-0 z-20">
         <div className="flex items-center gap-2.5">
-          <span className="w-2.5 h-2.5 rounded-full bg-[#22C55E] animate-pulse"></span>
-          <span className="text-xs font-mono font-bold text-white tracking-wider uppercase">
+          <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span className="text-xs font-mono font-bold text-slate-900 tracking-wider uppercase">
             MOTHERBOARD 3D DIGITAL TWIN
           </span>
-          <span className="text-[10px] font-mono text-[#FACC15] hidden sm:inline">
+          <span className="text-[10px] font-mono text-amber-700 font-semibold hidden sm:inline">
             [ WEBGL 60FPS • 10 PINS ]
           </span>
         </div>
 
         {/* 3D Camera Controls */}
-        <div className="flex items-center gap-1.5 p-1 rounded-xl bg-[#071911]/85 border border-slate-800 backdrop-blur-md">
+        <div className="flex items-center gap-1.5 p-1 rounded-xl bg-slate-100 border border-slate-200 backdrop-blur-md">
           <button
             onClick={() => setCameraAngle('isometric')}
-            className={`px-2 py-1 rounded text-[10px] font-mono transition-all ${
-              cameraView === 'isometric' ? 'bg-[#22C55E]/20 text-[#4ADE80] border border-[#22C55E]/40' : 'text-slate-400 hover:text-white'
+            className={`px-2 py-1 rounded-lg text-[10px] font-mono transition-all ${
+              cameraView === 'isometric' ? 'bg-emerald-50 text-emerald-700 border border-emerald-300 font-bold shadow-xs' : 'text-slate-600 hover:text-slate-900'
             }`}
             title="Isometric High-Angle"
           >
@@ -588,8 +588,8 @@ export default function Motherboard3DViewer({
           </button>
           <button
             onClick={() => setCameraAngle('topdown')}
-            className={`px-2 py-1 rounded text-[10px] font-mono transition-all ${
-              cameraView === 'topdown' ? 'bg-[#22C55E]/20 text-[#4ADE80] border border-[#22C55E]/40' : 'text-slate-400 hover:text-white'
+            className={`px-2 py-1 rounded-lg text-[10px] font-mono transition-all ${
+              cameraView === 'topdown' ? 'bg-emerald-50 text-emerald-700 border border-emerald-300 font-bold shadow-xs' : 'text-slate-600 hover:text-slate-900'
             }`}
             title="Top-Down Blueprint"
           >
@@ -597,8 +597,8 @@ export default function Motherboard3DViewer({
           </button>
           <button
             onClick={() => setCameraAngle('front')}
-            className={`px-2 py-1 rounded text-[10px] font-mono transition-all ${
-              cameraView === 'front' ? 'bg-[#22C55E]/20 text-[#4ADE80] border border-[#22C55E]/40' : 'text-slate-400 hover:text-white'
+            className={`px-2 py-1 rounded-lg text-[10px] font-mono transition-all ${
+              cameraView === 'front' ? 'bg-emerald-50 text-emerald-700 border border-emerald-300 font-bold shadow-xs' : 'text-slate-600 hover:text-slate-900'
             }`}
             title="Front Angle"
           >
@@ -606,8 +606,8 @@ export default function Motherboard3DViewer({
           </button>
           <button
             onClick={() => setIsAutoRotate(!isAutoRotate)}
-            className={`p-1.5 rounded text-xs transition-all ${
-              isAutoRotate ? 'bg-[#22C55E]/20 text-[#4ADE80]' : 'text-slate-400 hover:text-white'
+            className={`p-1.5 rounded-lg text-xs transition-all ${
+              isAutoRotate ? 'bg-emerald-50 text-emerald-700 font-bold' : 'text-slate-600 hover:text-slate-900'
             }`}
             title="Toggle Auto-Rotate"
           >
@@ -622,21 +622,21 @@ export default function Motherboard3DViewer({
 
         {/* Hovered Pin Tooltip */}
         {hoveredPin && (
-          <div className="absolute top-4 left-4 z-10 p-2.5 rounded-xl bg-[#071911]/95 border border-[#22C55E]/60 text-xs font-mono text-white shadow-xl pointer-events-none animate-fadeIn flex items-center gap-2">
-            <span className="w-5 h-5 rounded-lg bg-[#22C55E] text-[#06140d] font-bold flex items-center justify-center text-[10px]">
+          <div className="absolute top-4 left-4 z-10 p-2.5 rounded-xl bg-white/95 border border-slate-200 text-xs font-mono text-slate-800 shadow-md pointer-events-none animate-fadeIn flex items-center gap-2">
+            <span className="w-5 h-5 rounded-lg bg-emerald-500 text-white font-bold flex items-center justify-center text-[10px]">
               {hoveredPin.pinNumber}
             </span>
-            <span className="font-semibold text-[#4ADE80]">{hoveredPin.shortName}</span>
-            <span className="text-[10px] text-slate-400">({hoveredPin.category})</span>
+            <span className="font-bold text-emerald-700">{hoveredPin.shortName}</span>
+            <span className="text-[10px] text-slate-500">({hoveredPin.category})</span>
           </div>
         )}
       </div>
 
       {/* Bottom Pin Quick-Selector Strip */}
       {showPinStrip && (
-        <div className="shrink-0 px-3 py-2 border-t border-[#22C55E]/20 bg-[#0A1F16]/95 backdrop-blur-md flex items-center justify-between gap-2 overflow-x-auto z-20">
+        <div className="shrink-0 px-3 py-2 border-t border-slate-200 bg-white/95 backdrop-blur-md flex items-center justify-between gap-2 overflow-x-auto z-20">
           <div className="flex items-center gap-1.5 shrink-0">
-            <span className="text-[10px] font-mono text-slate-400 uppercase tracking-wider mr-1 hidden sm:inline">
+            <span className="text-[10px] font-mono text-slate-500 uppercase tracking-wider mr-1 hidden sm:inline font-semibold">
               HOTSPOT PINS:
             </span>
             {MOTHERBOARD_PINS.map((pin) => {
@@ -652,8 +652,8 @@ export default function Motherboard3DViewer({
                   className={`
                     relative flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-xl font-mono text-xs font-bold transition-all shrink-0
                     ${isSelected
-                      ? 'bg-[#22C55E] text-[#06140d] shadow-[0_0_15px_rgba(34,197,94,0.6)] scale-110'
-                      : 'bg-[#06170F] text-slate-300 border border-slate-800 hover:border-[#22C55E]/60 hover:text-[#4ADE80]'
+                      ? 'bg-emerald-500 text-white shadow-[0_0_12px_rgba(16,185,129,0.4)] scale-110'
+                      : 'bg-white text-slate-700 border border-slate-200 hover:border-emerald-400 hover:bg-emerald-50/60 shadow-xs'
                     }
                   `}
                   title={`${pin.pinNumber}: ${pin.shortName}`}
@@ -666,13 +666,13 @@ export default function Motherboard3DViewer({
 
           {activePin && (
             <div className="flex items-center gap-2 shrink-0">
-              <span className="text-[11px] font-mono text-[#FACC15] hidden md:inline truncate max-w-[200px]">
+              <span className="text-[11px] font-mono text-amber-700 font-bold hidden md:inline truncate max-w-[200px]">
                 {activePin.shortName}
               </span>
               {showModal && (
                 <button
                   onClick={() => setActivePin(activePin)}
-                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#22C55E]/20 border border-[#22C55E]/40 text-[#4ADE80] text-xs font-mono font-medium hover:bg-[#22C55E]/30 transition-all"
+                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-teal-50 border border-teal-200 text-teal-700 text-xs font-mono font-semibold hover:bg-teal-100 transition-all shadow-xs"
                 >
                   <Info className="w-3 h-3" />
                   <span>Details</span>

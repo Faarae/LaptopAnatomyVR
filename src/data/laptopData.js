@@ -11,7 +11,8 @@ export const LAPTOPS = [
     alias: "AeroBook Slim 14",
     category: "Entry Level",
     categoryBadge: "Productivity & Study",
-    accentColor: "#38BDF8",
+    accentColor: "#0D9488",
+    image: "/images/laptop-a.jpg",
     description: "Designed for daily productivity, coursework, and high battery efficiency with integrated graphics architecture and passive/quiet thermal profile.",
     specs: {
       cpu: "Quad-Core Ultra-Low Voltage Processor",
@@ -35,7 +36,8 @@ export const LAPTOPS = [
     alias: "TitanForge RTX 16",
     category: "Gaming",
     categoryBadge: "High Performance",
-    accentColor: "#F43F5E",
+    accentColor: "#10B981",
+    image: "/images/laptop-b.jpg",
     description: "Built for intensive real-time rendering and triple-A gaming with high-wattage discrete GPU, multi-heatpipe dual exhaust vapor cooling, and modular dual RAM slots.",
     specs: {
       cpu: "Octa-Core High-Performance Max Clock CPU",
@@ -59,7 +61,8 @@ export const LAPTOPS = [
     alias: "VisionStudio Pro 16",
     category: "Creator",
     categoryBadge: "Workstation & Media",
-    accentColor: "#818CF8",
+    accentColor: "#0284C7",
+    image: "/images/laptop-c.jpg",
     description: "Engineered for 3D creators, motion artists, and video editors with high RAM density, color-accurate display controllers, and studio-grade thermal efficiency.",
     specs: {
       cpu: "14-Core Hybrid Architecture Creator CPU",

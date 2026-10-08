@@ -1,167 +1,101 @@
-import React, { useRef, useState } from 'react';
+import React from 'react';
 import { 
-  HelpCircle, Shuffle, Move, Search, Timer, ArrowRight, Zap, CheckCircle2 
+  HelpCircle, Shuffle, Move, Search, Timer, ShieldCheck, ArrowRight 
 } from 'lucide-react';
 
 /**
- * ChallengeCard
- * Tactical hardware module card with 3D cursor tilt, micro telemetry,
- * custom hover animations, and HUD aesthetic.
+ * ChallengeCard (Clean Light Theme)
+ * Friendly hardware challenge card with crisp white surface, soft shadows,
+ * emerald accent highlights, and smooth selected indicator.
  */
 export default function ChallengeCard({
   id,
   number,
   title,
-  subtitle,
+  category,
+  badge,
   description,
   iconType,
-  delayClass,
-  isHovered,
-  onHover,
-  onLeave,
+  isSelected = false,
   onSelect,
 }) {
-  const cardRef = useRef(null);
-  const [tilt, setTilt] = useState({ rotateX: 0, rotateY: 0 });
-  const [mouseGlow, setMouseGlow] = useState({ x: 50, y: 50 });
-
-  // 3D Tilt calculation (max 3-5 degrees as strictly required by prompt Section 10)
-  const handleMouseMove = (e) => {
-    if (!cardRef.current) return;
-    const rect = cardRef.current.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-
-    const centerX = rect.width / 2;
-    const centerY = rect.height / 2;
-
-    const rotateX = ((y - centerY) / centerY) * -4; // Max -4 to +4 deg
-    const rotateY = ((x - centerX) / centerX) * 4;  // Max -4 to +4 deg
-
-    setTilt({ rotateX, rotateY });
-    setMouseGlow({
-      x: (x / rect.width) * 100,
-      y: (y / rect.height) * 100,
-    });
-  };
-
-  const handleMouseEnter = () => {
-    onHover?.(id);
-  };
-
-  const handleMouseLeave = () => {
-    setTilt({ rotateX: 0, rotateY: 0 });
-    onLeave?.();
-  };
-
   return (
     <div
-      ref={cardRef}
-      onMouseMove={handleMouseMove}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
       onClick={() => onSelect?.(id)}
       style={{
-        transform: `perspective(800px) rotateX(${tilt.rotateX}deg) rotateY(${tilt.rotateY}deg) ${isHovered ? 'translateY(-3px)' : 'translateY(0px)'}`,
-        transition: 'transform 0.18s cubic-bezier(0.2, 0, 0, 1), box-shadow 0.2s ease, border-color 0.2s ease',
+        transform: isSelected ? 'translateY(-2px)' : 'translateY(0)',
+        transition: 'transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease',
       }}
       className={`
-        group relative rounded-xl bg-[#091D14]/90 border cursor-pointer select-none overflow-hidden
-        p-3.5 sm:p-4 flex flex-col justify-between
-        ${isHovered 
-          ? 'border-[#4ADE80] shadow-[0_0_25px_rgba(74,222,128,0.35),0_12px_28px_rgba(0,0,0,0.8)]' 
-          : 'border-[#22C55E]/30 shadow-[0_8px_20px_rgba(0,0,0,0.7)] hover:border-[#22C55E]/60'
+        group relative rounded-2xl p-3 sm:p-3.5 flex flex-col justify-between cursor-pointer select-none overflow-hidden transition-all duration-200
+        ${isSelected 
+          ? 'bg-emerald-50/70 border-2 border-emerald-500 shadow-md ring-2 ring-emerald-500/10' 
+          : 'bg-white border border-slate-200/90 hover:border-emerald-300 hover:bg-slate-50/60 shadow-2xs hover:shadow-md'
         }
-        ${delayClass || ''}
       `}
     >
-      {/* Dynamic Cursor Spotlight Radial Background */}
-      <div
-        className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-        style={{
-          background: `radial-gradient(circle at ${mouseGlow.x}% ${mouseGlow.y}%, rgba(74,222,128,0.18) 0%, transparent 60%)`,
-        }}
-      />
+      {/* Top Accent Strip for Selected Card */}
+      {isSelected && (
+        <div className="absolute top-0 inset-x-0 h-[2.5px] bg-emerald-500" />
+      )}
 
-      {/* Subtle Circuit Grid Overlay */}
-      <div className="absolute inset-0 cyber-circuit-grid opacity-30 pointer-events-none" />
-
-      {/* Top Telemetry Header Strip */}
-      <div className="relative z-10 flex items-center justify-between border-b border-[#22C55E]/20 pb-2 mb-2">
-        <div className="flex items-center gap-1.5 font-mono text-[11px] font-bold tracking-wider">
-          <span className="text-[#FACC15]">{number}</span>
-          <span className="text-white group-hover:text-[#4ADE80] transition-colors">{title}</span>
+      {/* Top Header: Number, Title & Status */}
+      <div className="flex items-center justify-between border-b border-slate-100 pb-2 mb-1.5">
+        <div className="flex items-center gap-1.5">
+          <span className="font-mono text-xs font-bold text-emerald-700">
+            [{number}]
+          </span>
+          <h3 className={`font-display font-bold text-xs sm:text-sm tracking-wide transition-colors ${isSelected ? 'text-emerald-900' : 'text-slate-800 group-hover:text-emerald-700'}`}>
+            {title}
+          </h3>
         </div>
-        
-        {/* Status Indicator */}
-        <div className="flex items-center gap-1.5 font-mono text-[9px]">
-          <span className={`w-1.5 h-1.5 rounded-full ${isHovered ? 'bg-[#4ADE80] animate-ping' : 'bg-[#22C55E]'}`} />
-          <span className={`tracking-widest uppercase font-semibold ${isHovered ? 'text-[#4ADE80]' : 'text-slate-400'}`}>
-            {isHovered ? '● ON' : 'STANDBY'}
+
+        {/* Selected / Standby status badge */}
+        <div className="flex items-center gap-1 font-mono text-[9px]">
+          <span className={`w-1.5 h-1.5 rounded-full ${isSelected ? 'bg-emerald-500 animate-pulse' : 'bg-slate-300'}`} />
+          <span className={`uppercase font-bold tracking-wider px-1.5 py-0.5 rounded-full ${isSelected ? 'bg-emerald-100/90 text-emerald-800' : 'text-slate-400 bg-slate-100'}`}>
+            {isSelected ? 'ACTIVE' : 'READY'}
           </span>
         </div>
       </div>
 
-      {/* Center Visual & Icon Block */}
-      <div className="relative z-10 my-1 flex items-center gap-3">
-        {/* Unique Icon Animation Pod */}
+      {/* Middle Body: Icon & Description */}
+      <div className="flex items-start gap-2.5 my-1">
+        {/* Icon Pod */}
         <div className={`
-          w-11 h-11 rounded-lg border flex items-center justify-center shrink-0 transition-all duration-300
-          ${isHovered 
-            ? 'bg-[#123824] border-[#4ADE80] text-[#4ADE80] shadow-[0_0_15px_rgba(74,222,128,0.4)] scale-105' 
-            : 'bg-[#0B2117] border-[#22C55E]/30 text-slate-300'
+          w-8 h-8 rounded-xl border flex items-center justify-center shrink-0 transition-all duration-200
+          ${isSelected 
+            ? 'bg-emerald-600 border-emerald-600 text-white shadow-xs' 
+            : 'bg-emerald-50 border-emerald-100 text-emerald-600 group-hover:bg-emerald-100'
           }
         `}>
-          {iconType === 'quiz' && (
-            <div className="relative flex items-center justify-center">
-              <HelpCircle className={`w-5 h-5 ${isHovered ? 'animate-pulse text-[#4ADE80]' : ''}`} />
-            </div>
-          )}
-          {iconType === 'match' && (
-            <div className="relative flex items-center justify-center">
-              <Shuffle className={`w-5 h-5 ${isHovered ? 'rotate-12 text-[#4ADE80]' : ''} transition-transform`} />
-            </div>
-          )}
-          {iconType === 'drag' && (
-            <div className="relative flex items-center justify-center">
-              <Move className={`w-5 h-5 ${isHovered ? 'translate-y-[-2px] text-[#4ADE80]' : ''} transition-transform`} />
-            </div>
-          )}
-          {iconType === 'find' && (
-            <div className="relative flex items-center justify-center">
-              <Search className={`w-5 h-5 ${isHovered ? 'scale-110 text-[#4ADE80]' : ''} transition-transform`} />
-            </div>
-          )}
-          {iconType === 'speed' && (
-            <div className="relative flex items-center justify-center">
-              <Timer className={`w-5 h-5 ${isHovered ? 'animate-spin text-[#FACC15]' : 'text-[#FACC15]'}`} style={{ animationDuration: '4s' }} />
-            </div>
-          )}
+          {iconType === 'quiz' && <HelpCircle className="w-4 h-4" />}
+          {iconType === 'match' && <Shuffle className="w-4 h-4" />}
+          {iconType === 'drag' && <Move className="w-4 h-4" />}
+          {iconType === 'find' && <Search className="w-4 h-4" />}
+          {iconType === 'speed' && <Timer className="w-4 h-4" />}
+          {iconType === 'identify' && <ShieldCheck className="w-4 h-4" />}
         </div>
 
         {/* Text Description */}
         <div className="flex-1 min-w-0">
-          <p className="text-xs text-slate-300 line-clamp-2 leading-relaxed">
+          <p className="text-[11px] text-slate-500 font-sans leading-relaxed line-clamp-2">
             {description}
           </p>
         </div>
       </div>
 
-      {/* Footer Strip with Action CTA */}
-      <div className="relative z-10 flex items-center justify-between border-t border-[#22C55E]/20 pt-2 mt-2">
-        <span className="text-[10px] font-mono text-[#FACC15] uppercase tracking-wider font-semibold">
-          {subtitle || 'HARDWARE MODULE'}
+      {/* Bottom Footer: Category & Preview Action */}
+      <div className="flex items-center justify-between pt-1.5 border-t border-slate-100 mt-1 text-[10px] font-mono">
+        <span className="text-slate-600 uppercase tracking-wider font-semibold">
+          {category}
         </span>
 
-        <div className="flex items-center gap-1.5 font-mono text-[11px] font-bold text-[#4ADE80] group-hover:text-white transition-colors">
-          <span>START</span>
-          <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+        <div className={`flex items-center gap-1 font-semibold transition-colors ${isSelected ? 'text-emerald-700' : 'text-slate-400 group-hover:text-emerald-600'}`}>
+          <span>{isSelected ? 'PREVIEWING' : 'PREVIEW'}</span>
+          <ArrowRight className={`w-3 h-3 transition-transform ${isSelected ? 'translate-x-0.5' : 'group-hover:translate-x-0.5'}`} />
         </div>
       </div>
-
-      {/* Decorative Chamfer Accent Corner */}
-      <div className="absolute top-0 right-0 w-3 h-3 bg-gradient-to-bl from-[#22C55E]/40 to-transparent pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-3 h-3 bg-gradient-to-tr from-[#22C55E]/40 to-transparent pointer-events-none" />
 
     </div>
   );

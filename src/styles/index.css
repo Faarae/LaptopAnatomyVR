@@ -2,6 +2,53 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  /* Background / Surface (Clean Modern Light Theme) */
+  --color-bg-main: #F8FAFC;
+  --color-bg-secondary: #F1F5F9;
+  --color-surface: #FFFFFF;
+  --color-surface-elevated: #FFFFFF;
+  --color-surface-hover: #F8FAFC;
+
+  /* Primary Brand — Vibrant Emerald Green Accent */
+  --color-primary: #10B981;
+  --color-primary-hover: #059669;
+  --color-primary-active: #047857;
+  --color-primary-muted: #A7F3D0;
+  --color-primary-subtle: #ECFDF5;
+
+  /* Secondary — Teal */
+  --color-teal: #0D9488;
+  --color-teal-hover: #0F766E;
+  --color-teal-muted: #CCFBF1;
+
+  /* Secondary — Cyan */
+  --color-cyan: #0284C7;
+  --color-cyan-hover: #0369A1;
+  --color-cyan-muted: #E0F2FE;
+
+  /* Accent — Amber */
+  --color-amber: #D97706;
+  --color-amber-hover: #B45309;
+  --color-amber-muted: #FEF3C7;
+
+  /* Semantic Colors */
+  --color-success: #10B981;
+  --color-error: #EF4444;
+  --color-warning: #F59E0B;
+  --color-info: #0284C7;
+
+  /* Text System (Dark neutral on white for optimal readability & eye comfort) */
+  --color-text-primary: #0F172A;
+  --color-text-secondary: #475569;
+  --color-text-muted: #64748B;
+  --color-text-disabled: #94A3B8;
+
+  /* Border System */
+  --color-border-subtle: rgba(15, 23, 42, 0.08);
+  --color-border-hover: rgba(15, 23, 42, 0.16);
+}
+
 @layer base {
   html, body, #root {
     height: 100%;
@@ -10,8 +57,8 @@
   }
 
   body {
-    background-color: #04150F;
-    color: #F8FAFC;
+    background-color: #F8FAFC;
+    color: #0F172A;
     font-family: 'Inter', sans-serif;
   }
 
@@ -28,9 +75,9 @@
 .tech-grid-pattern {
   background-size: 56px 56px;
   background-image: 
-    radial-gradient(circle, rgba(34, 197, 94, 0.12) 1px, transparent 1px),
-    linear-gradient(to right, rgba(34, 197, 94, 0.03) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(34, 197, 94, 0.03) 1px, transparent 1px);
+    radial-gradient(circle, rgba(15, 23, 42, 0.05) 1px, transparent 1px),
+    linear-gradient(to right, rgba(16, 185, 129, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(16, 185, 129, 0.03) 1px, transparent 1px);
 }
 
 /* Slow Ambient Grid Drift (Section 20) */
@@ -282,9 +329,9 @@
   animation: snap-pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-/* Concentric Green Floor Reflection */
+/* Concentric Restrained Brand Floor Reflection */
 .concentric-floor-glow {
-  background: radial-gradient(circle at 50% 50%, rgba(34, 197, 94, 0.22) 0%, rgba(34, 197, 94, 0.08) 40%, transparent 70%);
+  background: radial-gradient(circle at 50% 50%, rgba(91, 196, 122, 0.12) 0%, rgba(69, 184, 165, 0.04) 40%, transparent 70%);
 }
 
 /* ─────────────────────────────────────────────────────────────
@@ -427,12 +474,12 @@
   width: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: #04150F;
+  background: #0B1110;
 }
 ::-webkit-scrollbar-thumb {
-  background: #0F2E20;
+  background: #1B2522;
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #22C55E;
+  background: #5BC47A;
 }

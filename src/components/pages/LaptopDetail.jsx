@@ -39,12 +39,12 @@ export default function LaptopDetail({ laptopId, onNavigate }) {
   const activePin = getPinByNumber(selectedPinNumber) || MOTHERBOARD_PINS[7]; // Pin 8 default
 
   const specItems = [
-    { label: "Processor (CPU)", value: laptop.specs.cpu, icon: Cpu, accent: "#22C55E", pinNum: 8, pinName: "Pin #08: Central CPU Socket" },
-    { label: "Graphics (GPU)", value: laptop.specs.gpu, icon: Sparkles, accent: "#FACC15", pinNum: 1, pinName: "Pin #01: PCIe x16 Bus" },
-    { label: "System Memory (RAM)", value: laptop.specs.ram, icon: Layers, accent: "#4ADE80", pinNum: 4, pinName: "Pin #04: Dual-Channel RAM" },
-    { label: "Storage (SSD NVMe)", value: laptop.specs.storage, icon: HardDrive, accent: "#22C55E", pinNum: 3, pinName: "Pin #03: Storage Controller" },
-    { label: "Thermal Solution", value: laptop.specs.cooling, icon: Fan, accent: "#FACC15", pinNum: 5, pinName: "Pin #05: VRM Heatsink & Cooling" },
-    { label: "Battery Unit & Logic", value: laptop.specs.battery, icon: Battery, accent: "#4ADE80", pinNum: 9, pinName: "Pin #09: Southbridge & CMOS" },
+    { label: "Processor (CPU)", value: laptop.specs.cpu, icon: Cpu, accent: "#5BC47A", pinNum: 8, pinName: "Pin #08: Central CPU Socket" },
+    { label: "Graphics (GPU)", value: laptop.specs.gpu, icon: Sparkles, accent: "#45B8A5", pinNum: 1, pinName: "Pin #01: PCIe x16 Bus" },
+    { label: "System Memory (RAM)", value: laptop.specs.ram, icon: Layers, accent: "#5EB6D6", pinNum: 4, pinName: "Pin #04: Dual-Channel RAM" },
+    { label: "Storage (SSD NVMe)", value: laptop.specs.storage, icon: HardDrive, accent: "#45B8A5", pinNum: 3, pinName: "Pin #03: Storage Controller" },
+    { label: "Thermal Solution", value: laptop.specs.cooling, icon: Fan, accent: "#E5B85C", pinNum: 5, pinName: "Pin #05: VRM Heatsink & Cooling" },
+    { label: "Battery Unit & Logic", value: laptop.specs.battery, icon: Battery, accent: "#E5B85C", pinNum: 9, pinName: "Pin #09: Southbridge & CMOS" },
   ];
 
   /**
@@ -61,8 +61,8 @@ export default function LaptopDetail({ laptopId, onNavigate }) {
     // 1. Scene
     const scene = new THREE.Scene();
     sceneRef.current = scene;
-    scene.background = new THREE.Color(0x04130b);
-    scene.fog = new THREE.FogExp2(0x04130b, 0.035);
+    scene.background = new THREE.Color(0xf8fafc);
+    scene.fog = new THREE.FogExp2(0xf8fafc, 0.025);
 
     // 2. Camera
     const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
@@ -91,22 +91,22 @@ export default function LaptopDetail({ laptopId, onNavigate }) {
     controls.target.set(0, 0, 0);
     controlsRef.current = controls;
 
-    // 5. Lighting
-    const ambientLight = new THREE.AmbientLight(0xffffff, 1.4);
+    // 5. Lighting (Clean Daylight Studio Setup)
+    const ambientLight = new THREE.AmbientLight(0xffffff, 2.0);
     scene.add(ambientLight);
 
-    const mainLight = new THREE.DirectionalLight(0xe8fff0, 2.8);
-    mainLight.position.set(8, 14, 8);
+    const mainLight = new THREE.DirectionalLight(0xffffff, 2.6);
+    mainLight.position.set(8, 16, 8);
     mainLight.castShadow = true;
     scene.add(mainLight);
 
-    const greenFill = new THREE.PointLight(0x22c55e, 2.5, 20);
-    greenFill.position.set(-6, 5, -4);
+    const greenFill = new THREE.PointLight(0x10b981, 1.8, 20);
+    greenFill.position.set(-6, 6, -4);
     scene.add(greenFill);
 
-    const goldFill = new THREE.PointLight(0xfacc15, 2.0, 20);
-    goldFill.position.set(6, 4, 6);
-    scene.add(goldFill);
+    const tealFill = new THREE.PointLight(0x06b6d4, 1.4, 20);
+    tealFill.position.set(6, 5, 6);
+    scene.add(tealFill);
 
     // 6. Build Motherboard
     buildMotherboard(scene);
@@ -282,16 +282,16 @@ export default function LaptopDetail({ laptopId, onNavigate }) {
   const buildMotherboard = (scene) => {
     pinMeshesRef.current = [];
 
-    // PCB Main Board
+    // PCB Main Board (Dark Neutral Surface with high-tech traces)
     const pcb = new THREE.Mesh(
       new THREE.BoxGeometry(10, 0.2, 10),
-      new THREE.MeshStandardMaterial({ color: 0x0c2518, roughness: 0.45, metalness: 0.2 })
+      new THREE.MeshStandardMaterial({ color: 0x151d1b, roughness: 0.5, metalness: 0.2 })
     );
     pcb.receiveShadow = true;
     scene.add(pcb);
 
-    // Circuit trace grid
-    const gridHelper = new THREE.GridHelper(9.6, 24, 0x22c55e, 0x113b24);
+    // Circuit trace grid (Teal & dark neutral)
+    const gridHelper = new THREE.GridHelper(9.6, 24, 0x45b8a5, 0x1a2e29);
     gridHelper.position.y = 0.11;
     scene.add(gridHelper);
 
@@ -342,7 +342,7 @@ export default function LaptopDetail({ laptopId, onNavigate }) {
     ramBank1.position.set(2.2, 0.3, 1.0);
     scene.add(ramBank1);
 
-    const ramBank2 = createRamSlots(2, 0x22c55e, 0x1e293b);
+    const ramBank2 = createRamSlots(2, 0x45b8a5, 0x1e293b);
     ramBank2.position.set(3.4, 0.3, 1.8);
     scene.add(ramBank2);
 
@@ -496,8 +496,8 @@ export default function LaptopDetail({ laptopId, onNavigate }) {
     const sphere = new THREE.Mesh(
       new THREE.SphereGeometry(0.24, 16, 16),
       new THREE.MeshStandardMaterial({
-        color: 0x22c55e,
-        emissive: 0x15803d,
+        color: 0x5bc47a,
+        emissive: 0x2f6543,
         emissiveIntensity: 0.6,
         roughness: 0.2
       })
@@ -507,7 +507,7 @@ export default function LaptopDetail({ laptopId, onNavigate }) {
 
     const ring = new THREE.Mesh(
       new THREE.RingGeometry(0.28, 0.38, 24),
-      new THREE.MeshBasicMaterial({ color: 0xfacc15, side: THREE.DoubleSide, transparent: true, opacity: 0.85 })
+      new THREE.MeshBasicMaterial({ color: 0x45b8a5, side: THREE.DoubleSide, transparent: true, opacity: 0.85 })
     );
     ring.rotation.x = Math.PI / 2;
     ring.name = 'pinRing';
@@ -516,7 +516,7 @@ export default function LaptopDetail({ laptopId, onNavigate }) {
 
     const glow = new THREE.Mesh(
       new THREE.SphereGeometry(0.34, 16, 16),
-      new THREE.MeshBasicMaterial({ color: 0x4ade80, transparent: true, opacity: 0.25 })
+      new THREE.MeshBasicMaterial({ color: 0x5bc47a, transparent: true, opacity: 0.25 })
     );
     glow.name = 'pinGlow';
     glow.userData = { pinData: pin };
@@ -524,7 +524,7 @@ export default function LaptopDetail({ laptopId, onNavigate }) {
 
     const stalk = new THREE.Mesh(
       new THREE.CylinderGeometry(0.03, 0.03, 0.45, 8),
-      new THREE.MeshStandardMaterial({ color: 0xfacc15, metalness: 0.8 })
+      new THREE.MeshStandardMaterial({ color: 0x45b8a5, metalness: 0.8 })
     );
     stalk.position.y = -0.25;
     stalk.userData = { pinData: pin };
@@ -536,7 +536,7 @@ export default function LaptopDetail({ laptopId, onNavigate }) {
   return (
     <div 
       ref={containerRef}
-      className="relative w-full h-[calc(100vh-4.5rem)] max-h-[calc(100vh-4.5rem)] overflow-hidden select-none bg-[#04130b]"
+      className="relative w-full h-[calc(100vh-4.5rem)] max-h-[calc(100vh-4.5rem)] overflow-hidden select-none bg-slate-100"
     >
       {/* ── FULLSCREEN WEBGL 3D BACKGROUND CANVAS ── */}
       <canvas 
@@ -546,12 +546,12 @@ export default function LaptopDetail({ laptopId, onNavigate }) {
 
       {/* Hovered Pin Floating Tag */}
       {hoveredPin && (
-        <div className="absolute top-20 left-1/2 -translate-x-1/2 z-30 p-2 px-3 rounded-xl bg-[#071911]/95 border border-[#22C55E]/60 text-xs font-mono text-white shadow-2xl pointer-events-none animate-fadeIn flex items-center gap-2">
-          <span className="w-5 h-5 rounded-lg bg-[#22C55E] text-[#06140d] font-bold flex items-center justify-center text-[10px]">
+        <div className="absolute top-16 left-1/2 -translate-x-1/2 z-30 p-2 px-3.5 rounded-xl bg-white/95 border border-emerald-300 text-xs font-mono text-slate-800 shadow-xl pointer-events-none animate-fadeIn flex items-center gap-2">
+          <span className="w-5 h-5 rounded-lg bg-emerald-600 text-white font-bold flex items-center justify-center text-[10px]">
             {hoveredPin.pinNumber}
           </span>
-          <span className="font-semibold text-[#4ADE80]">{hoveredPin.shortName}</span>
-          <span className="text-[10px] text-slate-400">({hoveredPin.category})</span>
+          <span className="font-semibold text-emerald-700">{hoveredPin.shortName}</span>
+          <span className="text-[10px] text-slate-500">({hoveredPin.category})</span>
         </div>
       )}
 
@@ -561,51 +561,51 @@ export default function LaptopDetail({ laptopId, onNavigate }) {
         <div className="pointer-events-auto flex items-center gap-3">
           <button
             onClick={() => onNavigate('laptop-selection')}
-            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#0C2017]/90 border border-slate-700/80 text-white text-xs font-mono hover:border-[#22C55E] hover:text-[#4ADE80] transition-all backdrop-blur-md shadow-lg"
+            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/95 border border-slate-200/90 text-slate-700 text-xs font-mono hover:border-emerald-300 hover:text-emerald-700 transition-all backdrop-blur-md shadow-sm"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
-            <span>Back to Laptops</span>
+            <span>Kembali ke Pilihan Laptop</span>
           </button>
 
-          <div className="flex items-center gap-2 px-3 py-1 rounded-xl bg-[#071911]/85 border border-[#22C55E]/30 backdrop-blur-md">
+          <div className="flex items-center gap-2 px-3 py-1 rounded-xl bg-white/90 border border-slate-200/90 backdrop-blur-md shadow-xs">
             <span className="text-xs font-mono text-slate-400">{laptop.code} //</span>
-            <span className="text-xs font-mono font-bold text-white">{laptop.name}</span>
-            <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#22C55E]/15 text-[#4ADE80] border border-[#22C55E]/30">
+            <span className="text-xs font-mono font-bold text-slate-800">{laptop.name}</span>
+            <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 font-semibold">
               {laptop.category}
             </span>
           </div>
         </div>
 
         {/* Right: Camera Angle & Rotate Controls */}
-        <div className="pointer-events-auto flex items-center gap-1.5 p-1 rounded-xl bg-[#071911]/85 border border-[#22C55E]/30 backdrop-blur-md shadow-lg">
+        <div className="pointer-events-auto flex items-center gap-1.5 p-1 rounded-xl bg-white/90 border border-slate-200/90 backdrop-blur-md shadow-sm">
           <button
             onClick={() => setCameraAngle('isometric')}
-            className={`px-2.5 py-1 rounded text-[10px] font-mono transition-all ${
-              cameraView === 'isometric' ? 'bg-[#22C55E]/20 text-[#4ADE80] border border-[#22C55E]/40 font-semibold' : 'text-slate-400 hover:text-white'
+            className={`px-2.5 py-1 rounded-lg text-[10px] font-mono transition-all ${
+              cameraView === 'isometric' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 font-semibold' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
             }`}
           >
             Iso 3D
           </button>
           <button
             onClick={() => setCameraAngle('topdown')}
-            className={`px-2.5 py-1 rounded text-[10px] font-mono transition-all ${
-              cameraView === 'topdown' ? 'bg-[#22C55E]/20 text-[#4ADE80] border border-[#22C55E]/40 font-semibold' : 'text-slate-400 hover:text-white'
+            className={`px-2.5 py-1 rounded-lg text-[10px] font-mono transition-all ${
+              cameraView === 'topdown' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 font-semibold' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
             }`}
           >
             Top Blueprint
           </button>
           <button
             onClick={() => setCameraAngle('front')}
-            className={`px-2.5 py-1 rounded text-[10px] font-mono transition-all ${
-              cameraView === 'front' ? 'bg-[#22C55E]/20 text-[#4ADE80] border border-[#22C55E]/40 font-semibold' : 'text-slate-400 hover:text-white'
+            className={`px-2.5 py-1 rounded-lg text-[10px] font-mono transition-all ${
+              cameraView === 'front' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 font-semibold' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
             }`}
           >
             Front Angle
           </button>
           <button
             onClick={() => setIsAutoRotate(!isAutoRotate)}
-            className={`p-1.5 rounded text-xs transition-all ${
-              isAutoRotate ? 'bg-[#22C55E]/20 text-[#4ADE80]' : 'text-slate-400 hover:text-white'
+            className={`p-1.5 rounded-lg text-xs transition-all ${
+              isAutoRotate ? 'bg-emerald-50 text-emerald-700' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
             }`}
             title="Toggle Auto-Rotate"
           >
@@ -615,23 +615,23 @@ export default function LaptopDetail({ laptopId, onNavigate }) {
       </div>
 
       {/* ── LEFT FLOATING GLASS PANEL: HARDWARE SPECS SELECTOR ── */}
-      <div className="absolute top-16 left-4 bottom-16 w-72 sm:w-80 lg:w-84 z-20 flex flex-col justify-between pointer-events-auto backdrop-blur-xl bg-[#06170F]/85 border border-[#22C55E]/30 rounded-2xl p-4 shadow-2xl overflow-y-auto">
+      <div className="absolute top-16 left-4 bottom-16 w-72 sm:w-80 lg:w-84 z-20 flex flex-col justify-between pointer-events-auto backdrop-blur-xl bg-white/92 border border-slate-200/90 rounded-2xl p-4 shadow-xl overflow-y-auto">
         <div className="space-y-3">
-          <div className="flex items-center justify-between border-b border-[#22C55E]/20 pb-2">
-            <span className="text-[10px] font-mono text-[#4ADE80] uppercase tracking-wider font-semibold">
-              HARDWARE ARCHITECTURE
+          <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+            <span className="text-[10px] font-mono text-emerald-700 uppercase tracking-wider font-semibold">
+              ARSITEKTUR HARDWARE
             </span>
-            <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#092218] text-[#FACC15] border border-slate-800">
+            <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 font-medium">
               {laptop.alias}
             </span>
           </div>
 
-          <p className="text-xs text-slate-300 font-sans leading-relaxed">
+          <p className="text-xs text-slate-600 font-sans leading-relaxed">
             {laptop.description}
           </p>
 
-          <h4 className="text-[10px] font-mono uppercase tracking-wider text-[#FACC15] font-semibold pt-1">
-            Component Specs (Click to focus 3D):
+          <h4 className="text-[10px] font-mono uppercase tracking-wider text-slate-500 font-semibold pt-1">
+            Komponen Utama (Klik untuk fokus 3D):
           </h4>
 
           {/* Clickable Component Spec Cards */}
@@ -645,22 +645,22 @@ export default function LaptopDetail({ laptopId, onNavigate }) {
                   onClick={() => setSelectedPinNumber(spec.pinNum)}
                   className={`p-2.5 rounded-xl border transition-all cursor-pointer ${
                     isSelected
-                      ? 'bg-[#0E3523] border-[#22C55E] shadow-[0_0_15px_rgba(34,197,94,0.35)] scale-102'
-                      : 'bg-[#06170F]/80 border-slate-800 hover:border-[#22C55E]/50 hover:bg-[#081F15]'
+                      ? 'bg-emerald-50/80 border-emerald-300 shadow-xs ring-1 ring-emerald-500/20'
+                      : 'bg-slate-50 border-slate-200/70 hover:border-emerald-200 hover:bg-slate-100/70'
                   }`}
                 >
                   <div className="flex items-center justify-between mb-0.5">
                     <div className="flex items-center gap-2">
-                      <Icon className="w-3.5 h-3.5" style={{ color: spec.accent }} />
-                      <span className="text-[11px] font-mono font-medium text-slate-200">
+                      <Icon className="w-3.5 h-3.5 text-emerald-600" />
+                      <span className="text-[11px] font-mono font-medium text-slate-800">
                         {spec.label}
                       </span>
                     </div>
-                    <span className="text-[9px] font-mono text-[#4ADE80] px-1.5 py-0.5 rounded bg-[#22C55E]/15 border border-[#22C55E]/30 font-bold">
+                    <span className="text-[9px] font-mono text-emerald-700 px-1.5 py-0.5 rounded bg-emerald-100/70 font-bold">
                       Pin #{spec.pinNum < 10 ? `0${spec.pinNum}` : spec.pinNum}
                     </span>
                   </div>
-                  <p className="text-[11px] font-sans text-slate-300 font-semibold pl-5">
+                  <p className="text-[11px] font-sans text-slate-600 font-medium pl-5 truncate">
                     {spec.value}
                   </p>
                 </div>
@@ -670,67 +670,67 @@ export default function LaptopDetail({ laptopId, onNavigate }) {
         </div>
 
         {/* Bottom hint */}
-        <div className="pt-2 border-t border-slate-800/80 text-[10px] font-mono text-slate-400 flex items-center gap-1.5">
-          <Compass className="w-3.5 h-3.5 text-[#22C55E] shrink-0" />
-          <span>Click any pin or drag the 3D board to explore freely.</span>
+        <div className="pt-2 border-t border-slate-100 text-[10px] font-mono text-slate-400 flex items-center gap-1.5">
+          <Compass className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+          <span>Klik pin atau putar papan 3D dengan mouse untuk eksplorasi.</span>
         </div>
       </div>
 
       {/* ── RIGHT FLOATING GLASS PANEL: ACTIVE COMPONENT TECHNICAL DOSSIER ── */}
       {activePin && (
-        <div className="absolute top-16 right-4 bottom-16 w-80 sm:w-88 lg:w-96 z-20 flex flex-col justify-between pointer-events-auto backdrop-blur-xl bg-[#06170F]/85 border border-[#22C55E]/30 rounded-2xl p-4 shadow-2xl overflow-y-auto">
+        <div className="absolute top-16 right-4 bottom-16 w-80 sm:w-88 lg:w-96 z-20 flex flex-col justify-between pointer-events-auto backdrop-blur-xl bg-white/92 border border-slate-200/90 rounded-2xl p-4 shadow-xl overflow-y-auto">
           <div className="space-y-3">
             {/* Header Badge */}
-            <div className="flex items-center justify-between border-b border-[#22C55E]/20 pb-2.5">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-2.5">
               <div className="flex items-center gap-2">
-                <span className="w-7 h-7 rounded-lg bg-[#22C55E] text-[#06140d] font-bold font-mono text-xs flex items-center justify-center shadow-md">
+                <span className="w-7 h-7 rounded-lg bg-emerald-600 text-white font-bold font-mono text-xs flex items-center justify-center shadow-xs">
                   {activePin.pinNumber}
                 </span>
                 <div>
-                  <span className="text-[9px] font-mono text-[#FACC15] block uppercase font-bold">
+                  <span className="text-[9px] font-mono text-emerald-700 block uppercase font-bold">
                     PIN #{activePin.pinNumber < 10 ? `0${activePin.pinNumber}` : activePin.pinNumber} // {activePin.badge}
                   </span>
-                  <span className="text-xs font-bold font-display text-white">
+                  <span className="text-xs font-bold font-display text-slate-900">
                     {activePin.shortName}
                   </span>
                 </div>
               </div>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#22C55E]/15 text-[#4ADE80] border border-[#22C55E]/30">
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200">
                 {activePin.category}
               </span>
             </div>
 
             {/* Architecture Role */}
-            <div className="p-3 rounded-xl bg-[#0B251A]/80 border border-[#22C55E]/20">
-              <h5 className="text-[10px] font-mono uppercase tracking-wider text-[#4ADE80] mb-1 font-semibold">
-                Architecture Function
+            <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/70">
+              <h5 className="text-[10px] font-mono uppercase tracking-wider text-emerald-700 mb-1 font-semibold">
+                Fungsi Arsitektur
               </h5>
-              <p className="text-xs text-slate-200 leading-relaxed font-sans">
+              <p className="text-xs text-slate-700 leading-relaxed font-sans">
                 {activePin.role}
               </p>
             </div>
 
             {/* Practical Application in Modern Laptops */}
-            <div className="p-3 rounded-xl bg-[#081F15] border border-slate-800">
-              <h5 className="text-[10px] font-mono uppercase tracking-wider text-[#FACC15] mb-1 font-semibold flex items-center gap-1.5">
-                <Cpu className="w-3 h-3 text-[#FACC15]" />
-                <span>How This Works in Modern Laptops</span>
+            <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/70">
+              <h5 className="text-[10px] font-mono uppercase tracking-wider text-amber-700 mb-1 font-semibold flex items-center gap-1.5">
+                <Cpu className="w-3 h-3 text-amber-600" />
+                <span>Penerapan Pada Laptop Modern</span>
               </h5>
-              <p className="text-xs text-slate-300 leading-relaxed font-sans">
+              <p className="text-xs text-slate-600 leading-relaxed font-sans">
                 {activePin.laptopComparison}
               </p>
             </div>
 
             {/* Hardware Specs Matrix */}
             <div>
-              <h5 className="text-[10px] font-mono uppercase tracking-wider text-slate-400 mb-1.5 font-semibold">
-                Electrical & Bus Specifications:
+              <h5 className="text-[10px] font-mono uppercase tracking-wider text-slate-500 mb-1.5 font-semibold">
+                Spesifikasi Bus & Elektrikal:
               </h5>
               <div className="grid grid-cols-2 gap-1.5 text-[11px] font-mono">
                 {Object.entries(activePin.specs).map(([k, v], i) => (
-                  <div key={i} className="p-2 rounded-lg bg-[#04150F] border border-slate-800">
+                  <div key={i} className="p-2 rounded-lg bg-slate-50 border border-slate-200/60">
                     <span className="text-[9px] text-slate-400 block">{k}</span>
-                    <span className="text-white font-semibold truncate block">{v}</span>
+                    <span className="text-slate-800 font-semibold truncate block">{v}</span>
                   </div>
                 ))}
               </div>
@@ -738,9 +738,9 @@ export default function LaptopDetail({ laptopId, onNavigate }) {
           </div>
 
           {/* VR Inspection Observation Tip */}
-          <div className="p-2.5 rounded-xl bg-gradient-to-r from-[#0C2419] to-[#0A291E] border border-[#FACC15]/30 flex items-start gap-2 mt-2">
-            <Eye className="w-3.5 h-3.5 text-[#FACC15] shrink-0 mt-0.5" />
-            <p className="text-[11px] text-slate-300 font-sans leading-tight">
+          <div className="p-2.5 rounded-xl bg-emerald-50/70 border border-emerald-200 flex items-start gap-2 mt-2">
+            <Eye className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+            <p className="text-[11px] text-slate-700 font-sans leading-tight">
               {activePin.vrNote}
             </p>
           </div>
@@ -748,9 +748,9 @@ export default function LaptopDetail({ laptopId, onNavigate }) {
       )}
 
       {/* ── BOTTOM FLOATING HOTSPOT PINS QUICK-BAR (Pins 1 to 10) ── */}
-      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1.5 p-1.5 rounded-2xl bg-[#06170F]/90 border border-[#22C55E]/40 backdrop-blur-xl shadow-2xl pointer-events-auto">
-        <span className="text-[10px] font-mono text-slate-400 uppercase tracking-wider px-2 hidden sm:inline">
-          PINS 1–10:
+      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1.5 p-1.5 rounded-2xl bg-white/95 border border-slate-200/90 backdrop-blur-xl shadow-xl pointer-events-auto">
+        <span className="text-[10px] font-mono text-slate-400 uppercase tracking-wider px-2 hidden sm:inline font-semibold">
+          PIN 1–10:
         </span>
         {MOTHERBOARD_PINS.map((pin) => {
           const isSelected = selectedPinNumber === pin.pinNumber;
@@ -761,8 +761,8 @@ export default function LaptopDetail({ laptopId, onNavigate }) {
               className={`
                 relative flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-xl font-mono text-xs font-bold transition-all shrink-0
                 ${isSelected
-                  ? 'bg-[#22C55E] text-[#06140d] shadow-[0_0_15px_rgba(34,197,94,0.7)] scale-110'
-                  : 'bg-[#06170F] text-slate-300 border border-slate-800 hover:border-[#22C55E]/60 hover:text-[#4ADE80]'
+                  ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/30 scale-110'
+                  : 'bg-slate-100 text-slate-600 border border-slate-200 hover:border-emerald-300 hover:text-emerald-700 hover:bg-slate-50'
                 }
               `}
               title={`Pin #${pin.pinNumber}: ${pin.shortName}`}

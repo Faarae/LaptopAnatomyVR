@@ -8,20 +8,57 @@ export default {
     extend: {
       colors: {
         brand: {
-          bg: "#06130D",
-          bgSecondary: "#0A1C14",
-          card: "#0C2017",
-          cardHover: "#112B20",
-          cardBorder: "rgba(34, 197, 94, 0.2)",
-          cardBorderHover: "rgba(74, 222, 128, 0.45)",
-          green: "#22C55E",
-          greenLight: "#4ADE80",
-          greenMuted: "#86EFAC",
-          yellow: "#FACC15",
-          yellowHover: "#FDE047",
-          yellowDark: "#EAB308",
-          text: "#F8FAFC",
-          muted: "#94A3B8",
+          // Background & Surfaces (Clean Bright Friendly Light Theme)
+          bg: "#F8FAFC",
+          bgSecondary: "#F1F5F9",
+          surface: "#FFFFFF",
+          surfaceElevated: "#FFFFFF",
+          surfaceHover: "#F8FAFC",
+          card: "#FFFFFF",
+          cardHover: "#F8FAFC",
+          cardBorder: "rgba(15, 23, 42, 0.08)",
+          cardBorderHover: "rgba(15, 23, 42, 0.16)",
+
+          // Primary Brand - Green Accent
+          primary: "#10B981",
+          primaryHover: "#059669",
+          primaryActive: "#047857",
+          primaryMuted: "#A7F3D0",
+          primarySubtle: "#ECFDF5",
+          green: "#10B981",
+          greenLight: "#34D399",
+          greenMuted: "#059669",
+
+          // Secondary - Teal
+          teal: "#0D9488",
+          tealHover: "#0F766E",
+          tealMuted: "#CCFBF1",
+
+          // Secondary - Cyan
+          cyan: "#0284C7",
+          cyanHover: "#0369A1",
+          cyanMuted: "#E0F2FE",
+
+          // Accent - Amber
+          amber: "#D97706",
+          amberHover: "#B45309",
+          amberMuted: "#FEF3C7",
+          yellow: "#D97706",
+          yellowHover: "#B45309",
+          yellowDark: "#92400E",
+
+          // Semantic
+          success: "#10B981",
+          error: "#EF4444",
+          warning: "#F59E0B",
+          info: "#0284C7",
+
+          // Text System (Dark Slate on White for clarity)
+          text: "#0F172A",
+          textSecondary: "#475569",
+          textMuted: "#64748B",
+          textDisabled: "#94A3B8",
+          muted: "#475569",
           dim: "#64748B",
         }
       },
@@ -31,9 +68,11 @@ export default {
         mono: ['"JetBrains Mono"', 'monospace'],
       },
       boxShadow: {
-        'brand-glow': '0 0 35px -5px rgba(34, 197, 94, 0.35)',
-        'yellow-glow': '0 0 25px -3px rgba(250, 204, 21, 0.4)',
-        'card-glow': '0 10px 30px -10px rgba(0, 0, 0, 0.8), 0 0 20px -5px rgba(34, 197, 94, 0.15)',
+        'brand-glow': '0 0 25px -4px rgba(91, 196, 122, 0.28)',
+        'teal-glow': '0 0 25px -4px rgba(69, 184, 165, 0.28)',
+        'cyan-glow': '0 0 25px -4px rgba(94, 182, 214, 0.28)',
+        'amber-glow': '0 0 20px -3px rgba(229, 184, 92, 0.3)',
+        'card-glow': '0 10px 30px -10px rgba(0, 0, 0, 0.65)',
       }
     },
   },

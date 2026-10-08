@@ -1,16 +1,14 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { ArrowRight, Play } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { ArrowRight, Play, Sparkles } from 'lucide-react';
 
 /**
- * PAGE 1 — LANDING PAGE (Interactive Motion System)
- * Implements:
- * - Subtle 5s idle floating
+ * PAGE 1 — LANDING PAGE (Clean Light Theme & Interactive Motion)
+ * - Bright clean canvas with emerald accents
  * - 3D Mouse Parallax (max 3-5 deg)
  * - Screen scanning beam
  * - Staggered pulsing hotspots (CPU, GPU, RAM, SSD, Battery)
- * - Hotspot hover highlight + traveling SVG connection photon
- * - Hero text entrance stagger & animated light sweep on "Your Laptop"
- * - CTA button micro-interactions with click scale feedback
+ * - Friendly tooltips and rounded pill CTAs
+ * - Fits in 1 single viewport height with zero scrolling
  */
 export default function LandingPage({ onNavigate }) {
   // Parallax rotation state
@@ -54,11 +52,10 @@ export default function LandingPage({ onNavigate }) {
     {
       id: 'cpu',
       title: 'CPU',
-      desc: 'The brain of the laptop that processes data.',
+      desc: 'Otak laptop yang memproses seluruh instruksi komputasi.',
       staggerDelay: '0s',
       pinX: '49%',
       pinY: '30%',
-      // SVG leader line coordinates (relative to 560x420 canvas)
       pinSvgX: 274,
       pinSvgY: 126,
       labelSvgX: 274,
@@ -68,7 +65,7 @@ export default function LandingPage({ onNavigate }) {
     {
       id: 'gpu',
       title: 'GPU',
-      desc: 'Handles graphics and visual performance.',
+      desc: 'Akselerator grafis 3D & komputasi visual berkecepatan tinggi.',
       staggerDelay: '0.4s',
       pinX: '76%',
       pinY: '28%',
@@ -81,7 +78,7 @@ export default function LandingPage({ onNavigate }) {
     {
       id: 'ram',
       title: 'RAM',
-      desc: 'Temporary memory used by running applications.',
+      desc: 'Memori kerja ultra cepat untuk aplikasi aktif.',
       staggerDelay: '0.8s',
       pinX: '34%',
       pinY: '40%',
@@ -93,8 +90,8 @@ export default function LandingPage({ onNavigate }) {
     },
     {
       id: 'ssd',
-      title: 'SSD',
-      desc: 'Stores data permanently and keeps it fast.',
+      title: 'SSD NVMe',
+      desc: 'Penyimpanan data permanen berkecepatan multi-gigabyte/s.',
       staggerDelay: '1.2s',
       pinX: '78%',
       pinY: '44%',
@@ -106,8 +103,8 @@ export default function LandingPage({ onNavigate }) {
     },
     {
       id: 'battery',
-      title: 'Battery',
-      desc: 'Provides power so you can work anywhere.',
+      title: 'Battery Pack',
+      desc: 'Sel baterai Lithium-Polymer untuk mobilitas daya portabel.',
       staggerDelay: '1.6s',
       pinX: '49%',
       pinY: '78%',
@@ -124,70 +121,69 @@ export default function LandingPage({ onNavigate }) {
       ref={heroRef}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      className="relative h-[calc(100vh-4.5rem)] max-h-[calc(100vh-4.5rem)] flex items-center justify-center px-6 sm:px-10 lg:px-14 py-4 overflow-hidden bg-transparent"
+      className="relative h-[calc(100vh-4.5rem)] max-h-[calc(100vh-4.5rem)] flex items-center justify-center px-6 sm:px-10 lg:px-14 py-2 overflow-hidden bg-transparent select-none"
     >
-      {/* Background Soft Pulsing Radial Light */}
+      {/* Background Soft Pulsing Radial Light (Light Emerald) */}
       <div 
         className={`
-          absolute top-1/2 right-1/4 -translate-y-1/2 w-[650px] h-[650px] rounded-full pointer-events-none transition-all duration-700
-          ${isHoveredLaptop ? 'bg-[#22C55E]/18 scale-110' : 'bg-[#22C55E]/10 scale-100 animate-ambient-pulse'}
-          blur-[140px]
+          absolute top-1/2 right-1/4 -translate-y-1/2 w-[600px] h-[600px] rounded-full pointer-events-none transition-all duration-700
+          ${isHoveredLaptop ? 'bg-emerald-300/20 scale-110' : 'bg-emerald-200/15 scale-100 animate-ambient-pulse'}
+          blur-[130px]
         `} 
       />
 
-      <div className="w-full max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+      <div className="w-full max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-center my-auto">
         
         {/* ─────────────────────────────────────────────────────────────
-            LEFT COLUMN: HERO HEADLINE WITH ENTRANCE STAGGER & LIGHT SWEEP
+            LEFT COLUMN: HERO HEADLINE WITH ENTRANCE STAGGER
            ───────────────────────────────────────────────────────────── */}
         <div className="lg:col-span-5 flex flex-col items-start z-10 pr-0 lg:pr-4">
           
-          {/* Eyebrow (Entrance Stagger 1) */}
-          <div className="transition-all duration-500 transform translate-y-0 opacity-100">
-            <span className="text-[#FACC15] text-xs font-mono font-bold tracking-widest uppercase mb-4 inline-block">
-              INTERACTIVE VR LEARNING
-            </span>
+          {/* Eyebrow Badge */}
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-50 border border-emerald-200/80 text-emerald-700 text-xs font-semibold mb-4 shadow-2xs">
+            <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
+            <span>INTERACTIVE VR LEARNING PLATFORM</span>
           </div>
 
-          {/* Main Title (Entrance Stagger 2) */}
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold font-display tracking-tight text-white leading-[1.1] mb-6">
-            Understand<br />
-            What’s Inside<br />
-            <span className="inline-block text-transparent bg-clip-text bg-gradient-to-r from-[#4ADE80] via-[#FACC15] to-[#4ADE80] animate-text-sweep font-bold">
-              Your Laptop
+          {/* Main Title */}
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold font-display tracking-tight text-slate-900 leading-[1.1] mb-5">
+            Pelajari Anatomi<br />
+            Komponen di Dalam<br />
+            <span className="inline-block text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-500 font-extrabold">
+              Laptop Anda
             </span>
           </h1>
 
-          {/* Description (Entrance Stagger 3) */}
-          <p className="text-base text-slate-300 font-sans leading-relaxed max-w-md mb-8">
-            Explore laptop components through an interactive virtual reality experience.
+          {/* Description */}
+          <p className="text-base text-slate-600 font-sans leading-relaxed max-w-md mb-7">
+            Eksplorasi susunan motherboard, pendingin termal, dan silikon chip komputer melalui simulasi 3D & VR yang ramah dan interaktif.
           </p>
 
-          {/* Dual Action Buttons (Entrance Stagger 4) */}
-          <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
-            {/* Primary Button: Start Exploring with arrow slide and click press */}
+          {/* Dual Action Buttons */}
+          <div className="flex flex-col sm:flex-row items-center gap-3.5 w-full sm:w-auto">
+            {/* Primary Button: Start Exploring */}
             <button
               onClick={handlePrimaryClick}
               className={`
-                w-full sm:w-auto inline-flex items-center justify-center gap-3 px-7 py-3 rounded-full bg-[#22C55E] text-[#06130D] font-display font-semibold text-sm
-                hover:bg-[#4ADE80] hover:shadow-[0_0_25px_rgba(34,197,94,0.5)] transition-all duration-200 group select-none
+                w-full sm:w-auto inline-flex items-center justify-center gap-3 px-7 py-3 rounded-xl bg-emerald-600 text-white font-display font-semibold text-sm
+                hover:bg-emerald-500 shadow-md shadow-emerald-600/25 transition-all duration-200 group select-none
                 ${btnClickScale ? 'scale-95' : 'scale-100 hover:scale-[1.02]'}
               `}
             >
-              <span>Start Exploring</span>
-              <div className="w-6 h-6 rounded-full bg-[#06130D]/20 flex items-center justify-center transition-transform duration-200 group-hover:translate-x-1">
-                <ArrowRight className="w-3.5 h-3.5 text-[#06130D]" />
+              <span>Mulai Eksplorasi</span>
+              <div className="w-6 h-6 rounded-lg bg-white/20 flex items-center justify-center transition-transform duration-200 group-hover:translate-x-1">
+                <ArrowRight className="w-3.5 h-3.5 text-white" />
               </div>
             </button>
 
-            {/* Secondary Button: How It Works with play rotation and border brighten */}
+            {/* Secondary Button: How It Works */}
             <button
               onClick={() => onNavigate('how-it-works')}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-6 py-3 rounded-full bg-[#0C2017]/80 border border-slate-700/80 text-white font-display font-medium text-sm hover:border-[#22C55E] hover:text-[#4ADE80] hover:bg-[#0E261B] hover:shadow-[0_0_15px_rgba(34,197,94,0.2)] transition-all duration-200 group"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-6 py-3 rounded-xl bg-white border border-slate-200 text-slate-700 font-display font-medium text-sm hover:border-emerald-300 hover:text-emerald-700 hover:bg-emerald-50/50 shadow-2xs transition-all duration-200 group"
             >
-              <span>How It Works</span>
-              <div className="w-6 h-6 rounded-full bg-slate-800 flex items-center justify-center transition-transform duration-300 group-hover:rotate-12">
-                <Play className="w-3 h-3 text-slate-300 fill-slate-300 ml-0.5" />
+              <span>Panduan Penggunaan</span>
+              <div className="w-6 h-6 rounded-lg bg-slate-100 group-hover:bg-emerald-100 flex items-center justify-center transition-colors">
+                <Play className="w-3 h-3 text-slate-600 group-hover:text-emerald-700 fill-current ml-0.5" />
               </div>
             </button>
           </div>
@@ -197,13 +193,13 @@ export default function LandingPage({ onNavigate }) {
             RIGHT COLUMN: LAPTOP WITH IDLE FLOAT & 3D PARALLAX TILT
            ───────────────────────────────────────────────────────────── */}
         <div 
-          className="lg:col-span-7 relative flex items-center justify-center py-10 lg:py-4 select-none perspective-[1000px]"
+          className="lg:col-span-7 relative flex items-center justify-center py-6 lg:py-2 select-none perspective-[1000px]"
           onMouseEnter={() => setIsHoveredLaptop(true)}
           onMouseLeave={() => setIsHoveredLaptop(false)}
         >
-          {/* Green Concentric Floor Rings beneath the Laptop */}
-          <div className="absolute top-[68%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[420px] sm:w-[560px] h-[160px] sm:h-[220px] rounded-full border border-[#22C55E]/30 concentric-floor-glow pointer-events-none transition-all duration-700" />
-          <div className="absolute top-[68%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] sm:w-[400px] h-[110px] sm:h-[150px] rounded-full border border-[#22C55E]/40 pointer-events-none" />
+          {/* Subtle Concentric Floor Rings beneath the Laptop */}
+          <div className="absolute top-[68%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[420px] sm:w-[540px] h-[150px] sm:h-[200px] rounded-full border border-emerald-400/20 pointer-events-none transition-all duration-700" />
+          <div className="absolute top-[68%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] sm:w-[380px] h-[100px] sm:h-[140px] rounded-full border border-teal-400/20 pointer-events-none" />
 
           {/* MAIN LAPTOP CONTAINER: Idle Float + 3D Mouse Parallax + Subtle Scale */}
           <div 
@@ -211,20 +207,13 @@ export default function LandingPage({ onNavigate }) {
               transform: `rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(${isHoveredLaptop ? 1.015 : 1})`,
               transition: isHoveredLaptop ? 'transform 0.15s ease-out' : 'transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1)',
             }}
-            className="relative w-full max-w-[560px] z-10 animate-laptop-float"
+            className="relative w-full max-w-[540px] z-10 animate-laptop-float"
           >
             {/* SVG Interactive Connection Lines & Photon Particles */}
             <svg 
               className="absolute inset-0 w-full h-full pointer-events-none z-20"
               viewBox="0 0 560 420"
             >
-              <defs>
-                <linearGradient id="lineGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#FACC15" stopOpacity="0.8" />
-                  <stop offset="100%" stopColor="#22C55E" stopOpacity="0.3" />
-                </linearGradient>
-              </defs>
-
               {hotspots.map((spot) => {
                 const isHovered = hoveredHotspot === spot.id;
                 return (
@@ -235,9 +224,9 @@ export default function LandingPage({ onNavigate }) {
                       y1={spot.pinSvgY}
                       x2={spot.labelSvgX}
                       y2={spot.labelSvgY}
-                      stroke={isHovered ? '#FACC15' : 'rgba(34, 197, 94, 0.35)'}
-                      strokeWidth={isHovered ? '2' : '1'}
-                      className={isHovered ? 'animate-dash-flow' : ''}
+                      stroke={isHovered ? '#10B981' : 'rgba(16, 185, 129, 0.4)'}
+                      strokeWidth={isHovered ? '2' : '1.2'}
+                      strokeDasharray={isHovered ? '4 2' : 'none'}
                       opacity={hoveredHotspot && !isHovered ? 0.25 : 1}
                     />
                     {/* Traveling Photon on Hover */}
@@ -245,8 +234,8 @@ export default function LandingPage({ onNavigate }) {
                       <circle
                         cx={(spot.pinSvgX + spot.labelSvgX) / 2}
                         cy={(spot.pinSvgY + spot.labelSvgY) / 2}
-                        r="3"
-                        fill="#FACC15"
+                        r="3.5"
+                        fill="#10B981"
                         className="animate-ping"
                       />
                     )}
@@ -255,125 +244,133 @@ export default function LandingPage({ onNavigate }) {
               })}
             </svg>
 
-            {/* LAPTOP LID / SCREEN */}
-            <div className="relative w-[88%] mx-auto aspect-[16/10] rounded-t-xl bg-[#1C2621] p-2.5 sm:p-3 border-t border-x border-slate-700 shadow-2xl transition-all duration-300">
+            {/* LAPTOP LID / SCREEN (Crisp Slate Silver Chassis) */}
+            <div className="relative w-[88%] mx-auto aspect-[16/10] rounded-t-2xl bg-slate-800 p-2.5 sm:p-3 border-t border-x border-slate-700 shadow-xl transition-all duration-300">
               {/* Inner Screen Display Bezel */}
-              <div className="w-full h-full rounded-lg bg-[#040D08] p-1.5 flex flex-col relative overflow-hidden border border-slate-800/80">
+              <div className="w-full h-full rounded-xl bg-slate-950 p-1.5 flex flex-col relative overflow-hidden border border-slate-800">
                 
                 {/* MOTHERBOARD / CIRCUIT BOARD WITH VERTICAL SCANNING BEAM */}
-                <div className="relative w-full h-full rounded bg-[#03120A] overflow-hidden flex items-center justify-center">
+                <div className="relative w-full h-full rounded-lg bg-slate-900 overflow-hidden flex items-center justify-center">
                   
-                  {/* Vertical Technology Scanning Ray (Section 7) */}
-                  <div className="absolute inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-[#4ADE80] to-transparent shadow-[0_0_8px_#22c55e] animate-scanline pointer-events-none z-10" />
+                  {/* Vertical Technology Scanning Ray */}
+                  <div className="absolute inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-emerald-400 to-transparent shadow-[0_0_8px_#34d399] animate-scanline pointer-events-none z-10" />
 
                   {/* Grid Circuit Pattern */}
-                  <div className="absolute inset-0 bg-[linear-gradient(to_right,#22c55e10_1px,transparent_1px),linear-gradient(to_bottom,#22c55e10_1px,transparent_1px)] bg-[size:16px_16px]" />
+                  <div className="absolute inset-0 bg-[linear-gradient(to_right,#10b98115_1px,transparent_1px),linear-gradient(to_bottom,#10b98115_1px,transparent_1px)] bg-[size:16px_16px]" />
 
-                  {/* CPU Silicon Die Area (Highlights when CPU hotspot hovered) */}
+                  {/* CPU Silicon Die Area */}
                   <div 
                     className={`
-                      relative z-10 w-24 h-24 rounded-lg bg-[#0B2618] border-2 flex flex-col items-center justify-center transition-all duration-300
+                      relative z-10 w-24 h-24 rounded-xl bg-slate-800/90 border-2 flex flex-col items-center justify-center transition-all duration-300
                       ${hoveredHotspot === 'cpu' 
-                        ? 'border-[#FACC15] shadow-[0_0_30px_#FACC15] scale-105' 
-                        : 'border-[#22C55E]/60 shadow-[0_0_20px_rgba(34,197,94,0.35)]'
+                        ? 'border-emerald-400 shadow-[0_0_20px_rgba(16,185,129,0.5)] scale-105' 
+                        : 'border-emerald-500/50 shadow-sm'
                       }
                     `}
                   >
-                    <div className="w-14 h-14 rounded bg-[#04130A] border border-[#4ADE80]/40 flex items-center justify-center">
-                      <span className="text-[10px] font-mono text-[#4ADE80] font-bold">CORE</span>
+                    <div className="w-14 h-14 rounded-lg bg-slate-900 border border-emerald-500/40 flex items-center justify-center">
+                      <span className="text-[10px] font-mono text-emerald-400 font-bold">CPU CORE</span>
                     </div>
                   </div>
 
-                  {/* GPU Silicon Area (Highlights when GPU hotspot hovered) */}
+                  {/* GPU Silicon Area */}
                   <div 
                     className={`
-                      absolute right-8 top-8 w-16 h-16 rounded bg-[#092014] border flex items-center justify-center transition-all duration-300
+                      absolute right-8 top-8 w-16 h-16 rounded-xl bg-slate-800/90 border flex items-center justify-center transition-all duration-300
                       ${hoveredHotspot === 'gpu' 
-                        ? 'border-[#FACC15] shadow-[0_0_25px_#FACC15] scale-105' 
-                        : 'border-[#22C55E]/50'
+                        ? 'border-teal-400 shadow-[0_0_18px_rgba(20,184,166,0.5)] scale-105' 
+                        : 'border-teal-500/50'
                       }
                     `}
                   >
-                    <div className="w-9 h-9 rounded bg-[#03120A] border border-emerald-500/30 flex items-center justify-center">
-                      <span className="text-[8px] font-mono text-[#22C55E]">GPU</span>
+                    <div className="w-9 h-9 rounded-md bg-slate-900 border border-teal-500/40 flex items-center justify-center">
+                      <span className="text-[8px] font-mono text-teal-400 font-bold">GPU</span>
                     </div>
                   </div>
 
-                  {/* RAM Modules (Highlight when RAM hotspot hovered) */}
+                  {/* RAM Modules */}
                   <div 
                     className={`
                       absolute left-6 top-10 flex flex-col gap-2 transition-all duration-300
-                      ${hoveredHotspot === 'ram' ? 'scale-105 drop-shadow-[0_0_12px_#FACC15]' : ''}
+                      ${hoveredHotspot === 'ram' ? 'scale-105 drop-shadow-[0_0_12px_rgba(14,165,233,0.5)]' : ''}
                     `}
                   >
-                    <div className={`w-16 h-4 rounded-sm bg-[#082014] border ${hoveredHotspot === 'ram' ? 'border-[#FACC15]' : 'border-emerald-500/40'} flex justify-between px-1 items-center`}>
+                    <div className={`w-16 h-4 rounded bg-slate-800 border ${hoveredHotspot === 'ram' ? 'border-sky-400' : 'border-sky-500/40'} flex justify-between px-1 items-center`}>
                       {[...Array(4)].map((_, i) => (
-                        <div key={i} className="w-2 h-2 rounded-xs bg-[#22C55E]/60" />
+                        <div key={i} className="w-2 h-2 rounded-xs bg-sky-400/80" />
                       ))}
                     </div>
-                    <div className={`w-16 h-4 rounded-sm bg-[#082014] border ${hoveredHotspot === 'ram' ? 'border-[#FACC15]' : 'border-emerald-500/40'} flex justify-between px-1 items-center`}>
+                    <div className={`w-16 h-4 rounded bg-slate-800 border ${hoveredHotspot === 'ram' ? 'border-sky-400' : 'border-sky-500/40'} flex justify-between px-1 items-center`}>
                       {[...Array(4)].map((_, i) => (
-                        <div key={i} className="w-2 h-2 rounded-xs bg-[#22C55E]/60" />
+                        <div key={i} className="w-2 h-2 rounded-xs bg-sky-400/80" />
                       ))}
                     </div>
                   </div>
 
-                  {/* SSD NVMe M.2 Slot (Highlight when SSD hovered) */}
+                  {/* SSD NVMe M.2 Slot */}
                   <div 
                     className={`
-                      absolute right-10 bottom-6 w-20 h-5 rounded-sm bg-[#071C11] border flex items-center justify-between px-1.5 transition-all duration-300
-                      ${hoveredHotspot === 'ssd' ? 'border-[#FACC15] shadow-[0_0_15px_#FACC15] scale-105' : 'border-emerald-500/40'}
+                      absolute right-10 bottom-6 w-20 h-5 rounded bg-slate-800 border flex items-center justify-between px-1.5 transition-all duration-300
+                      ${hoveredHotspot === 'ssd' ? 'border-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.4)] scale-105' : 'border-emerald-500/40'}
                     `}
                   >
-                    <div className="w-3 h-3 bg-emerald-500/50 rounded-xs" />
-                    <div className="w-6 h-2 bg-emerald-400/30 rounded-xs" />
-                    <div className="w-1 h-3 bg-[#FACC15]/80" />
+                    <div className="w-3 h-3 bg-emerald-400/60 rounded-xs" />
+                    <div className="w-6 h-2 bg-emerald-400/40 rounded-xs" />
+                    <div className="w-1 h-3 bg-sky-400/90" />
                   </div>
                 </div>
               </div>
             </div>
 
             {/* HINGE ACCENT */}
-            <div className="w-[86%] mx-auto h-2 bg-[#2D3A33] border-x border-slate-700 rounded-t-sm" />
+            <div className="w-[86%] mx-auto h-2 bg-slate-700 border-x border-slate-600 rounded-t-sm" />
 
             {/* LAPTOP KEYBOARD BASE DECK */}
             <div 
               className={`
-                relative w-full rounded-2xl bg-gradient-to-b from-[#3B4841] via-[#2A3630] to-[#1F2923] p-3 sm:p-4 border-t border-slate-600 shadow-[0_20px_45px_rgba(0,0,0,0.9)] transition-all duration-300
-                ${hoveredHotspot === 'battery' ? 'shadow-[0_0_25px_rgba(250,204,21,0.25)]' : ''}
+                relative w-full rounded-2xl bg-slate-800 p-3 sm:p-4 border-t border-slate-700 shadow-xl transition-all duration-300
+                ${hoveredHotspot === 'battery' ? 'shadow-[0_0_20px_rgba(245,158,11,0.3)]' : ''}
               `}
             >
               {/* Keyboard Well */}
-              <div className="w-full rounded-lg bg-[#141E19] p-2 border border-slate-800 mb-2">
+              <div className="w-full rounded-xl bg-slate-900 p-2 border border-slate-700/60 mb-2">
                 <div className="space-y-1">
                   <div className="flex gap-1 justify-between">
                     {[...Array(14)].map((_, i) => (
-                      <div key={i} className="flex-1 h-2 rounded-xs bg-[#202E26]" />
+                      <div key={i} className="flex-1 h-2 rounded-xs bg-slate-800" />
                     ))}
                   </div>
                   <div className="flex gap-1 justify-between">
                     {[...Array(14)].map((_, i) => (
-                      <div key={i} className="flex-1 h-2.5 rounded-xs bg-[#202E26]" />
+                      <div key={i} className="flex-1 h-2.5 rounded-xs bg-slate-800" />
                     ))}
                   </div>
                   <div className="flex gap-1 justify-between">
                     {[...Array(13)].map((_, i) => (
-                      <div key={i} className="flex-1 h-2.5 rounded-xs bg-[#202E26]" />
+                      <div key={i} className="flex-1 h-2.5 rounded-xs bg-slate-800" />
                     ))}
                   </div>
                 </div>
               </div>
 
               {/* Trackpad */}
-              <div className="w-28 sm:w-36 h-8 sm:h-10 mx-auto rounded-lg bg-[#1B2620] border border-slate-700/60" />
+              <div className="w-28 sm:w-36 h-8 sm:h-9 mx-auto rounded-lg bg-slate-900 border border-slate-700" />
             </div>
 
             {/* ─────────────────────────────────────────────────────────
-                STAGGERED PULSING HOTSPOTS & INTERACTIVE HOVER TOOLTIPS
+                STAGGERED PULSING HOTSPOTS & FRIENDLY LIGHT TOOLTIPS
                ───────────────────────────────────────────────────────── */}
             {hotspots.map((spot) => {
               const isHovered = hoveredHotspot === spot.id;
               const isOtherHovered = hoveredHotspot && !isHovered;
+
+              const spotColor = {
+                cpu: '#10B981',
+                gpu: '#0D9488',
+                ram: '#0284C7',
+                ssd: '#059669',
+                battery: '#D97706',
+              }[spot.id] || '#10B981';
 
               return (
                 <div key={spot.id}>
@@ -382,54 +379,54 @@ export default function LandingPage({ onNavigate }) {
                     style={{ 
                       top: spot.pinY, 
                       left: spot.pinX,
-                      opacity: isOtherHovered ? 0.4 : 1,
+                      opacity: isOtherHovered ? 0.35 : 1,
                     }}
                     onMouseEnter={() => setHoveredHotspot(spot.id)}
                     onMouseLeave={() => setHoveredHotspot(null)}
                     className="absolute -translate-x-1/2 -translate-y-1/2 z-30 cursor-pointer p-2 transition-opacity duration-300"
                   >
                     <div className="relative flex items-center justify-center">
-                      {/* Pulsing Radar Ring with Staggered Delay */}
                       <span 
-                        style={{ animationDelay: spot.staggerDelay }}
+                        style={{ 
+                          animationDelay: spot.staggerDelay,
+                          backgroundColor: `${spotColor}33`,
+                        }}
                         className={`
-                          absolute w-6 h-6 rounded-full bg-[#FACC15]/25 animate-hotspot-wave pointer-events-none
-                          ${isHovered ? 'scale-150 bg-[#FACC15]/50' : ''}
+                          absolute w-6 h-6 rounded-full animate-hotspot-wave pointer-events-none
+                          ${isHovered ? 'scale-150' : ''}
                         `} 
                       />
-                      {/* Central Glowing Pin Dot */}
                       <span 
+                        style={{
+                          backgroundColor: spotColor,
+                          boxShadow: isHovered ? `0 0 12px ${spotColor}` : `0 0 6px ${spotColor}`,
+                        }}
                         className={`
-                          w-3.5 h-3.5 rounded-full bg-[#FACC15] border-2 border-[#06130D] shadow-[0_0_12px_#FACC15] transition-transform duration-200
-                          ${isHovered ? 'scale-125 shadow-[0_0_20px_#FACC15]' : ''}
+                          w-3.5 h-3.5 rounded-full border-2 border-white transition-transform duration-200
+                          ${isHovered ? 'scale-125' : ''}
                         `} 
                       />
                     </div>
                   </div>
 
-                  {/* Hotspot Callout Text (Highlighted on hover) */}
+                  {/* Hotspot Callout Text (Clean light friendly card) */}
                   <div 
                     onMouseEnter={() => setHoveredHotspot(spot.id)}
                     onMouseLeave={() => setHoveredHotspot(null)}
-                    style={{ opacity: isOtherHovered ? 0.35 : 1 }}
+                    style={{ opacity: isOtherHovered ? 0.3 : 1 }}
                     className={`absolute z-30 cursor-pointer transition-all duration-300 ${spot.labelClass}`}
                   >
-                    <span 
-                      className={`
-                        text-sm font-bold font-display block leading-tight transition-colors duration-200
-                        ${isHovered ? 'text-[#FACC15] scale-105 drop-shadow-[0_0_10px_#FACC15]' : 'text-[#FACC15]'}
-                      `}
-                    >
-                      {spot.title}
-                    </span>
-                    <span 
-                      className={`
-                        text-[11px] font-sans leading-tight block mt-0.5 transition-colors duration-200
-                        ${isHovered ? 'text-white' : 'text-slate-300'}
-                      `}
-                    >
-                      {spot.desc}
-                    </span>
+                    <div className={`p-1.5 rounded-xl bg-white/95 backdrop-blur-md border border-slate-200 shadow-md ${isHovered ? 'ring-2 ring-emerald-500/30' : ''}`}>
+                      <span 
+                        style={{ color: spotColor }}
+                        className="text-xs font-bold font-display block leading-tight"
+                      >
+                        {spot.title}
+                      </span>
+                      <span className="text-[10px] font-sans text-slate-500 leading-tight block mt-0.5">
+                        {spot.desc}
+                      </span>
+                    </div>
                   </div>
                 </div>
               );

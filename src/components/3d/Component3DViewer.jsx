@@ -40,13 +40,13 @@ export default function Component3DViewer({
 
     // 1. Scene
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x06140d);
+    scene.background = null; // Transparent so it inherits surrounding light card surface
 
     // 2. Camera
     const camera = new THREE.PerspectiveCamera(40, width / height, 0.1, 50);
     camera.position.set(0, 3.2, 5.2);
 
-    // 3. Renderer
+    // 3. Renderer with pure transparent background
     const renderer = new THREE.WebGLRenderer({
       canvas,
       antialias: true,
@@ -55,6 +55,7 @@ export default function Component3DViewer({
     });
     renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setClearColor(0x000000, 0); // 100% transparent clear color
     renderer.shadowMap.enabled = true;
 
     // 4. Controls
@@ -76,23 +77,26 @@ export default function Component3DViewer({
     keyLight.castShadow = true;
     scene.add(keyLight);
 
-    const greenRim = new THREE.PointLight(0x22c55e, 2.5, 12);
+    const greenRim = new THREE.PointLight(0x5bc47a, 2.2, 12);
     greenRim.position.set(-4, 3, -3);
     scene.add(greenRim);
 
-    const goldFill = new THREE.PointLight(0xfacc15, 1.8, 12);
-    goldFill.position.set(4, -2, 3);
-    scene.add(goldFill);
+    const tealFill = new THREE.PointLight(0x45b8a5, 1.8, 12);
+    tealFill.position.set(4, -2, 3);
+    scene.add(tealFill);
 
     // 6. Build Component Model based on type
     const modelGroup = new THREE.Group();
     buildComponentModel(modelGroup, type);
     scene.add(modelGroup);
 
-    // Subtle ground grid
-    const grid = new THREE.GridHelper(6, 12, 0x22c55e, 0x113b24);
-    grid.position.y = -1.2;
-    scene.add(grid);
+    // Subtle clean ground shadow plate
+    const shadowGeo = new THREE.CircleGeometry(1.8, 32);
+    const shadowMat = new THREE.MeshBasicMaterial({ color: 0x0f172a, transparent: true, opacity: 0.08 });
+    const shadowPlate = new THREE.Mesh(shadowGeo, shadowMat);
+    shadowPlate.rotation.x = -Math.PI / 2;
+    shadowPlate.position.y = -1.2;
+    scene.add(shadowPlate);
 
     // 7. Animation loop
     const animate = () => {
@@ -129,7 +133,7 @@ export default function Component3DViewer({
         // CPU Substrate PCB (Green/Dark)
         const sub = new THREE.Mesh(
           new THREE.BoxGeometry(2.4, 0.12, 2.4),
-          new THREE.MeshStandardMaterial({ color: 0x0f3e26, roughness: 0.35 })
+          new THREE.MeshStandardMaterial({ color: 0x151d1b, roughness: 0.35 })
         );
         group.add(sub);
 
@@ -152,7 +156,7 @@ export default function Component3DViewer({
         // Gold corner orientation triangle
         const goldCorner = new THREE.Mesh(
           new THREE.BoxGeometry(0.2, 0.02, 0.2),
-          new THREE.MeshStandardMaterial({ color: 0xfacc15, metalness: 0.9 })
+          new THREE.MeshStandardMaterial({ color: 0xe5b85c, metalness: 0.9 })
         );
         goldCorner.position.set(-1.05, 0.08, -1.05);
         group.add(goldCorner);
@@ -163,21 +167,21 @@ export default function Component3DViewer({
         // RAM SO-DIMM / DIMM PCB
         const pcb = new THREE.Mesh(
           new THREE.BoxGeometry(3.6, 1.2, 0.08),
-          new THREE.MeshStandardMaterial({ color: 0x09281a, roughness: 0.4 })
+          new THREE.MeshStandardMaterial({ color: 0x151d1b, roughness: 0.4 })
         );
         group.add(pcb);
 
         // Gold Contact Fingers Edge Connector with Key Notch
         const goldLeft = new THREE.Mesh(
           new THREE.BoxGeometry(1.8, 0.2, 0.09),
-          new THREE.MeshStandardMaterial({ color: 0xfacc15, metalness: 0.85, roughness: 0.2 })
+          new THREE.MeshStandardMaterial({ color: 0xe5b85c, metalness: 0.85, roughness: 0.2 })
         );
         goldLeft.position.set(-0.85, -0.5, 0);
         group.add(goldLeft);
 
         const goldRight = new THREE.Mesh(
           new THREE.BoxGeometry(1.4, 0.2, 0.09),
-          new THREE.MeshStandardMaterial({ color: 0xfacc15, metalness: 0.85, roughness: 0.2 })
+          new THREE.MeshStandardMaterial({ color: 0xe5b85c, metalness: 0.85, roughness: 0.2 })
         );
         goldRight.position.set(0.95, -0.5, 0);
         group.add(goldRight);
@@ -206,7 +210,7 @@ export default function Component3DViewer({
         // M.2 2280 NVMe Slim PCB
         const pcb = new THREE.Mesh(
           new THREE.BoxGeometry(3.2, 0.9, 0.08),
-          new THREE.MeshStandardMaterial({ color: 0x072115, roughness: 0.4 })
+          new THREE.MeshStandardMaterial({ color: 0x151d1b, roughness: 0.4 })
         );
         group.add(pcb);
 
@@ -302,6 +306,7 @@ export default function Component3DViewer({
         break;
       }
 
+      case 'cooling-fan':
       case 'fan': {
         // Centrifugal Blower Housing
         const housing = new THREE.Mesh(
@@ -414,6 +419,112 @@ export default function Component3DViewer({
         break;
       }
 
+      case 'wifi-card':
+      case 'wifi': {
+        // M.2 2230 Wi-Fi 6E Module PCB
+        const pcb = new THREE.Mesh(
+          new THREE.BoxGeometry(2.2, 0.08, 2.4),
+          new THREE.MeshStandardMaterial({ color: 0x0d3822, roughness: 0.35 })
+        );
+        group.add(pcb);
+
+        // Nickel RF Metal Shielding Can
+        const shield = new THREE.Mesh(
+          new THREE.BoxGeometry(1.7, 0.22, 1.5),
+          new THREE.MeshStandardMaterial({ color: 0xd1d5db, metalness: 0.9, roughness: 0.15 })
+        );
+        shield.position.set(0, 0.14, 0.15);
+        group.add(shield);
+
+        // Gold U.FL Micro-Coaxial Antenna Connectors (Main & Aux)
+        [-0.45, 0.45].forEach((x) => {
+          const ufl = new THREE.Mesh(
+            new THREE.CylinderGeometry(0.12, 0.12, 0.18, 16),
+            new THREE.MeshStandardMaterial({ color: 0xfacc15, metalness: 0.95, roughness: 0.2 })
+          );
+          ufl.position.set(x, 0.28, -0.4);
+          group.add(ufl);
+        });
+
+        // Gold M.2 A/E-Key Interface Fingers
+        const edge = new THREE.Mesh(
+          new THREE.BoxGeometry(1.6, 0.09, 0.3),
+          new THREE.MeshStandardMaterial({ color: 0xfacc15, metalness: 0.9, roughness: 0.2 })
+        );
+        edge.position.set(0, 0, 1.1);
+        group.add(edge);
+        break;
+      }
+
+      case 'motherboard': {
+        // Multi-Layer Mainboard PCB
+        const pcb = new THREE.Mesh(
+          new THREE.BoxGeometry(3.6, 0.1, 3.2),
+          new THREE.MeshStandardMaterial({ color: 0x061e12, roughness: 0.4 })
+        );
+        group.add(pcb);
+
+        // Central CPU LGA Socket
+        const cpuSocket = new THREE.Mesh(
+          new THREE.BoxGeometry(1.4, 0.18, 1.4),
+          new THREE.MeshStandardMaterial({ color: 0x1f2937, roughness: 0.6 })
+        );
+        cpuSocket.position.set(-0.4, 0.12, -0.3);
+        group.add(cpuSocket);
+
+        const cpuIhs = new THREE.Mesh(
+          new THREE.BoxGeometry(1.0, 0.1, 1.0),
+          new THREE.MeshStandardMaterial({ color: 0x9ca3af, metalness: 0.85, roughness: 0.2 })
+        );
+        cpuIhs.position.set(-0.4, 0.24, -0.3);
+        group.add(cpuIhs);
+
+        // Dual SO-DIMM RAM Slots
+        [0.7, 1.1].forEach((x) => {
+          const ramSlot = new THREE.Mesh(
+            new THREE.BoxGeometry(0.22, 0.16, 1.8),
+            new THREE.MeshStandardMaterial({ color: 0x111827, roughness: 0.5 })
+          );
+          ramSlot.position.set(x, 0.11, -0.2);
+          group.add(ramSlot);
+        });
+
+        // PCIe Expansion Slot
+        const pcieSlot = new THREE.Mesh(
+          new THREE.BoxGeometry(2.4, 0.18, 0.22),
+          new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.6 })
+        );
+        pcieSlot.position.set(-0.2, 0.11, 0.9);
+        group.add(pcieSlot);
+
+        // VRM Aluminum Heatsink on rear I/O
+        const vrm = new THREE.Mesh(
+          new THREE.BoxGeometry(1.6, 0.35, 0.4),
+          new THREE.MeshStandardMaterial({ color: 0x475569, metalness: 0.75, roughness: 0.3 })
+        );
+        vrm.position.set(-0.4, 0.22, -1.25);
+        group.add(vrm);
+
+        // Chipset Heatsink (Gold/Copper)
+        const chipset = new THREE.Mesh(
+          new THREE.BoxGeometry(0.7, 0.22, 0.7),
+          new THREE.MeshStandardMaterial({ color: 0xb45309, metalness: 0.85, roughness: 0.25 })
+        );
+        chipset.position.set(1.0, 0.14, 0.8);
+        group.add(chipset);
+
+        // Solid Capacitors
+        [[-1.4, -0.8], [-1.4, -0.4], [-1.4, 0], [-1.4, 0.4]].forEach(([x, z]) => {
+          const cap = new THREE.Mesh(
+            new THREE.CylinderGeometry(0.1, 0.1, 0.25, 12),
+            new THREE.MeshStandardMaterial({ color: 0xe2e8f0, metalness: 0.9, roughness: 0.2 })
+          );
+          cap.position.set(x, 0.16, z);
+          group.add(cap);
+        });
+        break;
+      }
+
       case 'pcie':
       default: {
         // PCIe x16 Expansion Slot Housing
@@ -446,16 +557,16 @@ export default function Component3DViewer({
   return (
     <div
       ref={containerRef}
-      className={`relative w-full rounded-2xl bg-[#06140d] border border-[#22C55E]/30 overflow-hidden shadow-lg select-none ${heightClass} ${className}`}
+      className={`relative w-full rounded-2xl bg-slate-50/60 border border-slate-200/80 overflow-hidden shadow-xs select-none ${heightClass} ${className}`}
     >
       <canvas ref={canvasRef} className="w-full h-full block cursor-grab active:cursor-grabbing" />
 
       {/* Floating 3D Controls HUD */}
-      <div className="absolute top-2.5 right-2.5 flex items-center gap-1.5 p-1 rounded-xl bg-[#071911]/80 border border-slate-800 backdrop-blur-md">
+      <div className="absolute top-2.5 right-2.5 flex items-center gap-1.5 p-1 rounded-xl bg-white/90 border border-slate-200 shadow-xs backdrop-blur-md">
         <button
           onClick={() => setIsRotating(!isRotating)}
           className={`p-1.5 rounded-lg text-xs transition-all ${
-            isRotating ? 'bg-[#22C55E]/20 text-[#4ADE80]' : 'text-slate-400 hover:text-white'
+            isRotating ? 'bg-emerald-50 text-emerald-700 font-bold' : 'text-slate-500 hover:text-slate-800'
           }`}
           title="Toggle Auto-Rotate"
         >
@@ -464,8 +575,8 @@ export default function Component3DViewer({
       </div>
 
       {/* Bottom Hint */}
-      <div className="absolute bottom-2 left-2 pointer-events-none text-[10px] font-mono text-slate-400 flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-[#071911]/70 border border-slate-800/80">
-        <Compass className="w-3 h-3 text-[#22C55E]" />
+      <div className="absolute bottom-2 left-2 pointer-events-none text-[10px] font-mono text-slate-500 flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-white/90 border border-slate-200/80 shadow-2xs font-medium">
+        <Compass className="w-3 h-3 text-emerald-600" />
         <span>3D Model: Drag to orbit • Scroll to zoom</span>
       </div>
     </div>

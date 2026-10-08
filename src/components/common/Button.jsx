@@ -23,34 +23,48 @@ export default function Button({
   };
 
   const variantStyles = {
-    // Primary: Cyan accent with glow
+    // Primary: Emerald background, white text, darker emerald on hover
     primary: `
-      bg-[#38BDF8] text-[#0B1020] border border-[#38BDF8]
-      hover:bg-[#7dd3fc] hover:shadow-[0_0_20px_rgba(56,189,248,0.5)] hover:border-[#7dd3fc]
-      active:scale-[0.98] active:bg-[#0284c7]
-      disabled:bg-[#38BDF8]/40 disabled:border-transparent disabled:text-[#0B1020]/60 disabled:shadow-none disabled:cursor-not-allowed disabled:transform-none
+      bg-emerald-500 text-white border border-emerald-500 font-bold shadow-xs
+      hover:bg-emerald-600 hover:border-emerald-600 hover:shadow-md
+      active:scale-[0.98] active:bg-emerald-700
+      disabled:bg-emerald-200 disabled:border-transparent disabled:text-white/70 disabled:shadow-none disabled:cursor-not-allowed disabled:transform-none
     `,
-    // Secondary: Indigo/purple futuristic
+    // Secondary: Crisp white surface, subtle slate border, hover emerald highlight
     secondary: `
-      bg-[#818CF8] text-[#0B1020] border border-[#818CF8]
-      hover:bg-[#a5b4fc] hover:shadow-[0_0_20px_rgba(129,140,248,0.5)] hover:border-[#a5b4fc]
-      active:scale-[0.98] active:bg-[#6366f1]
-      disabled:bg-[#818CF8]/40 disabled:border-transparent disabled:text-[#0B1020]/60 disabled:shadow-none disabled:cursor-not-allowed disabled:transform-none
+      bg-white text-slate-800 border border-slate-200/90 shadow-xs
+      hover:bg-slate-50 hover:border-emerald-500 hover:text-emerald-700 hover:shadow-sm
+      active:scale-[0.98] active:bg-slate-100
+      disabled:opacity-40 disabled:border-slate-200 disabled:text-slate-400 disabled:shadow-none disabled:cursor-not-allowed disabled:transform-none
     `,
-    // Outline: Glass cyber outline
+    // Outline: Clean outline with emerald hover
     outline: `
-      bg-[#172033]/80 backdrop-blur-md text-[#F8FAFC] border border-[#38BDF8]/30
-      hover:border-[#38BDF8] hover:text-[#38BDF8] hover:bg-[#172033] hover:shadow-[0_0_15px_rgba(56,189,248,0.25)]
-      active:scale-[0.98] active:bg-[#111827]
-      disabled:opacity-40 disabled:border-slate-700 disabled:text-slate-500 disabled:shadow-none disabled:cursor-not-allowed disabled:transform-none
+      bg-transparent text-slate-700 border border-slate-300
+      hover:border-emerald-500 hover:text-emerald-700 hover:bg-emerald-50/50
+      active:scale-[0.98] active:bg-emerald-100/50
+      disabled:opacity-40 disabled:border-slate-200 disabled:text-slate-400 disabled:cursor-not-allowed disabled:transform-none
     `,
-    // Ghost: Subtle navigation button
+    // Ghost / Tertiary: Transparent, neutral slate text
     ghost: `
-      bg-transparent text-[#94A3B8] border border-transparent
-      hover:text-[#F8FAFC] hover:bg-[#172033]/60
+      bg-transparent text-slate-600 border border-transparent
+      hover:text-slate-900 hover:bg-slate-100
       active:scale-[0.98]
-      disabled:opacity-40 disabled:text-slate-600 disabled:cursor-not-allowed disabled:transform-none
-    `
+      disabled:opacity-40 disabled:text-slate-300 disabled:cursor-not-allowed disabled:transform-none
+    `,
+    // Danger: Semantic Error Red
+    danger: `
+      bg-rose-500 text-white border border-rose-500
+      hover:bg-rose-600 hover:shadow-md
+      active:scale-[0.98]
+      disabled:opacity-40 disabled:cursor-not-allowed disabled:transform-none
+    `,
+    // Warning: Accent Amber
+    warning: `
+      bg-amber-500 text-white border border-amber-500 font-bold
+      hover:bg-amber-600 hover:shadow-md
+      active:scale-[0.98]
+      disabled:opacity-40 disabled:cursor-not-allowed disabled:transform-none
+    `,
   };
 
   return (
@@ -59,7 +73,7 @@ export default function Button({
       disabled={disabled}
       onClick={disabled ? undefined : onClick}
       className={`
-        relative inline-flex items-center justify-center rounded-lg transition-all duration-200 uppercase font-display select-none
+        relative inline-flex items-center justify-center rounded-xl transition-all duration-200 uppercase font-display select-none
         ${sizeStyles[size]}
         ${variantStyles[variant]}
         ${className}

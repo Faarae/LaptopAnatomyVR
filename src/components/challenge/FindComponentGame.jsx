@@ -107,22 +107,22 @@ export default function FindComponentGame({ onScoreChange, onComplete, onStepCha
       
       {/* 1. Top Mission Headline */}
       <div className="text-center shrink-0 mb-2">
-        <div className="inline-flex items-center gap-2 px-3 py-0.5 rounded-full bg-[#082216]/90 border border-[#22C55E]/40 text-[#4ADE80] text-[11px] font-mono tracking-widest uppercase mb-1 shadow-[0_0_12px_rgba(34,197,94,0.15)]">
-          <Crosshair className="w-3.5 h-3.5 text-[#FACC15]" />
+        <div className="inline-flex items-center gap-2 px-3 py-0.5 rounded-full bg-white border border-slate-200/90 text-sky-700 text-[11px] font-mono tracking-widest uppercase mb-1 shadow-xs font-semibold">
+          <Crosshair className="w-3.5 h-3.5 text-amber-500" />
           <span>MISI {missionIndex + 1} DARI {missions.length} // TARGET SPASIAL</span>
         </div>
 
-        <h2 className="text-sm sm:text-lg font-bold font-display text-white">
-          CARI: <span className="text-[#4ADE80] underline decoration-[#22C55E]/50 underline-offset-4">{curMission.title}</span>
+        <h2 className="text-sm sm:text-lg font-bold font-display text-slate-900">
+          CARI: <span className="text-sky-700 underline decoration-sky-300 underline-offset-4">{curMission.title}</span>
         </h2>
         
-        <p className="text-[11px] sm:text-xs text-slate-300 font-sans mt-0.5 max-w-2xl mx-auto">
+        <p className="text-[11px] sm:text-xs text-slate-500 font-sans mt-0.5 max-w-2xl mx-auto">
           💡 {curMission.hint}
         </p>
 
         {wrongFeedback && !discovered && (
-          <div className="mt-1.5 inline-flex items-center gap-1.5 px-3 py-0.5 rounded-xl bg-red-950/90 border border-red-500/60 text-red-300 text-[11px] font-mono animate-shake">
-            <AlertTriangle className="w-3.5 h-3.5 text-red-400 shrink-0" />
+          <div className="mt-1.5 inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-rose-50 border border-rose-300 text-rose-700 text-[11px] font-mono animate-shake shadow-xs">
+            <AlertTriangle className="w-3.5 h-3.5 text-rose-500 shrink-0" />
             <span>{wrongFeedback}</span>
           </div>
         )}
@@ -131,8 +131,8 @@ export default function FindComponentGame({ onScoreChange, onComplete, onStepCha
       {/* 2. Central 3D Motherboard Viewport */}
       <div 
         className={`
-          relative w-full rounded-2xl bg-[#061710] border border-[#22C55E]/30 overflow-hidden shadow-[0_8px_30px_rgba(0,0,0,0.8)]
-          ${shakeWrong ? 'animate-shake border-red-500' : ''}
+          relative w-full rounded-2xl bg-white border border-slate-200/90 overflow-hidden shadow-sm
+          ${shakeWrong ? 'animate-shake border-rose-400 ring-2 ring-rose-200' : ''}
         `}
       >
         <Motherboard3DViewer
@@ -144,8 +144,8 @@ export default function FindComponentGame({ onScoreChange, onComplete, onStepCha
         />
 
         {/* Floating Quick Pin Selector Strip at Bottom of 3D Canvas */}
-        <div className="absolute bottom-2 left-2 right-2 z-10 flex items-center justify-center gap-1 sm:gap-1.5 py-1 px-2 rounded-xl bg-[#071911]/85 backdrop-blur-md border border-[#22C55E]/20 overflow-x-auto">
-          <span className="text-[9px] font-mono text-slate-400 uppercase tracking-wider hidden sm:inline mr-1">
+        <div className="absolute bottom-2 left-2 right-2 z-10 flex items-center justify-center gap-1 sm:gap-1.5 py-1.5 px-3 rounded-2xl bg-white/95 backdrop-blur-md border border-slate-200/90 shadow-md overflow-x-auto">
+          <span className="text-[9px] font-mono text-slate-500 uppercase tracking-wider hidden sm:inline mr-1 font-semibold">
             KLIK PIN:
           </span>
           {MOTHERBOARD_PINS.map((pin) => {
@@ -157,8 +157,8 @@ export default function FindComponentGame({ onScoreChange, onComplete, onStepCha
                 className={`
                   w-6 h-6 sm:w-7 sm:h-7 rounded-lg font-mono text-[11px] font-bold transition-all shrink-0 flex items-center justify-center
                   ${isTarget
-                    ? 'bg-[#22C55E] text-[#06140d] shadow-[0_0_12px_rgba(34,197,94,0.8)] scale-110'
-                    : 'bg-[#0B2519]/90 text-slate-300 border border-slate-700/60 hover:border-[#22C55E] hover:text-[#4ADE80] active:scale-95'
+                    ? 'bg-emerald-500 text-white shadow-[0_0_12px_rgba(16,185,129,0.4)] scale-110'
+                    : 'bg-slate-100 text-slate-700 border border-slate-200 hover:border-emerald-400 hover:bg-emerald-50 hover:text-emerald-800 active:scale-95'
                   }
                 `}
                 title={`Pin #${pin.pinNumber}: ${pin.shortName}`}
@@ -173,20 +173,20 @@ export default function FindComponentGame({ onScoreChange, onComplete, onStepCha
       {/* 3. Bottom Educational "Quick Take" Drawer */}
       <div className="min-h-[72px] sm:min-h-[76px] shrink-0 pt-2">
         {discovered ? (
-          <div className="w-full p-2.5 sm:p-3 rounded-xl bg-[#09281B]/95 border border-[#22C55E]/60 flex items-center justify-between gap-3 animate-in fade-in slide-in-from-bottom-2 duration-300 shadow-[0_4px_20px_rgba(0,0,0,0.8)]">
+          <div className="w-full p-2.5 sm:p-3 rounded-2xl bg-white border-2 border-emerald-400 flex items-center justify-between gap-3 animate-in fade-in slide-in-from-bottom-2 duration-300 shadow-md">
             <div className="flex items-start gap-2.5">
-              <div className="w-9 h-9 rounded-xl bg-[#22C55E]/20 border border-[#22C55E] flex items-center justify-center text-[#4ADE80] shrink-0 mt-0.5 shadow-[0_0_12px_rgba(34,197,94,0.4)]">
+              <div className="w-9 h-9 rounded-xl bg-emerald-50 border border-emerald-300 flex items-center justify-center text-emerald-600 shrink-0 mt-0.5 shadow-xs">
                 <CheckCircle2 className="w-5 h-5" />
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="text-[10px] font-mono font-bold text-[#4ADE80] uppercase tracking-wider">
+                  <span className="text-[10px] font-mono font-bold text-emerald-700 uppercase tracking-wider">
                     TARGET DITEMUKAN! +100 XP
                   </span>
-                  <span className="text-[10px] font-mono text-slate-400 hidden sm:inline">• {curMission.specs}</span>
+                  <span className="text-[10px] font-mono text-slate-500 hidden sm:inline">• {curMission.specs}</span>
                 </div>
-                <h4 className="text-xs sm:text-sm font-display font-bold text-white">{curMission.quickTakeTitle}</h4>
-                <p className="text-[11px] text-slate-300 font-sans leading-snug line-clamp-2 max-w-xl">
+                <h4 className="text-xs sm:text-sm font-display font-bold text-slate-900">{curMission.quickTakeTitle}</h4>
+                <p className="text-[11px] text-slate-600 font-sans leading-snug line-clamp-2 max-w-xl">
                   {curMission.quickTakeText}
                 </p>
               </div>
@@ -194,16 +194,16 @@ export default function FindComponentGame({ onScoreChange, onComplete, onStepCha
 
             <button
               onClick={handleContinue}
-              className="px-4 py-2 rounded-xl bg-[#22C55E] hover:bg-[#4ADE80] text-[#04150F] text-xs font-mono font-bold transition-all flex items-center gap-1.5 shrink-0 shadow-[0_0_15px_rgba(34,197,94,0.4)] active:scale-95"
+              className="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-mono font-bold transition-all flex items-center gap-1.5 shrink-0 shadow-sm active:scale-95"
             >
               <span>{missionIndex + 1 < missions.length ? 'TARGET BERIKUTNYA' : 'SELESAI MISI'}</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </div>
         ) : (
-          <div className="w-full text-center text-[11px] font-mono text-slate-400 bg-[#061710]/80 py-2 px-3 rounded-xl border border-slate-800 flex items-center justify-center gap-2">
-            <Compass className="w-3.5 h-3.5 text-[#22C55E]" />
-            <span>Putar motherboard 3D atau klik langsung bola pin bercahaya / tombol nomor pin <strong>{curMission.targetName}</strong>.</span>
+          <div className="w-full text-center text-[11px] font-mono text-slate-600 bg-white py-2 px-3 rounded-xl border border-slate-200/90 shadow-xs flex items-center justify-center gap-2">
+            <Compass className="w-3.5 h-3.5 text-sky-600" />
+            <span>Putar motherboard 3D atau klik langsung bola pin bercahaya / tombol nomor pin <strong className="text-slate-800">{curMission.targetName}</strong>.</span>
           </div>
         )}
       </div>

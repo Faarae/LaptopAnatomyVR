@@ -32,49 +32,74 @@ export default function ImmersiveBackground({ activePage = 'landing', mousePos =
     <div className="fixed inset-0 pointer-events-none overflow-hidden z-0 select-none">
       
       {/* ─────────────────────────────────────────────────────────────
-          LAYER 1: BASE DEEP FOREST DIGITAL CANVAS (#04150F -> #09251A)
+          LAYER 1: BASE CLEAN LIGHT DIGITAL CANVAS (#F8FAFC -> #F1F5F9)
          ───────────────────────────────────────────────────────────── */}
-      <div className="absolute inset-0 bg-gradient-to-b from-[#04150F] via-[#061C14] to-[#082017]" />
+      <div className="absolute inset-0 bg-gradient-to-b from-[#F8FAFC] via-[#F1F5F9] to-[#F8FAFC]" />
 
       {/* ─────────────────────────────────────────────────────────────
-          LAYER 2: AMBIENT RADIAL GLOWS & DIGITAL SPOTLIGHT (Section 17 & 18)
+          LAYER 2: VIBRANT TRI-COLOR AMBIENT AURORAS (GREEN, PURPLE, GOLD)
          ───────────────────────────────────────────────────────────── */}
-      {/* Primary Hero Digital Spotlight (Behind Laptop / Center Content) */}
+      {/* 1. Top-Left Luminous Emerald Green Aurora Orb */}
+      <div 
+        style={{
+          transform: `translate3d(${glowOffset.x * 0.8}px, ${glowOffset.y * 0.8}px, 0)`,
+          transition: 'transform 0.25s ease-out',
+        }}
+        className="absolute -top-36 -left-28 w-[580px] h-[580px] bg-emerald-400/16 rounded-full blur-[110px] animate-ambient-pulse" 
+      />
+
+      {/* 2. Top-Right Royal Purple / Violet Luminous Aurora Orb */}
+      <div 
+        style={{
+          transform: `translate3d(${-glowOffset.x * 0.9}px, ${glowOffset.y * 0.9}px, 0)`,
+          transition: 'transform 0.25s ease-out',
+        }}
+        className="absolute -top-32 -right-32 w-[620px] h-[600px] bg-purple-500/16 rounded-full blur-[120px] animate-ambient-pulse [animation-delay:1.5s]" 
+      />
+
+      {/* 3. Bottom-Left / Center Warm Radiant Gold Nebula Orb */}
+      <div 
+        style={{
+          transform: `translate3d(${glowOffset.x * 1.1}px, ${-glowOffset.y * 1.1}px, 0)`,
+          transition: 'transform 0.25s ease-out',
+        }}
+        className="absolute -bottom-40 left-1/4 -translate-x-1/2 w-[580px] h-[520px] bg-amber-400/18 rounded-full blur-[115px] animate-ambient-pulse [animation-delay:3s]" 
+      />
+
+      {/* 4. Bottom-Right Violet-Purple & Emerald Secondary Glow */}
+      <div 
+        style={{
+          transform: `translate3d(${-glowOffset.x}px, ${-glowOffset.y}px, 0)`,
+          transition: 'transform 0.25s ease-out',
+        }}
+        className="absolute -bottom-36 -right-28 w-[520px] h-[500px] bg-violet-500/14 rounded-full blur-[110px]" 
+      />
+
+      {/* 5. Center Subtle Iridescent Highlight Under Main Focus */}
       <div 
         style={{
           transform: `translate3d(${glowOffset.x}px, ${glowOffset.y}px, 0)`,
           transition: 'transform 0.2s ease-out',
         }}
         className={`
-          absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full blur-[140px] transition-all duration-1000
-          ${isHome ? 'w-[750px] h-[550px] bg-[#22C55E]/14 animate-ambient-pulse' : 'w-[650px] h-[450px] bg-[#22C55E]/10'}
-        `}
-      />
-
-      {/* Top-Left Ambient Soft Green Field */}
-      <div className="absolute -top-32 -left-32 w-[500px] h-[500px] bg-[#22C55E]/8 rounded-full blur-[130px]" />
-
-      {/* Bottom-Right Subtle Warm Accent Field */}
-      <div 
-        className={`
-          absolute -bottom-32 -right-32 rounded-full blur-[140px] transition-all duration-700
-          ${isChallenge ? 'w-[550px] h-[550px] bg-[#FACC15]/8' : 'w-[450px] h-[450px] bg-[#22C55E]/6'}
+          absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full blur-[130px] transition-all duration-1000
+          ${isHome ? 'w-[780px] h-[560px] bg-gradient-to-tr from-emerald-400/10 via-purple-400/10 to-amber-400/10' : 'w-[680px] h-[480px] bg-gradient-to-tr from-emerald-400/8 via-purple-400/8 to-amber-400/8'}
         `}
       />
 
       {/* ─────────────────────────────────────────────────────────────
-          LAYER 3: TECHNICAL CROSSHAIR GRID WITH SLOW DRIFT (Section 19 & 20)
+          LAYER 3: TECHNICAL CROSSHAIR GRID WITH SLOW DRIFT
          ───────────────────────────────────────────────────────────── */}
       <div 
         style={{
           transform: `translate3d(${gridOffset.x}px, ${gridOffset.y}px, 0)`,
           transition: 'transform 0.15s ease-out',
         }}
-        className="absolute -inset-10 tech-grid-pattern opacity-60 animate-grid-drift [mask-image:radial-gradient(ellipse_at_center,black_45%,transparent_80%)]"
+        className="absolute -inset-10 tech-grid-pattern opacity-60 animate-grid-drift [mask-image:radial-gradient(ellipse_at_center,black_55%,transparent_85%)]"
       />
 
       {/* ─────────────────────────────────────────────────────────────
-          LAYER 4: CIRCUIT-LIKE PATHS & TRAVELING PHOTONS (Section 21)
+          LAYER 4: CIRCUIT PATHS & MULTI-COLOR PHOTONS (GREEN, PURPLE, GOLD)
          ───────────────────────────────────────────────────────────── */}
       <svg 
         style={{
@@ -85,70 +110,100 @@ export default function ImmersiveBackground({ activePage = 'landing', mousePos =
         xmlns="http://www.w3.org/2000/svg"
       >
         <defs>
-          <linearGradient id="circuitGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#22C55E" stopOpacity="0.4" />
-            <stop offset="100%" stopColor="#4ADE80" stopOpacity="0.1" />
+          {/* Emerald to Purple Gradient */}
+          <linearGradient id="circuitGradGreenPurple" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#10B981" stopOpacity="0.6" />
+            <stop offset="50%" stopColor="#8B5CF6" stopOpacity="0.5" />
+            <stop offset="100%" stopColor="#A855F7" stopOpacity="0.4" />
+          </linearGradient>
+
+          {/* Purple to Gold Gradient */}
+          <linearGradient id="circuitGradPurpleGold" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#8B5CF6" stopOpacity="0.5" />
+            <stop offset="50%" stopColor="#F59E0B" stopOpacity="0.6" />
+            <stop offset="100%" stopColor="#EAB308" stopOpacity="0.4" />
+          </linearGradient>
+
+          {/* Gold to Emerald Gradient */}
+          <linearGradient id="circuitGradGoldGreen" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#F59E0B" stopOpacity="0.5" />
+            <stop offset="50%" stopColor="#10B981" stopOpacity="0.6" />
+            <stop offset="100%" stopColor="#059669" stopOpacity="0.4" />
           </linearGradient>
         </defs>
 
-        {/* Top-Right Circuit Path */}
-        <path d="M 850 40 L 980 40 L 1020 80 L 1150 80" stroke="url(#circuitGrad)" strokeWidth="1" fill="none" />
-        <circle cx="850" cy="40" r="2.5" fill="#22C55E" opacity="0.6" />
-        <circle cx="1150" cy="80" r="2.5" fill="#4ADE80" opacity="0.6" />
-        {/* Animated photon along top circuit */}
-        <circle cx="980" cy="40" r="1.5" fill="#FACC15" className="animate-ping" />
+        {/* Top-Right Circuit Path (Purple & Gold) */}
+        <path d="M 850 40 L 980 40 L 1020 80 L 1180 80 L 1220 120" stroke="url(#circuitGradPurpleGold)" strokeWidth="1.2" fill="none" />
+        <circle cx="850" cy="40" r="3" fill="#8B5CF6" opacity="0.7" />
+        <circle cx="1020" cy="80" r="2.5" fill="#F59E0B" opacity="0.8" />
+        <circle cx="1220" cy="120" r="3" fill="#EAB308" opacity="0.7" />
+        {/* Animated Gold Photon */}
+        <circle cx="980" cy="40" r="2" fill="#F59E0B" className="animate-ping" />
 
-        {/* Left Peripheral Circuit Path */}
-        <path d="M 60 300 L 120 300 L 160 350 L 160 480 L 220 540" stroke="url(#circuitGrad)" strokeWidth="1" fill="none" />
-        <circle cx="60" cy="300" r="2.5" fill="#22C55E" opacity="0.6" />
-        <circle cx="220" cy="540" r="2.5" fill="#22C55E" opacity="0.6" />
+        {/* Left Peripheral Circuit Path (Emerald & Purple) */}
+        <path d="M 60 260 L 140 260 L 180 320 L 180 450 L 240 510 L 320 510" stroke="url(#circuitGradGreenPurple)" strokeWidth="1.2" fill="none" />
+        <circle cx="60" cy="260" r="3" fill="#10B981" opacity="0.8" />
+        <circle cx="180" cy="320" r="2.5" fill="#8B5CF6" opacity="0.8" />
+        <circle cx="320" cy="510" r="3" fill="#A855F7" opacity="0.7" />
+        {/* Animated Emerald Photon */}
+        <circle cx="140" cy="260" r="2" fill="#10B981" className="animate-ping" />
 
-        {/* Bottom Peripheral Circuit Path */}
-        <path d="M 700 720 L 780 720 L 820 680 L 960 680" stroke="url(#circuitGrad)" strokeWidth="1" fill="none" />
-        <circle cx="960" cy="680" r="2.5" fill="#4ADE80" opacity="0.5" />
+        {/* Bottom Peripheral Circuit Path (Gold & Emerald) */}
+        <path d="M 650 720 L 750 720 L 800 670 L 980 670 L 1020 710" stroke="url(#circuitGradGoldGreen)" strokeWidth="1.2" fill="none" />
+        <circle cx="650" cy="720" r="3" fill="#F59E0B" opacity="0.8" />
+        <circle cx="800" cy="670" r="2.5" fill="#10B981" opacity="0.8" />
+        <circle cx="1020" cy="710" r="3" fill="#059669" opacity="0.7" />
+        {/* Animated Purple Photon */}
+        <circle cx="980" cy="670" r="2" fill="#8B5CF6" className="animate-ping" />
 
-        {isComponents && (
-          <>
-            {/* Additional Circuitry for Components Page */}
-            <path d="M 300 120 L 380 120 L 420 160" stroke="#22C55E" strokeWidth="0.8" fill="none" opacity="0.4" />
-            <path d="M 800 240 L 880 240 L 920 280" stroke="#22C55E" strokeWidth="0.8" fill="none" opacity="0.4" />
-          </>
-        )}
+        {/* Top-Center Micro Circuit */}
+        <path d="M 400 50 L 460 50 L 490 80" stroke="url(#circuitGradGreenPurple)" strokeWidth="1" fill="none" opacity="0.5" />
+        <circle cx="490" cy="80" r="2" fill="#8B5CF6" opacity="0.7" />
       </svg>
 
       {/* ─────────────────────────────────────────────────────────────
-          LAYER 5: FLOATING MICRO TECHNICAL LABELS (Section 22)
+          LAYER 5: FLOATING MICRO TECHNICAL LABELS & COORDINATES
          ───────────────────────────────────────────────────────────── */}
-      <div className="absolute inset-0 font-mono text-[9px] text-emerald-400/10 tracking-widest select-none">
-        <span className="absolute top-28 left-16">SYS_BUS // 0x48A</span>
-        <span className="absolute top-44 right-20">CORE_FREQ // 4.8GHz</span>
-        <span className="absolute bottom-32 left-28">VR_PIPELINE // STAGE_01</span>
-        <span className="absolute bottom-24 right-32">CHIPSET // INTEL_AMD</span>
-        <span className="absolute top-72 left-8 text-emerald-300/12">+</span>
-        <span className="absolute top-96 right-16 text-emerald-300/12">+</span>
-        <span className="absolute bottom-60 right-8 text-emerald-300/12">+</span>
+      <div className="absolute inset-0 font-mono text-[9px] tracking-widest select-none">
+        <span className="absolute top-24 left-16 text-emerald-700/40 font-semibold">SYS_BUS // 0x48A</span>
+        <span className="absolute top-40 right-20 text-purple-700/40 font-semibold">CORE_FREQ // 5.2GHz TURBO</span>
+        <span className="absolute bottom-28 left-28 text-amber-700/45 font-semibold">VR_PIPELINE // STAGE_01</span>
+        <span className="absolute bottom-20 right-32 text-purple-700/40 font-semibold">CHIPSET // INTEL_BGA1744</span>
+        
+        {/* Holographic registration crosshairs */}
+        <span className="absolute top-72 left-8 text-emerald-600/40 font-bold text-xs">+</span>
+        <span className="absolute top-96 right-16 text-purple-600/45 font-bold text-xs">+</span>
+        <span className="absolute bottom-60 right-8 text-amber-600/45 font-bold text-xs">+</span>
+        <span className="absolute bottom-80 left-20 text-purple-600/35 font-bold text-xs">+</span>
       </div>
 
       {/* ─────────────────────────────────────────────────────────────
-          LAYER 6: SUBTLE DIGITAL FLOATING PARTICLES (Section 23)
+          LAYER 6: FLOATING GLOWING PARTICLES (GREEN, PURPLE, GOLD)
          ───────────────────────────────────────────────────────────── */}
-      <div className="absolute inset-0">
-        <div className="absolute top-[25%] left-[18%] w-1.5 h-1.5 rounded-full bg-[#4ADE80]/30 animate-particle-1" />
-        <div className="absolute top-[60%] left-[12%] w-1 h-1 rounded-full bg-[#FACC15]/30 animate-particle-2" />
-        <div className="absolute top-[35%] right-[22%] w-1.5 h-1.5 rounded-full bg-[#4ADE80]/35 animate-particle-3" />
-        <div className="absolute top-[70%] right-[15%] w-1 h-1 rounded-full bg-[#22C55E]/40 animate-particle-1" />
-        <div className="absolute top-[80%] left-[45%] w-1 h-1 rounded-full bg-[#FACC15]/25 animate-particle-2" />
+      <div className="absolute inset-0 pointer-events-none">
+        {/* Emerald Particle */}
+        <div className="absolute top-[22%] left-[16%] w-2 h-2 rounded-full bg-emerald-400/40 blur-[1px] animate-particle-1 shadow-[0_0_8px_rgba(16,185,129,0.6)]" />
+        {/* Gold Particle */}
+        <div className="absolute top-[58%] left-[10%] w-2 h-2 rounded-full bg-amber-400/45 blur-[1px] animate-particle-2 shadow-[0_0_8px_rgba(245,158,11,0.6)]" />
+        {/* Purple Particle */}
+        <div className="absolute top-[32%] right-[18%] w-2.5 h-2.5 rounded-full bg-purple-400/45 blur-[1px] animate-particle-3 shadow-[0_0_8px_rgba(139,92,246,0.6)]" />
+        {/* Gold Particle Right */}
+        <div className="absolute top-[68%] right-[12%] w-1.5 h-1.5 rounded-full bg-amber-400/40 blur-[1px] animate-particle-1 shadow-[0_0_6px_rgba(245,158,11,0.5)]" />
+        {/* Purple Particle Center */}
+        <div className="absolute top-[78%] left-[42%] w-2 h-2 rounded-full bg-purple-400/40 blur-[1px] animate-particle-2 shadow-[0_0_8px_rgba(139,92,246,0.5)]" />
+        {/* Emerald Particle Top Right */}
+        <div className="absolute top-[15%] right-[35%] w-1.5 h-1.5 rounded-full bg-emerald-400/35 blur-[1px] animate-particle-3 shadow-[0_0_6px_rgba(16,185,129,0.5)]" />
       </div>
 
       {/* ─────────────────────────────────────────────────────────────
-          LAYER 7: MOUSE-FOLLOWING SPOTLIGHT (Section 24)
+          LAYER 7: MOUSE-FOLLOWING IRIDESCENT SHIMMER
          ───────────────────────────────────────────────────────────── */}
       <div 
         style={{
-          transform: `translate3d(${mousePos.x - 250}px, ${mousePos.y - 250}px, 0)`,
+          transform: `translate3d(${mousePos.x - 260}px, ${mousePos.y - 260}px, 0)`,
           transition: 'transform 0.15s cubic-bezier(0.1, 0.9, 0.2, 1)',
         }}
-        className="absolute top-0 left-0 w-[500px] h-[500px] rounded-full bg-[#22C55E]/5 blur-[120px] pointer-events-none"
+        className="absolute top-0 left-0 w-[520px] h-[520px] rounded-full bg-gradient-to-tr from-emerald-400/8 via-purple-400/8 to-amber-400/8 blur-[110px] pointer-events-none"
       />
     </div>
   );

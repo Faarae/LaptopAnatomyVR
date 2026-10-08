@@ -53,7 +53,7 @@ export default function App() {
   };
 
   return (
-    <div className="h-screen max-h-screen overflow-hidden bg-[#04150F] text-[#F8FAFC] flex flex-col font-sans select-none relative">
+    <div className="h-screen max-h-screen overflow-hidden bg-[#F8FAFC] text-[#0F172A] flex flex-col font-sans select-none relative">
       
       {/* Reusable Multi-Layer Ambient Interactive Technology Background (Sections 14-25, 29) */}
       <ImmersiveBackground activePage={currentPage} mousePos={mousePos} />

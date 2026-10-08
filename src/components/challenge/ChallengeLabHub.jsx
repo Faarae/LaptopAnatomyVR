@@ -1,301 +1,184 @@
-import React, { useState, useEffect } from 'react';
-import { Trophy, Activity, Cpu, Sparkles } from 'lucide-react';
-import CenterHardwareVisual from './CenterHardwareVisual';
+import React, { useState } from 'react';
+import { Trophy } from 'lucide-react';
 import ChallengeCard from './ChallengeCard';
+import GamePreview from './GamePreview';
 
 /**
- * ChallengeLabHub
- * Interactive Mission Command Hub & Landing Page for Laptop Anatomy VR challenges.
- * - Unified with website design system (Space Grotesk, Inter, green #22C55E & gold #FACC15)
- * - Central interactive hardware schematic (CenterHardwareVisual)
- * - 5 Tactical Game Cards with 3D tilt & animations
- * - Dynamic SVG laser connectors from hovered card to center visual
- * - Seamless transition into individual sub-pages
+ * 6 Tactical Challenge Modules Definitions
+ */
+export const CHALLENGES_LIST = [
+  {
+    id: 'quiz',
+    number: '01',
+    title: 'Quick Quiz',
+    category: 'Q&A SYSTEM',
+    badge: '20 QUESTIONS',
+    description: 'Uji pemahaman Anda tentang prosesor utama, arsitektur bus, dan kontrol termal laptop.',
+    iconType: 'quiz',
+    difficulty: 'Adaptif',
+    estimatedTime: '3-5 MENIT',
+  },
+  {
+    id: 'match',
+    number: '02',
+    title: 'Match It',
+    category: 'BUS INTERCONNECT',
+    badge: '3D MATCHING',
+    description: 'Hubungkan komponen perangkat keras dengan fungsi kerja komputasi dunia nyata.',
+    iconType: 'match',
+    difficulty: 'Menengah',
+    estimatedTime: '2-3 MENIT',
+  },
+  {
+    id: 'drag',
+    number: '03',
+    title: 'Drag & Place',
+    category: 'ASSEMBLY BENCH',
+    badge: 'INTERACTIVE SOCKETS',
+    description: 'Pasang chip CPU, keping RAM, dan drive NVMe ke soket motherboard yang tepat.',
+    iconType: 'drag',
+    difficulty: 'Praktik',
+    estimatedTime: '3-4 MENIT',
+  },
+  {
+    id: 'find',
+    number: '04',
+    title: 'Find Component',
+    category: 'SPATIAL LOCATOR',
+    badge: '3D PCB SCANNER',
+    description: 'Pindai papan sirkuit PCB untuk mengidentifikasi modul perangkat keras target.',
+    iconType: 'find',
+    difficulty: 'Eksplorasi',
+    estimatedTime: '3-4 MENIT',
+  },
+  {
+    id: 'speed',
+    number: '05',
+    title: 'Speed Challenge',
+    category: 'OVERCLOCK SPRINT',
+    badge: 'RAPID FIRE',
+    description: 'Identifikasi komponen dengan cepat di bawah tekanan waktu hitung mundur.',
+    iconType: 'speed',
+    difficulty: 'Kecepatan Tinggi',
+    estimatedTime: '45 DETIK',
+  },
+  {
+    id: 'identify',
+    number: '06',
+    title: 'Hardware Identification',
+    category: 'COMPONENT RECOGNITION',
+    badge: 'SPEC ANALYSIS',
+    description: 'Analisa lembar spesifikasi teknis dan tentukan modul perangkat keras yang sesuai.',
+    iconType: 'identify',
+    difficulty: 'Teknikal',
+    estimatedTime: '2-3 MENIT',
+  },
+];
+
+/**
+ * ChallengeLabHub (Clean Light Theme)
+ * Central Challenge Hub featuring an interactive GamePreview flanked by 6 challenge cards.
+ * Fits in 1 single viewport height with zero scrolling.
  */
 export default function ChallengeLabHub({ onSelectGame }) {
-  const [hoveredCard, setHoveredCard] = useState(null);
-  const [isLoaded, setIsLoaded] = useState(false);
-  const [transitioningGame, setTransitioningGame] = useState(null);
+  const [selectedGameId, setSelectedGameId] = useState('quiz');
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoaded(true);
-    }, 50);
-    return () => clearTimeout(timer);
-  }, []);
+  const selectedChallenge = CHALLENGES_LIST.find(c => c.id === selectedGameId) || CHALLENGES_LIST[0];
 
-  const handleCardSelect = (gameId) => {
-    setTransitioningGame(gameId);
-    setTimeout(() => {
-      onSelectGame(gameId);
-    }, 350);
+  const leftChallenges = [CHALLENGES_LIST[0], CHALLENGES_LIST[2], CHALLENGES_LIST[4]];
+  const rightChallenges = [CHALLENGES_LIST[1], CHALLENGES_LIST[3], CHALLENGES_LIST[5]];
+
+  const handleLaunch = (gameId) => {
+    onSelectGame?.(gameId);
   };
 
-  const games = [
-    {
-      id: 'quiz',
-      number: '[01]',
-      title: 'QUICK QUIZ',
-      subtitle: 'Q&A SYSTEM • 20 QUESTIONS',
-      description: 'Test your understanding of primary laptop processors, buses, and thermal control.',
-      iconType: 'quiz',
-    },
-    {
-      id: 'match',
-      number: '[02]',
-      title: 'MATCH IT',
-      subtitle: 'BUS INTERCONNECT',
-      description: 'Connect hardware components to their real-world computing functions.',
-      iconType: 'match',
-    },
-    {
-      id: 'drag',
-      number: '[03]',
-      title: 'DRAG & PLACE',
-      subtitle: 'ASSEMBLY BENCH',
-      description: 'Mount CPUs, RAM sticks, and NVMe drives into matching motherboard sockets.',
-      iconType: 'drag',
-    },
-    {
-      id: 'find',
-      number: '[04]',
-      title: 'FIND COMPONENT',
-      subtitle: 'SPATIAL LOCATOR',
-      description: 'Scan the mainboard PCB to identify requested hardware modules and chips.',
-      iconType: 'find',
-    },
-    {
-      id: 'speed',
-      number: '[05]',
-      title: 'SPEED CHALLENGE',
-      subtitle: 'OVERCLOCK SPRINT',
-      description: 'Rapidly identify flashing laptop components under pressure before time runs out.',
-      iconType: 'speed',
-    },
-  ];
-
   return (
-    <div className={`
-      w-full max-w-7xl mx-auto flex flex-col justify-between
-      bg-transparent text-white relative select-none
-      transition-opacity duration-300
-      ${transitioningGame ? 'scale-[1.01] filter brightness-125 opacity-75' : 'scale-100 opacity-100'}
-    `}>
+    <div className="w-full h-[calc(100vh-4.5rem)] max-h-[calc(100vh-4.5rem)] max-w-7xl mx-auto flex flex-col justify-between py-1.5 sm:py-2.5 px-3 sm:px-6 lg:px-8 select-none overflow-hidden">
       
-      {/* ─────────────────────────────────────────────────────────────
-          1. HUB HEADER (Consistent with other website pages)
-         ───────────────────────────────────────────────────────────── */}
-      <section className="relative z-20 text-center px-4 pt-2 sm:pt-4 mb-4 shrink-0">
-        <div 
-          style={{
-            opacity: isLoaded ? 1 : 0,
-            transform: isLoaded ? 'translateY(0)' : 'translateY(-10px)',
-            transition: 'opacity 0.4s ease-out 0.1s, transform 0.4s ease-out 0.1s'
-          }}
-          className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#0C2017] border border-[#22C55E]/30 text-[#4ADE80] text-xs font-mono mb-2 shadow-[0_0_15px_rgba(34,197,94,0.15)]"
-        >
-          <Trophy className="w-3.5 h-3.5 text-[#FACC15]" />
-          <span>INTERACTIVE HARDWARE LABORATORY</span>
+      {/* ─── 1. COMPACT PAGE HEADER ─── */}
+      <section className="text-center pt-1 mb-1.5 shrink-0">
+        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200/80 text-emerald-700 text-xs font-semibold mb-1 shadow-2xs">
+          <Trophy className="w-3.5 h-3.5 text-amber-500" />
+          <span>Interactive Hardware Laboratory</span>
         </div>
 
-        <h1 
-          style={{
-            opacity: isLoaded ? 1 : 0,
-            transform: isLoaded ? 'translateY(0)' : 'translateY(-12px)',
-            transition: 'opacity 0.4s ease-out 0.2s, transform 0.4s ease-out 0.2s'
-          }}
-          className="text-3xl sm:text-4xl lg:text-5xl font-bold font-display text-white tracking-tight leading-tight mb-2"
-        >
+        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold font-display text-slate-900 tracking-tight">
           Challenge Lab
         </h1>
 
-        <p 
-          style={{
-            opacity: isLoaded ? 1 : 0,
-            transform: isLoaded ? 'translateY(0)' : 'translateY(-8px)',
-            transition: 'opacity 0.4s ease-out 0.3s, transform 0.4s ease-out 0.3s'
-          }}
-          className="text-xs sm:text-sm text-slate-300 font-sans max-w-lg mx-auto"
-        >
-          Test your knowledge. Explore the hardware. Master your laptop architecture.
+        <p className="text-xs sm:text-sm text-slate-500 font-sans max-w-xl mx-auto mt-0.5 leading-relaxed">
+          Uji pemahaman Anda melalui 6 simulasi mini-game interaktif perakitan dan diagnostik perangkat keras.
         </p>
       </section>
 
-      {/* ─────────────────────────────────────────────────────────────
-          2. TACTICAL GRID & INTERACTIVE CENTER VIEWPORT
-         ───────────────────────────────────────────────────────────── */}
-      <div className="relative z-20 flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 sm:py-4 flex items-center justify-center min-h-0">
+      {/* ─── 2. DESKTOP 3-COLUMN CORE LAYOUT (Zero scroll single-viewport) ─── */}
+      <div className="hidden lg:grid lg:grid-cols-12 gap-3.5 items-stretch my-auto flex-1 min-h-0 py-1">
         
-        {/* Dynamic Connector SVG Overlay */}
-        <svg 
-          className="absolute inset-0 w-full h-full pointer-events-none z-10 hidden md:block"
-          viewBox="0 0 1200 600"
-          preserveAspectRatio="none"
-        >
-          <defs>
-            <linearGradient id="connLaser" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#4ADE80" stopOpacity="0.8" />
-              <stop offset="50%" stopColor="#22C55E" stopOpacity="1" />
-              <stop offset="100%" stopColor="#FACC15" stopOpacity="0.9" />
-            </linearGradient>
-          </defs>
+        {/* LEFT COLUMN: Cards 01, 03, 05 (col-span-3) */}
+        <div className="lg:col-span-3 flex flex-col justify-between gap-2.5">
+          {leftChallenges.map((card) => (
+            <ChallengeCard
+              key={card.id}
+              {...card}
+              isSelected={selectedGameId === card.id}
+              onSelect={setSelectedGameId}
+            />
+          ))}
+        </div>
 
-          {/* Left Top Card (01 Quiz) to Center */}
-          {hoveredCard === 'quiz' && (
-            <g className="animate-in fade-in duration-200">
-              <path d="M 380 150 C 480 150, 520 250, 600 250" fill="none" stroke="url(#connLaser)" strokeWidth="2.5" strokeDasharray="6 6" className="neon-dash-flow" />
-              <circle cx="600" cy="250" r="4" fill="#4ADE80" className="animate-ping" />
-            </g>
-          )}
+        {/* CENTER COLUMN: Large Interactive GamePreview (col-span-6) */}
+        <div className="lg:col-span-6 flex flex-col justify-between">
+          <GamePreview 
+            challenge={selectedChallenge} 
+            onLaunchGame={handleLaunch} 
+          />
+        </div>
 
-          {/* Left Bottom Card (03 Drag) to Center */}
-          {hoveredCard === 'drag' && (
-            <g className="animate-in fade-in duration-200">
-              <path d="M 380 430 C 480 430, 520 320, 600 320" fill="none" stroke="url(#connLaser)" strokeWidth="2.5" strokeDasharray="6 6" className="neon-dash-flow" />
-              <circle cx="600" cy="320" r="4" fill="#4ADE80" className="animate-ping" />
-            </g>
-          )}
-
-          {/* Right Top Card (02 Match) to Center */}
-          {hoveredCard === 'match' && (
-            <g className="animate-in fade-in duration-200">
-              <path d="M 820 150 C 720 150, 680 250, 600 250" fill="none" stroke="url(#connLaser)" strokeWidth="2.5" strokeDasharray="6 6" className="neon-dash-flow" />
-              <circle cx="600" cy="250" r="4" fill="#4ADE80" className="animate-ping" />
-            </g>
-          )}
-
-          {/* Right Bottom Card (04 Find) to Center */}
-          {hoveredCard === 'find' && (
-            <g className="animate-in fade-in duration-200">
-              <path d="M 820 430 C 720 430, 680 320, 600 320" fill="none" stroke="url(#connLaser)" strokeWidth="2.5" strokeDasharray="6 6" className="neon-dash-flow" />
-              <circle cx="600" cy="320" r="4" fill="#4ADE80" className="animate-ping" />
-            </g>
-          )}
-
-          {/* Center Bottom Card (05 Speed) to Center */}
-          {hoveredCard === 'speed' && (
-            <g className="animate-in fade-in duration-200">
-              <path d="M 600 480 L 600 360" fill="none" stroke="url(#connLaser)" strokeWidth="2.5" strokeDasharray="6 6" className="neon-dash-flow" />
-              <circle cx="600" cy="360" r="4" fill="#FACC15" className="animate-ping" />
-            </g>
-          )}
-        </svg>
-
-        {/* 3-Column Tactical HUD Assembly */}
-        <div className="w-full grid grid-cols-1 md:grid-cols-12 gap-3.5 lg:gap-5 items-center">
-          
-          {/* LEFT COLUMN: Games 01 and 03 */}
-          <div className="md:col-span-4 flex flex-col gap-3.5 lg:gap-4">
-            <div 
-              style={{
-                opacity: isLoaded ? 1 : 0,
-                transform: isLoaded ? 'translateY(0)' : 'translateY(15px)',
-                transition: 'opacity 0.4s ease-out 0.3s, transform 0.4s ease-out 0.3s'
-              }}
-            >
-              <ChallengeCard
-                {...games[0]}
-                isHovered={hoveredCard === 'quiz'}
-                onHover={setHoveredCard}
-                onLeave={() => setHoveredCard(null)}
-                onSelect={handleCardSelect}
-              />
-            </div>
-
-            <div 
-              style={{
-                opacity: isLoaded ? 1 : 0,
-                transform: isLoaded ? 'translateY(0)' : 'translateY(15px)',
-                transition: 'opacity 0.4s ease-out 0.5s, transform 0.4s ease-out 0.5s'
-              }}
-            >
-              <ChallengeCard
-                {...games[2]}
-                isHovered={hoveredCard === 'drag'}
-                onHover={setHoveredCard}
-                onLeave={() => setHoveredCard(null)}
-                onSelect={handleCardSelect}
-              />
-            </div>
-          </div>
-
-          {/* CENTER COLUMN: Central Hardware Visual + Game 05 */}
-          <div className="md:col-span-4 flex flex-col items-center justify-between gap-3">
-            {/* Center Hardware Digital Twin */}
-            <div 
-              style={{
-                opacity: isLoaded ? 1 : 0,
-                transform: isLoaded ? 'scale(1)' : 'scale(0.92)',
-                transition: 'opacity 0.4s ease-out 0.2s, transform 0.4s ease-out 0.2s'
-              }}
-              className="w-full"
-            >
-              <CenterHardwareVisual hoveredCard={hoveredCard} />
-            </div>
-
-            {/* Game 05: Speed Challenge (Centered at bottom) */}
-            <div 
-              style={{
-                opacity: isLoaded ? 1 : 0,
-                transform: isLoaded ? 'translateY(0)' : 'translateY(15px)',
-                transition: 'opacity 0.4s ease-out 0.65s, transform 0.4s ease-out 0.65s'
-              }}
-              className="w-full"
-            >
-              <ChallengeCard
-                {...games[4]}
-                isHovered={hoveredCard === 'speed'}
-                onHover={setHoveredCard}
-                onLeave={() => setHoveredCard(null)}
-                onSelect={handleCardSelect}
-              />
-            </div>
-          </div>
-
-          {/* RIGHT COLUMN: Games 02 and 04 */}
-          <div className="md:col-span-4 flex flex-col gap-3.5 lg:gap-4">
-            <div 
-              style={{
-                opacity: isLoaded ? 1 : 0,
-                transform: isLoaded ? 'translateY(0)' : 'translateY(15px)',
-                transition: 'opacity 0.4s ease-out 0.4s, transform 0.4s ease-out 0.4s'
-              }}
-            >
-              <ChallengeCard
-                {...games[1]}
-                isHovered={hoveredCard === 'match'}
-                onHover={setHoveredCard}
-                onLeave={() => setHoveredCard(null)}
-                onSelect={handleCardSelect}
-              />
-            </div>
-
-            <div 
-              style={{
-                opacity: isLoaded ? 1 : 0,
-                transform: isLoaded ? 'translateY(0)' : 'translateY(15px)',
-                transition: 'opacity 0.4s ease-out 0.6s, transform 0.4s ease-out 0.6s'
-              }}
-            >
-              <ChallengeCard
-                {...games[3]}
-                isHovered={hoveredCard === 'find'}
-                onHover={setHoveredCard}
-                onLeave={() => setHoveredCard(null)}
-                onSelect={handleCardSelect}
-              />
-            </div>
-          </div>
-
+        {/* RIGHT COLUMN: Cards 02, 04, 06 (col-span-3) */}
+        <div className="lg:col-span-3 flex flex-col justify-between gap-2.5">
+          {rightChallenges.map((card) => (
+            <ChallengeCard
+              key={card.id}
+              {...card}
+              isSelected={selectedGameId === card.id}
+              onSelect={setSelectedGameId}
+            />
+          ))}
         </div>
 
       </div>
 
-      {/* ─────────────────────────────────────────────────────────────
-          3. SUBTLE IN-PAGE FOOTER HINT
-         ───────────────────────────────────────────────────────────── */}
-      <div className="text-center py-3 text-[11px] font-mono text-slate-400">
-        <span>Click any mission card to launch its dedicated simulation</span>
+      {/* ─── 3. RESPONSIVE MOBILE & TABLET LAYOUT (< lg) ─── */}
+      <div className="lg:hidden flex flex-col gap-3 my-auto overflow-y-auto">
+        <div className="w-full">
+          <GamePreview 
+            challenge={selectedChallenge} 
+            onLaunchGame={handleLaunch} 
+          />
+        </div>
+
+        <div>
+          <div className="flex items-center justify-between text-[11px] font-mono text-slate-500 mb-1.5 px-1 font-semibold">
+            <span>PILIH TANTANGAN (6 MISI):</span>
+            <span className="text-emerald-700">KETUK UNTUK PREVIEW</span>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+            {CHALLENGES_LIST.map((card) => (
+              <ChallengeCard
+                key={card.id}
+                {...card}
+                isSelected={selectedGameId === card.id}
+                onSelect={setSelectedGameId}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* ─── 4. SUBTLE FOOTER HINT (Safe bottom clearance) ─── */}
+      <div className="text-center py-1 text-[11px] font-sans text-slate-400 shrink-0">
+        <span>Pilih tantangan di samping untuk meninjau simulasi • Tekan Mulai Tantangan untuk memulai permainan</span>
       </div>
 
     </div>

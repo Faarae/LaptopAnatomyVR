@@ -1,70 +1,64 @@
 import React from 'react';
-import { Layers, Lightbulb, Glasses, Box, Sparkles } from 'lucide-react';
+import { Lightbulb, Glasses, Box, Sparkles, CheckCircle2, ArrowRight } from 'lucide-react';
 
 /**
- * PAGE 5 — ABOUT
- * Replicates Page 5 from the user's reference image:
- * - Left: "About", "Laptop Anatomy VR", description, and 3 feature points
- *         (Interactive 3D Exploration, Educational & Informative, VR Immersion)
- * - Right: Isometric 3D exploded laptop layered illustration.
+ * PAGE 5 — ABOUT (Clean Light Theme & Rich Visual Pairing)
+ * - Left: About summary with 3 core pillars (Interactive 3D, Educational, VR Immersion)
+ * - Right: High-resolution hardware render showcase paired with architecture badges
+ * - Single-viewport fit with zero scrolling
  */
 export default function About({ onNavigate }) {
   const features = [
     {
-      title: "Interactive 3D Exploration",
-      desc: "Explore laptop components in detail.",
+      title: "Eksplorasi Interaktif 3D",
+      desc: "Bedah komponen laptop secara detail dengan orbit kamera 360 derajat.",
       icon: Box,
     },
     {
-      title: "Educational & Informative",
-      desc: "Learn with engaging and easy-to-understand explanations.",
+      title: "Edukatif & Komprehensif",
+      desc: "Penjelasan fungsi hardware yang mudah dipahami disertai matriks spesifikasi.",
       icon: Lightbulb,
     },
     {
-      title: "VR Immersion",
-      desc: "Experience learning like never before in virtual reality.",
+      title: "Simulasi Laboratorium VR",
+      desc: "Rasakan simulasi perakitan dan pengujian hardware laptop secara virtual.",
       icon: Glasses,
     },
   ];
 
   return (
-    <div className="h-[calc(100vh-4.5rem)] max-h-[calc(100vh-4.5rem)] overflow-hidden flex items-center justify-center px-6 sm:px-10 lg:px-14 py-4 bg-transparent">
-      <div className="max-w-6xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+    <div className="h-[calc(100vh-4.5rem)] max-h-[calc(100vh-4.5rem)] overflow-hidden flex items-center justify-center px-6 sm:px-10 lg:px-14 py-3 bg-transparent select-none">
+      <div className="max-w-6xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center my-auto">
         
-        {/* ─────────────────────────────────────────────────────────────
-            LEFT COLUMN: ABOUT TEXT & 3 FEATURE POINTS
-           ───────────────────────────────────────────────────────────── */}
-        <div className="lg:col-span-6 flex flex-col items-start pr-0 lg:pr-6">
-          {/* Eyebrow */}
-          <span className="text-sm font-display text-slate-400 mb-2">
-            About
-          </span>
+        {/* ─── LEFT COLUMN: ABOUT TEXT & 3 FEATURE POINTS ─── */}
+        <div className="lg:col-span-6 flex flex-col items-start pr-0 lg:pr-4">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200/80 text-emerald-700 text-xs font-semibold mb-2 shadow-2xs">
+            <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
+            <span>Mengenal Platform Pembelajaran</span>
+          </div>
 
-          {/* Title */}
-          <h1 className="text-4xl sm:text-5xl font-bold font-display text-white tracking-tight mb-6">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-display text-slate-900 tracking-tight mb-3">
             Laptop Anatomy VR
           </h1>
 
-          {/* Description */}
-          <p className="text-sm sm:text-base text-slate-300 font-sans leading-relaxed mb-10">
-            Laptop Anatomy VR is an interactive educational application that helps you understand the internal components of a laptop through an immersive virtual reality experience.
+          <p className="text-xs sm:text-sm text-slate-600 font-sans leading-relaxed mb-6">
+            Laptop Anatomy VR adalah platform pembelajaran virtual interaktif yang dirancang untuk membantu mahasiswa dan antusias teknologi memahami susunan motherboard, bus komputasi, dan solusi termal pendinginan laptop modern.
           </p>
 
           {/* 3 Feature Items */}
-          <div className="space-y-6 w-full">
+          <div className="space-y-3.5 w-full">
             {features.map((item, idx) => {
               const Icon = item.icon;
               return (
-                <div key={idx} className="flex items-start gap-4">
-                  {/* Green Outline Icon Circle */}
-                  <div className="w-10 h-10 rounded-full bg-[#0C2017] border border-[#22C55E]/40 flex items-center justify-center text-[#4ADE80] shrink-0 mt-0.5 shadow-[0_0_12px_rgba(34,197,94,0.25)]">
+                <div key={idx} className="flex items-start gap-3.5 p-2.5 rounded-2xl bg-white border border-slate-200/90 shadow-2xs hover:border-emerald-200 transition-colors">
+                  <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600 shrink-0 mt-0.5 shadow-2xs">
                     <Icon className="w-5 h-5" />
                   </div>
                   <div>
-                    <h3 className="text-base font-bold font-display text-white mb-0.5">
+                    <h3 className="text-sm font-bold font-display text-slate-900 mb-0.5">
                       {item.title}
                     </h3>
-                    <p className="text-xs sm:text-sm text-slate-400 font-sans">
+                    <p className="text-xs text-slate-500 font-sans leading-relaxed">
                       {item.desc}
                     </p>
                   </div>
@@ -72,62 +66,76 @@ export default function About({ onNavigate }) {
               );
             })}
           </div>
+
+          {/* Action button */}
+          <div className="mt-6">
+            <button
+              onClick={() => onNavigate('laptop-selection')}
+              className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-emerald-600 text-white font-display font-semibold text-xs sm:text-sm hover:bg-emerald-500 transition-all shadow-md shadow-emerald-600/20 group active:scale-[0.99]"
+            >
+              <span>Mulai Jelajahi Modul</span>
+              <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+            </button>
+          </div>
         </div>
 
-        {/* ─────────────────────────────────────────────────────────────
-            RIGHT COLUMN: ISOMETRIC EXPLODED LAPTOP VISUALIZATION
-           ───────────────────────────────────────────────────────────── */}
-        <div className="lg:col-span-6 relative flex items-center justify-center py-6 select-none">
-          {/* Background Ambient Radial Glow */}
-          <div className="absolute inset-0 bg-[#22C55E]/10 rounded-full blur-[100px] pointer-events-none" />
-
-          {/* 3D Exploded Laptop Stack */}
-          <div className="relative w-full max-w-[420px] aspect-[4/5] flex flex-col items-center justify-center">
+        {/* ─── RIGHT COLUMN: HARDWARE PRODUCT VISUAL SHOWCASE ─── */}
+        <div className="lg:col-span-6 relative flex items-center justify-center py-2 select-none">
+          <div className="relative w-full max-w-[460px] rounded-3xl bg-white border border-slate-200/90 p-4 shadow-xl shadow-slate-900/5 overflow-hidden">
             
-            {/* LAYER 1: SCREEN LID (Floating highest in perspective) */}
-            <div className="absolute top-[6%] w-[260px] sm:w-[300px] aspect-[16/10] rounded-xl bg-[#111A15] border-2 border-slate-700 shadow-[0_20px_40px_rgba(0,0,0,0.8)] transform -rotate-[16deg] skew-x-[-12deg] p-2 flex flex-col justify-center items-center">
-              <div className="w-full h-full rounded bg-[#030906] border border-slate-800 flex items-center justify-center">
-                <span className="text-[10px] font-mono text-slate-600">DISPLAY ASSEMBLY</span>
+            {/* Visual Header */}
+            <div className="flex items-center justify-between pb-3 mb-3 border-b border-slate-100">
+              <span className="text-xs font-mono font-bold text-slate-800">
+                ARCHITECTURE DIGITAL TWIN
+              </span>
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-semibold border border-emerald-200">
+                STUDIO RENDER
+              </span>
+            </div>
+
+            {/* Featured Image Frame */}
+            <div className="relative w-full aspect-[16/11] rounded-2xl overflow-hidden bg-slate-100 border border-slate-100 shadow-inner group">
+              <img 
+                src="/images/laptop-b.jpg" 
+                alt="Gaming Performance Architecture"
+                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+
+              {/* Badges on image */}
+              <div className="absolute top-3 left-3">
+                <span className="px-2.5 py-1 rounded-full text-[10px] font-bold font-mono bg-white/90 backdrop-blur-md text-slate-800 shadow-xs">
+                  HIGH PERFORMANCE CHASSIS
+                </span>
+              </div>
+
+              <div className="absolute bottom-3 left-3 right-3 text-white flex items-center justify-between">
+                <div>
+                  <span className="text-xs font-mono font-bold block">TitanForge RTX 16</span>
+                  <span className="text-[10px] text-slate-300 font-sans">Dual-Fan Vapor Cooling Architecture</span>
+                </div>
+                <span className="text-[10px] font-mono bg-emerald-600 px-2 py-0.5 rounded-full text-white font-bold">
+                  VR READY
+                </span>
               </div>
             </div>
 
-            {/* LAYER 2: KEYBOARD DECK (Floating middle) */}
-            <div className="absolute top-[34%] w-[270px] sm:w-[310px] aspect-[16/10] rounded-xl bg-[#1B2921] border-2 border-slate-600 shadow-[0_25px_45px_rgba(0,0,0,0.85)] transform -rotate-[16deg] skew-x-[-12deg] p-2.5">
-              <div className="w-full h-16 rounded bg-[#0A160F] border border-slate-800 p-1 mb-2">
-                <div className="grid grid-cols-6 gap-1 opacity-60">
-                  {[...Array(12)].map((_, i) => (
-                    <div key={i} className="h-2 rounded-xs bg-[#192E22]" />
-                  ))}
-                </div>
+            {/* Micro spec callouts below image */}
+            <div className="grid grid-cols-3 gap-2 mt-3 pt-1">
+              <div className="p-2 rounded-xl bg-slate-50 border border-slate-100 text-center">
+                <span className="text-[9px] font-mono text-slate-400 block">SOKET</span>
+                <span className="text-xs font-bold text-slate-800 font-mono">BGA 1744</span>
               </div>
-              <div className="w-16 h-6 mx-auto rounded bg-[#132219] border border-slate-700/60" />
-            </div>
-
-            {/* LAYER 3: MOTHERBOARD & INTERNAL SILICON (Glowing green with chips) */}
-            <div className="absolute top-[60%] w-[280px] sm:w-[320px] aspect-[16/10] rounded-xl bg-[#092215] border-2 border-[#22C55E]/60 shadow-[0_0_35px_rgba(34,197,94,0.35)] transform -rotate-[16deg] skew-x-[-12deg] p-3 overflow-hidden">
-              {/* Circuit Grid & Chips */}
-              <div className="relative w-full h-full">
-                {/* Central CPU socket */}
-                <div className="w-14 h-14 rounded-lg bg-[#04140B] border-2 border-[#4ADE80] flex items-center justify-center shadow-[0_0_15px_#22c55e] mx-auto mt-2">
-                  <div className="w-8 h-8 rounded bg-[#0D3820] flex items-center justify-center">
-                    <span className="text-[8px] font-mono font-bold text-[#FACC15]">SoC</span>
-                  </div>
-                </div>
-
-                {/* Copper Heatpipe & Fan representation */}
-                <div className="absolute right-4 top-2 w-12 h-12 rounded-full border border-emerald-500/50 flex items-center justify-center">
-                  <div className="w-6 h-6 rounded-full bg-emerald-500/30" />
-                </div>
-                <div className="absolute left-4 top-4 w-16 h-3 bg-[#0E331E] border border-emerald-500/40 rounded-xs" />
-                <div className="absolute left-6 bottom-3 w-28 h-5 bg-[#06180E] border border-emerald-500/30 rounded-xs" />
+              <div className="p-2 rounded-xl bg-slate-50 border border-slate-100 text-center">
+                <span className="text-[9px] font-mono text-slate-400 block">COOLER</span>
+                <span className="text-xs font-bold text-emerald-700 font-mono">Dual Blower</span>
+              </div>
+              <div className="p-2 rounded-xl bg-slate-50 border border-slate-100 text-center">
+                <span className="text-[9px] font-mono text-slate-400 block">MEMORY</span>
+                <span className="text-xs font-bold text-teal-700 font-mono">DDR5 Modular</span>
               </div>
             </div>
 
-            {/* LAYER 4: BOTTOM BASE CHASSIS (Floor level) */}
-            <div className="absolute top-[82%] w-[270px] sm:w-[310px] aspect-[16/10] rounded-xl bg-[#0F1B14] border border-slate-700 shadow-[0_30px_60px_rgba(0,0,0,0.9)] transform -rotate-[16deg] skew-x-[-12deg] opacity-75" />
-
-            {/* Floor Ambient Circle */}
-            <div className="absolute bottom-[2%] w-64 h-16 rounded-full bg-[#22C55E]/20 blur-xl pointer-events-none" />
           </div>
         </div>
 
