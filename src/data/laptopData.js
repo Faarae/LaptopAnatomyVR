@@ -13,70 +13,70 @@ export const LAPTOPS = [
     categoryBadge: "Productivity & Study",
     accentColor: "#0D9488",
     image: "/images/laptop-a.jpg",
-    description: "Designed for daily productivity, coursework, and high battery efficiency with integrated graphics architecture and passive/quiet thermal profile.",
+    description: "Designed for daily productivity, study, and high energy efficiency with Intel Core i5-1335U, integrated Intel Iris Xe graphics, soldered DDR4 memory, and a quiet single-fan thermal solution.",
     specs: {
-      cpu: "Quad-Core Ultra-Low Voltage Processor",
-      gpu: "Integrated Iris Architecture Graphics",
-      ram: "8 GB LPDDR4X (Soldered Onboard)",
-      storage: "256 GB NVMe PCIe Gen 3 SSD",
-      cooling: "Single Low-Noise Fan + Slim Copper Pipe",
-      battery: "45 Wh Lithium-Polymer (Up to 10 hrs)"
+      cpu: "Intel Core i5-1335U (10-Core / 12-Thread, Up to 4.6 GHz)",
+      gpu: "Intel Iris Xe Graphics (Integrated 80 EUs)",
+      ram: "16 GB DDR4-3200 (Soldered Onboard)",
+      storage: "512 GB M.2 NVMe PCIe 3.0 x4 SSD",
+      cooling: "Single Low-Noise Fan + Slim Copper Heat Pipe",
+      battery: "42 Wh Lithium-Ion Pack (All-Day Efficiency)"
     },
     anatomyFocus: [
-      "Compact motherboard layout",
-      "Single-fan thermal chamber",
-      "Integrated GPU memory sharing",
-      "Power-efficient battery cells"
+      "Compact energy-efficient motherboard layout",
+      "Integrated Intel Iris Xe graphics architecture",
+      "Soldered onboard DDR4 memory chips",
+      "Quiet single-fan copper heat pipe cooling"
     ]
   },
   {
     id: "laptop-b",
     code: "LAPTOP-02",
     name: "Laptop B — Gaming",
-    alias: "TitanForge RTX 16",
+    alias: "AeroBook Strix G16",
     category: "Gaming",
     categoryBadge: "High Performance",
     accentColor: "#10B981",
     image: "/images/laptop-b.jpg",
-    description: "Built for intensive real-time rendering and triple-A gaming with high-wattage discrete GPU, multi-heatpipe dual exhaust vapor cooling, and modular dual RAM slots.",
+    description: "Built for intensive real-time ray tracing and competitive gaming with Intel Core i7-14650HX, discrete NVIDIA RTX 4060 8GB GPU, multi-heatpipe dual centrifugal cooling, and modular DDR5 SO-DIMM slots.",
     specs: {
-      cpu: "Octa-Core High-Performance Max Clock CPU",
-      gpu: "Dedicated Discrete GPU (8GB GDDR6 VRAM)",
-      ram: "16 GB DDR5 5600MHz (Dual SODIMM Modular)",
-      storage: "1 TB NVMe PCIe Gen 4 High-Speed SSD",
-      cooling: "Dual High-CFM Fans + 4-Way Copper Heatpipes",
-      battery: "80 Wh High-Capacity Fast-Charge Battery"
+      cpu: "Intel Core i7-14650HX (16-Core / 24-Thread, Up to 5.2 GHz)",
+      gpu: "NVIDIA GeForce RTX 4060 Laptop GPU (8GB GDDR6, 140W TGP)",
+      ram: "16 GB DDR5-5600 MHz (2 x 8GB SO-DIMM Modular)",
+      storage: "1 TB M.2 NVMe PCIe 4.0 x4 High-Speed SSD",
+      cooling: "Dual Centrifugal Fans + 4-Way Sintered Copper Heatpipes",
+      battery: "90 Wh High-Density Lithium-Ion Pack (240W Fast Charge)"
     },
     anatomyFocus: [
-      "Discrete GPU heatsink assembly",
-      "Dual centrifugal cooling fans",
-      "Upgradable dual RAM modules",
-      "High-power VRM delivery chokes"
+      "Discrete NVIDIA RTX 4060 BGA GPU & GDDR6 VRAM",
+      "Intel Core i7-14650HX 16-Core BGA1964 Package",
+      "Dual high-CFM centrifugal blower fans with spinning impellers",
+      "Modular dual-channel DDR5 SO-DIMM memory slots"
     ]
   },
   {
     id: "laptop-c",
     code: "LAPTOP-03",
     name: "Laptop C — Creator",
-    alias: "VisionStudio Pro 16",
+    alias: "AeroBook Studio Pro 16",
     category: "Creator",
-    categoryBadge: "Workstation & Media",
+    categoryBadge: "Workstation & Studio",
     accentColor: "#0284C7",
     image: "/images/laptop-c.jpg",
-    description: "Engineered for 3D creators, motion artists, and video editors with high RAM density, color-accurate display controllers, and studio-grade thermal efficiency.",
+    description: "Engineered for 3D artists, video editors, and AI workflows with AMD Ryzen AI 9 HX 370, discrete NVIDIA RTX 4070 8GB GPU, soldered 32GB LPDDR5X-7500, and dual-fan studio cooling.",
     specs: {
-      cpu: "14-Core Hybrid Architecture Creator CPU",
-      gpu: "Studio-Grade GPU with Hardware Ray Tracing",
-      ram: "32 GB LPDDR5X Dual-Channel Unified Memory",
-      storage: "1 TB NVMe PCIe Gen 4 (Dual M.2 Slots)",
-      cooling: "Vapor Chamber Liquid-Vapor Thermal Plate",
-      battery: "90 Wh Studio Endurance Battery Pack"
+      cpu: "AMD Ryzen AI 9 HX 370 (12-Core / 24-Thread, 50 TOPS NPU)",
+      gpu: "NVIDIA GeForce RTX 4070 Laptop GPU (8GB GDDR6, Studio Drivers)",
+      ram: "32 GB LPDDR5X-7500 (Soldered High-Bandwidth Memory)",
+      storage: "2 TB M.2 NVMe PCIe 4.0 x4 High-Speed SSD",
+      cooling: "Dual Studio Blower Fans + Multi-Way Copper Heatpipes & Heatsinks",
+      battery: "90 Wh Studio Endurance Battery Pack (Fast Charge)"
     },
     anatomyFocus: [
-      "Vapor chamber thermal spreader",
-      "Dual NVMe expansion slots",
-      "Thunderbolt controller chipset",
-      "Dense high-bandwidth memory layout"
+      "AMD Ryzen AI 9 processor with integrated NPU",
+      "Discrete NVIDIA RTX 4070 Laptop GPU with 8GB GDDR6",
+      "High-density soldered LPDDR5X-7500 unified memory",
+      "Symmetrical dual-fan multi-heatpipe studio cooling"
     ]
   }
 ];

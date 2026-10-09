@@ -136,6 +136,7 @@ export default function FindComponentGame({ onScoreChange, onComplete, onStepCha
         `}
       >
         <Motherboard3DViewer
+          category="desktop"
           highlightPinNumber={discovered ? curMission.targetPin : null}
           onPinClick={handlePinSelect}
           showModal={false}
