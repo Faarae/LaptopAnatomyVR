@@ -11,6 +11,8 @@ export const COMPONENTS = [
     category: "Compute Engine",
     tag: "Brain of System",
     threeType: "cpu",
+    image: "/images/components/pin-8.jpg",
+    imageName: "pin-8.jpg",
     description: "The primary computational processor that decodes, coordinates, and executes instructions across all operating system and software workloads.",
     specsHighlight: "Clock speed, Cores & Threads, Cache memory, TDP rating",
     details: {
@@ -35,6 +37,8 @@ export const COMPONENTS = [
     category: "Compute & Rasterization",
     tag: "Visual Engine",
     threeType: "gpu",
+    image: "/images/components/pin-1.jpg",
+    imageName: "pin-1.jpg",
     description: "Specialized massively-parallel chip engineered for 3D polygon rasterization, real-time hardware ray tracing, physics computation, and tensor AI acceleration.",
     specsHighlight: "CUDA / Stream Cores, VRAM capacity, Memory bus width",
     details: {
@@ -59,6 +63,8 @@ export const COMPONENTS = [
     category: "System Memory",
     tag: "High-Speed Buffer",
     threeType: "ram",
+    image: "/images/components/pin-4.jpg",
+    imageName: "pin-4.jpg",
     description: "Volatile high-speed working memory that stores currently executing applications, open browser tabs, and working datasets for sub-nanosecond processor access.",
     specsHighlight: "Transfer speed (MT/s), Channel mode, Timing latency, Form factor",
     details: {
@@ -83,6 +89,8 @@ export const COMPONENTS = [
     category: "Persistent Storage",
     tag: "Persistent Storage",
     threeType: "ssd",
+    image: "/images/components/pin-3.jpg",
+    imageName: "pin-3.jpg",
     description: "Non-volatile 3D NAND flash memory storage holding the operating system, games, and user files with gigabyte-per-second sequential and random throughput.",
     specsHighlight: "PCIe Generation interface, Sequential read/write speeds, TBW endurance",
     details: {
@@ -107,6 +115,8 @@ export const COMPONENTS = [
     category: "System Backbone",
     tag: "Central Backbone",
     threeType: "motherboard",
+    image: "/images/components/pin-10.jpg",
+    imageName: "pin-10.jpg",
     description: "The primary printed circuit board (PCB) that interconnects the CPU, memory, power delivery rails, display pipeline, audio, and all input/output buses.",
     specsHighlight: "Chipset interconnect, Power delivery VRM phases, Form factor, Trace layers",
     details: {
@@ -131,6 +141,8 @@ export const COMPONENTS = [
     category: "Power Subsystem",
     tag: "Energy Reservoir",
     threeType: "battery",
+    image: "/images/components/pin-9.jpg",
+    imageName: "pin-9.jpg",
     description: "Rechargeable high-density chemical energy source powering the laptop untethered, managed by smart Battery Management System (BMS) microcontrollers.",
     specsHighlight: "Watt-hour (Wh) capacity, Cell count, Charging wattage rating, Cycle lifespan",
     details: {
@@ -155,6 +167,8 @@ export const COMPONENTS = [
     category: "Thermal Subsystem",
     tag: "Heat Dissipation",
     threeType: "fan",
+    image: "/images/components/pin-2.jpg",
+    imageName: "pin-2.jpg",
     description: "Centrifugal blower fan and sintered copper heatpipes that rapidly conduct thermal energy away from the CPU and GPU silicon dies to prevent thermal throttling.",
     specsHighlight: "CFM airflow rating, Blade density, Liquid bearing durability, Heatpipe count",
     details: {
@@ -179,6 +193,8 @@ export const COMPONENTS = [
     category: "Wireless Networking",
     tag: "Wireless Interface",
     threeType: "wifi",
+    image: "/images/components/pin-6.jpg",
+    imageName: "pin-6.jpg",
     description: "Modular or soldered radio frequency (RF) controller providing gigabit wireless internet connectivity and ultra-low latency Bluetooth peripheral pairing.",
     specsHighlight: "Wi-Fi 6E/7 standard, Multi-band antennas, Bluetooth version, Channel width",
     details: {

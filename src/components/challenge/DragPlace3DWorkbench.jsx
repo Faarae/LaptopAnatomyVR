@@ -5,12 +5,23 @@ import {
   CheckCircle2, Sparkles, Compass, AlertCircle, Box, Volume2
 } from 'lucide-react';
 import { ASSEMBLY_COMPONENT_POOL } from './DragPlaceGame';
+import { buildGamingPCB } from '../3d/motherboards/gaming/GamingPCB';
+import { buildGamingCPU } from '../3d/motherboards/gaming/GamingCPU';
+import { buildGamingGPU } from '../3d/motherboards/gaming/GamingGPU';
+import { buildGamingRAM } from '../3d/motherboards/gaming/GamingRAM';
+import { buildGamingSSD } from '../3d/motherboards/gaming/GamingSSD';
+import { buildGamingCooling } from '../3d/motherboards/gaming/GamingCooling';
+import { buildGamingBattery } from '../3d/motherboards/gaming/GamingBattery';
+import { buildGamingVRM } from '../3d/motherboards/gaming/GamingVRM';
+import { buildGamingIO } from '../3d/motherboards/gaming/GamingIO';
 
 /**
  * DragPlace3DWorkbench
  * 100% Native WebGL Three.js Fullscreen Isometric Assembly Scene:
- * - Empty Motherboard Sockets corresponding to activeQuestIds
- * - Staging 3D Components on the front ESD table tray
+ * - Uses the authentic Gaming Laptop Motherboard (AeroBook Strix G16) as the workbench base
+ * - Real modular 3D components matching the laptop motherboard detail 1:1
+ * - Empty realistic sockets corresponding to activeQuestIds
+ * - Staging 3D components on the front ESD table tray with high-fidelity textures
  * - Fluid 3D Raycasting with elevated plane drag mechanics
  * - Locked Isometric Camera Perspective
  * - Multi-item persistence: placed items are locked in place and never reset/lost
@@ -50,6 +61,7 @@ export default function DragPlace3DWorkbench({
   const socketTargetsRef = useRef({});   // { [id]: Vector3 }
   const socketBeaconsRef = useRef({});   // { [id]: Group }
   const particlesRef = useRef([]);
+  const fanRotatorsRef = useRef([]);
 
   // 3D Dragging state
   const dragPlaneRef = useRef(new THREE.Plane(new THREE.Vector3(0, 1, 0), -1.1));
@@ -71,6 +83,9 @@ export default function DragPlace3DWorkbench({
       if (compGroup && isInstalled && targetPos) {
         compGroup.position.copy(targetPos);
         compGroup.rotation.set(0, 0, 0);
+        if (slotKey === 'battery') {
+          compGroup.scale.set(1, 1, 1);
+        }
         compGroup.userData.installed = true;
         compGroup.userData.isDragging = false;
       }
@@ -109,16 +124,19 @@ export default function DragPlace3DWorkbench({
     const width = container.clientWidth || window.innerWidth;
     const height = container.clientHeight || window.innerHeight;
 
+    // Reset fan rotators
+    fanRotatorsRef.current = [];
+
     // 1. Scene
     const scene = new THREE.Scene();
     sceneRef.current = scene;
     scene.background = new THREE.Color(0xf8fafc);
-    scene.fog = new THREE.FogExp2(0xf8fafc, 0.02);
+    scene.fog = new THREE.FogExp2(0xf8fafc, 0.018);
 
-    // 2. Camera (Strictly Isometric POV, framed to the right so left quest drawer never covers it)
+    // 2. Camera (Strictly Isometric POV, framed so left quest drawer never covers it)
     const camera = new THREE.PerspectiveCamera(40, width / height, 0.1, 100);
-    camera.position.set(-1.2, 10.2, 11.2);
-    camera.lookAt(-1.2, 0, 0.4);
+    camera.position.set(-1.0, 13.5, 12.8);
+    camera.lookAt(-0.8, 0, 0.6);
     cameraRef.current = camera;
 
     // 3. Renderer
@@ -138,30 +156,30 @@ export default function DragPlace3DWorkbench({
     const controls = new OrbitControls(camera, canvas);
     controls.enableDamping = true;
     controls.dampingFactor = 0.05;
-    controls.target.set(-1.2, 0, 0.4);
+    controls.target.set(-0.8, 0, 0.6);
     controls.maxPolarAngle = Math.PI / 2.15;
     controls.minPolarAngle = Math.PI / 5;
     controls.minDistance = 6.0;
-    controls.maxDistance = 22.0;
+    controls.maxDistance = 25.0;
     controlsRef.current = controls;
 
     // 5. Lighting Setup
-    const ambientLight = new THREE.AmbientLight(0xffffff, 2.2);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 2.4);
     scene.add(ambientLight);
 
-    const mainLight = new THREE.DirectionalLight(0xffffff, 2.6);
-    mainLight.position.set(8, 16, 8);
+    const mainLight = new THREE.DirectionalLight(0xffffff, 2.8);
+    mainLight.position.set(8, 18, 8);
     mainLight.castShadow = true;
     mainLight.shadow.mapSize.width = 2048;
     mainLight.shadow.mapSize.height = 2048;
     scene.add(mainLight);
 
-    const fillGreen = new THREE.PointLight(0x10b981, 1.6, 22);
-    fillGreen.position.set(-6, 6, -3);
+    const fillGreen = new THREE.PointLight(0x10b981, 1.8, 24);
+    fillGreen.position.set(-6, 7, -3);
     scene.add(fillGreen);
 
-    const fillCyan = new THREE.PointLight(0x06b6d4, 1.4, 22);
-    fillCyan.position.set(6, 6, 6);
+    const fillCyan = new THREE.PointLight(0x06b6d4, 1.6, 24);
+    fillCyan.position.set(6, 7, 6);
     scene.add(fillCyan);
 
     // 6. Build ESD Table Workbench & Motherboard Sockets
@@ -276,10 +294,10 @@ export default function DragPlace3DWorkbench({
           const dist = new THREE.Vector2(draggedObjRef.current.position.x, draggedObjRef.current.position.z)
             .distanceTo(new THREE.Vector2(targetPos.x, targetPos.z));
 
-          if (dist < 2.0) {
+          if (dist < 2.2) {
             setActiveHoverHint(`✓ Posisi pas! Lepaskan kursor untuk memasang ${draggedObjRef.current.userData.name}!`);
           } else {
-            setActiveHoverHint(`Tarik ${draggedObjRef.current.userData.name} ke soketnya...`);
+            setActiveHoverHint(`Tarik ${draggedObjRef.current.userData.name} ke soketnya di motherboard...`);
           }
         }
       } else {
@@ -324,7 +342,7 @@ export default function DragPlace3DWorkbench({
           }
         });
 
-        if (closestSocket && minDistance < 2.1) {
+        if (closestSocket && minDistance < 2.3) {
           trySnap(draggedId, closestSocket);
         } else if (moveDistance < 8) {
           // Just clicked: keep active in select mode
@@ -334,7 +352,10 @@ export default function DragPlace3DWorkbench({
           // Slide back to initial dock position
           draggedObj.userData.isDragging = false;
           draggedObj.position.copy(draggedObj.userData.initialPos);
-          setActiveHoverHint(`Komponen kembali ke baki.`);
+          if (draggedId === 'battery') {
+            draggedObj.scale.set(0.38, 0.38, 0.38);
+          }
+          setActiveHoverHint(`Komponen kembali ke baki meja.`);
         }
 
         draggedObjRef.current = null;
@@ -353,17 +374,23 @@ export default function DragPlace3DWorkbench({
       const delta = clock.getDelta();
       const time = clock.getElapsedTime();
 
+      // Spin rotating fans
+      fanRotatorsRef.current.forEach((rotor) => {
+        if (rotor) rotor.rotation.y += delta * 7.5;
+      });
+
       // Animate socket beacons
       Object.keys(socketBeaconsRef.current).forEach((sKey) => {
         const beacon = socketBeaconsRef.current[sKey];
         if (beacon && beacon.visible) {
           const ring = beacon.getObjectByName('beaconRing');
-          if (ring) ring.rotation.z += delta * 2.0;
+          if (ring) ring.rotation.z += delta * 2.2;
 
           const glow = beacon.getObjectByName('beaconGlow');
           if (glow) {
-            const scale = 1 + Math.sin(time * 4) * 0.15;
+            const scale = 1 + Math.sin(time * 4) * 0.16;
             glow.scale.set(scale, scale, scale);
+            glow.rotation.y += delta * 1.5;
           }
         }
       });
@@ -374,7 +401,7 @@ export default function DragPlace3DWorkbench({
         const comp = componentsRef.current[cKey];
         if (comp && !comp.userData.installed && !comp.userData.isDragging && currActive !== cKey) {
           comp.position.y = comp.userData.initialPos.y + Math.sin(time * 2.5 + comp.position.x) * 0.04;
-          comp.rotation.y = Math.sin(time * 0.8) * 0.06;
+          comp.rotation.y = Math.sin(time * 0.8) * 0.05;
         }
       });
 
@@ -426,6 +453,9 @@ export default function DragPlace3DWorkbench({
       const targetPos = socketTargetsRef.current[targetSocket];
       compGroup.position.copy(targetPos);
       compGroup.rotation.set(0, 0, 0);
+      if (componentId === 'battery') {
+        compGroup.scale.set(1, 1, 1);
+      }
       compGroup.userData.installed = true;
       compGroup.userData.isDragging = false;
 
@@ -446,6 +476,9 @@ export default function DragPlace3DWorkbench({
     } else {
       // WRONG SOCKET!
       compGroup.position.copy(compGroup.userData.initialPos);
+      if (componentId === 'battery') {
+        compGroup.scale.set(0.38, 0.38, 0.38);
+      }
       compGroup.userData.isDragging = false;
 
       setSnapFeedback({
@@ -465,7 +498,7 @@ export default function DragPlace3DWorkbench({
     const scene = sceneRef.current;
     if (!scene) return;
 
-    for (let i = 0; i < 24; i++) {
+    for (let i = 0; i < 28; i++) {
       const p = new THREE.Mesh(
         new THREE.SphereGeometry(0.04, 8, 8),
         new THREE.MeshBasicMaterial({
@@ -475,17 +508,17 @@ export default function DragPlace3DWorkbench({
         })
       );
       p.position.set(
-        centerPos.x + (Math.random() - 0.5) * 0.4,
-        centerPos.y + 0.3 + Math.random() * 0.2,
-        centerPos.z + (Math.random() - 0.5) * 0.4
+        centerPos.x + (Math.random() - 0.5) * 0.5,
+        centerPos.y + 0.3 + Math.random() * 0.25,
+        centerPos.z + (Math.random() - 0.5) * 0.5
       );
       p.userData = {
         velocity: new THREE.Vector3(
-          (Math.random() - 0.5) * 0.08,
-          0.04 + Math.random() * 0.06,
-          (Math.random() - 0.5) * 0.08
+          (Math.random() - 0.5) * 0.09,
+          0.05 + Math.random() * 0.07,
+          (Math.random() - 0.5) * 0.09
         ),
-        life: 0.8,
+        life: 0.85,
       };
       scene.add(p);
       particlesRef.current.push(p);
@@ -498,159 +531,204 @@ export default function DragPlace3DWorkbench({
   const buildAssemblyWorkbench = (scene) => {
     // Large ESD Anti-Static Mat
     const mat = new THREE.Mesh(
-      new THREE.BoxGeometry(16, 0.2, 14),
+      new THREE.BoxGeometry(18, 0.2, 16),
       new THREE.MeshStandardMaterial({ color: 0xe2e8f0, roughness: 0.7, metalness: 0.1 })
     );
-    mat.position.y = -0.11;
+    mat.position.set(0, -0.11, 0.2);
     mat.receiveShadow = true;
     scene.add(mat);
 
+    // Grid Traces on Workbench Mat
+    const grid = new THREE.GridHelper(18, 36, 0x10b981, 0xcbd5e1);
+    grid.position.set(0, 0.01, 0.2);
+    scene.add(grid);
+
     // Front Staging Tray
     const tray = new THREE.Mesh(
-      new THREE.BoxGeometry(9.6, 0.08, 2.2),
+      new THREE.BoxGeometry(10.8, 0.08, 2.4),
       new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.35, metalness: 0.15 })
     );
-    tray.position.set(0, 0.04, 2.7);
+    tray.position.set(0, 0.04, 5.0);
     tray.receiveShadow = true;
     scene.add(tray);
 
-    // Front Tray Rim
+    // Front Tray Rim Accent
     const rim = new THREE.Mesh(
-      new THREE.BoxGeometry(9.8, 0.12, 0.06),
+      new THREE.BoxGeometry(11.0, 0.12, 0.06),
       new THREE.MeshStandardMaterial({ color: 0x10b981, roughness: 0.3 })
     );
-    rim.position.set(0, 0.06, 3.8);
+    rim.position.set(0, 0.06, 6.2);
     scene.add(rim);
-
-    // Grid Traces
-    const grid = new THREE.GridHelper(14, 28, 0x10b981, 0xcbd5e1);
-    grid.position.y = 0.01;
-    scene.add(grid);
   };
 
   /**
    * Build Motherboard with Target Sockets
+   * Uses authentic Gaming Laptop Motherboard base (GamingPCB, RTX 4060 GPU, VRM, IO)
    */
   const buildMotherboardWithSockets = (scene, questIds) => {
     const mbGroup = new THREE.Group();
     mbGroup.position.set(0, 0, -0.6);
 
-    // Mainboard PCB Surface
-    const pcb = new THREE.Mesh(
-      new THREE.BoxGeometry(8.6, 0.2, 7.2),
-      new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.4, metalness: 0.2 })
-    );
-    pcb.receiveShadow = true;
-    mbGroup.add(pcb);
+    // 1. Mount Realistic Gaming Laptop Mainboard PCB Base
+    buildGamingPCB(mbGroup);
 
-    // Gold Circuit Traces
-    const traceGrid = new THREE.GridHelper(7.8, 22, 0xf59e0b, 0x1e293b);
-    traceGrid.position.y = 0.11;
-    mbGroup.add(traceGrid);
+    // 2. Mount Soldered Compute Engine: NVIDIA RTX 4060 GPU (Permanently Seated BGA)
+    buildGamingGPU(mbGroup);
 
-    // VRM Heatsinks
-    const vrm = createHeatsink(0.7, 0.8, 2.6, 0x475569);
-    vrm.position.set(-3.2, 0.5, -1.2);
-    mbGroup.add(vrm);
+    // 3. Mount VRM Power Delivery Infrastructure
+    buildGamingVRM(mbGroup);
 
-    const vrmTop = createHeatsink(2.4, 0.8, 0.7, 0x475569);
-    vrmTop.position.set(-1.8, 0.5, -2.8);
-    mbGroup.add(vrmTop);
+    // 4. Mount Perimeter IO System (Display, USB, LAN, Audio)
+    const ioGroup = buildGamingIO(mbGroup);
+    if (questIds.includes('wifi')) {
+      ioGroup.traverse((child) => {
+        if (child.name === 'gamingWiFiModule') {
+          child.visible = false;
+        }
+      });
+    }
 
-    // Chipset PCH Heatsink
-    const pch = createHeatsink(1.4, 0.5, 1.4, 0xb45309);
-    pch.position.set(-2.0, 0.35, 1.6);
-    mbGroup.add(pch);
+    // 5. Mount Thermal Cooling Subsystem
+    const coolingResult = buildGamingCooling(mbGroup);
+    if (coolingResult && coolingResult.fanRotators) {
+      if (questIds.includes('fan')) {
+        // Hide left fan so user can assemble it into the left bay
+        mbGroup.traverse((child) => {
+          if (child.name === 'leftFan') {
+            child.visible = false;
+          }
+        });
+        coolingResult.fanRotators.forEach((rotor) => {
+          if (rotor.name !== 'leftFan_rotor') {
+            fanRotatorsRef.current.push(rotor);
+          }
+        });
+      } else {
+        coolingResult.fanRotators.forEach((rotor) => fanRotatorsRef.current.push(rotor));
+      }
+    }
 
-    // PCIe Slot
-    const pcie = new THREE.Mesh(
-      new THREE.BoxGeometry(0.35, 0.4, 3.4),
-      new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.6 })
-    );
-    pcie.position.set(-0.2, 0.3, 0.8);
-    mbGroup.add(pcie);
-
-    // CMOS CR2032 Battery
-    const batt = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.38, 0.38, 0.14, 24),
-      new THREE.MeshStandardMaterial({ color: 0xe2e8f0, metalness: 0.95 })
-    );
-    batt.position.set(-2.2, 0.25, 2.8);
-    mbGroup.add(batt);
+    // 6. Mount Non-Quest Components (if not part of current assembly challenge)
+    if (!questIds.includes('cpu')) {
+      buildGamingCPU(mbGroup);
+    }
+    if (!questIds.includes('ram')) {
+      buildGamingRAM(mbGroup);
+    }
+    if (!questIds.includes('ssd')) {
+      buildGamingSSD(mbGroup);
+    }
+    if (!questIds.includes('battery')) {
+      buildGamingBattery(mbGroup);
+    }
 
     scene.add(mbGroup);
 
-    // ── DEFINE ALL POSSIBLE SOCKET LOCATIONS & HOUSINGS ──
+    // ── DEFINE ALL AUTHENTIC GAMING LAPTOP SOCKET LOCATIONS (World Coordinates) ──
     socketTargetsRef.current = {
-      cpu: new THREE.Vector3(-1.8, 0.22, -1.8),
-      ram: new THREE.Vector3(2.2, 0.24, -1.8),
-      ssd: new THREE.Vector3(2.0, 0.22, 0.8),
-      battery: new THREE.Vector3(-2.6, 0.22, 1.0),
-      wifi: new THREE.Vector3(-0.6, 0.22, -1.4),
-      fan: new THREE.Vector3(-3.2, 0.25, -2.5),
+      cpu: new THREE.Vector3(1.8, 0.22, -1.8),
+      ram: new THREE.Vector3(0.0, 0.24, 0.2),
+      ssd: new THREE.Vector3(2.3, 0.22, 1.0),
+      battery: new THREE.Vector3(0.0, 0.16, 2.6),
+      wifi: new THREE.Vector3(-3.5, 0.22, 0.6),
+      fan: new THREE.Vector3(-3.8, 0.22, -3.4),
     };
 
-    // 1. CPU Socket Base (World: -1.8, -1.8)
-    const cpuBase = new THREE.Mesh(
-      new THREE.BoxGeometry(2.2, 0.16, 2.2),
-      new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.6 })
-    );
-    cpuBase.position.set(-1.8, 0.18, -1.8);
-    scene.add(cpuBase);
+    // ── MOUNT REALISTIC EMPTY SOCKET BASES FOR ACTIVE QUESTS ──
+    if (questIds.includes('cpu')) {
+      // Empty CPU BGA1964 Socket Base with Gold Pin Array
+      const cpuBase = new THREE.Mesh(
+        new THREE.BoxGeometry(1.85, 0.08, 1.85),
+        new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.6 })
+      );
+      cpuBase.position.set(1.8, 0.18, -1.8);
+      scene.add(cpuBase);
 
-    const pinMatrix = new THREE.Mesh(
-      new THREE.BoxGeometry(1.6, 0.18, 1.6),
-      new THREE.MeshStandardMaterial({ color: 0xf59e0b, metalness: 0.95, roughness: 0.15 })
-    );
-    pinMatrix.position.set(-1.8, 0.22, -1.8);
-    scene.add(pinMatrix);
+      const pinMatrix = new THREE.Mesh(
+        new THREE.BoxGeometry(1.4, 0.08, 1.4),
+        new THREE.MeshStandardMaterial({ color: 0xf59e0b, metalness: 0.95, roughness: 0.15 })
+      );
+      pinMatrix.position.set(1.8, 0.22, -1.8);
+      scene.add(pinMatrix);
 
-    // 2. RAM Socket Base (World: 2.2, -1.8)
-    const ramSlotBase = new THREE.Mesh(
-      new THREE.BoxGeometry(3.6, 0.25, 0.6),
-      new THREE.MeshStandardMaterial({ color: 0x111827, roughness: 0.6 })
-    );
-    ramSlotBase.position.set(2.2, 0.2, -1.8);
-    scene.add(ramSlotBase);
+      // Gold Pin-1 Corner Triangle Indicator
+      const pin1Mark = new THREE.Mesh(
+        new THREE.BufferGeometry().setFromPoints([
+          new THREE.Vector3(-0.7, 0.23, -0.7),
+          new THREE.Vector3(-0.5, 0.23, -0.7),
+          new THREE.Vector3(-0.7, 0.23, -0.5)
+        ]),
+        new THREE.MeshBasicMaterial({ color: 0xd4af37, side: THREE.DoubleSide })
+      );
+      pin1Mark.position.set(1.8, 0, -1.8);
+      scene.add(pin1Mark);
+    }
 
-    // 3. SSD Socket Base (World: 2.0, 0.8)
-    const m2Connector = new THREE.Mesh(
-      new THREE.BoxGeometry(0.35, 0.25, 1.2),
-      new THREE.MeshStandardMaterial({ color: 0x1f2937, roughness: 0.5 })
-    );
-    m2Connector.position.set(0.6, 0.22, 0.8);
-    scene.add(m2Connector);
+    if (questIds.includes('ram')) {
+      // Empty Dual SO-DIMM Socket Base Frame with Retention Latches
+      const ramBase = new THREE.Mesh(
+        new THREE.BoxGeometry(3.0, 0.09, 1.0),
+        new THREE.MeshStandardMaterial({ color: 0x111827, roughness: 0.5 })
+      );
+      ramBase.position.set(0.0, 0.18, 0.2);
+      scene.add(ramBase);
 
-    const standoff = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.12, 0.12, 0.22, 16),
-      new THREE.MeshStandardMaterial({ color: 0xf59e0b, metalness: 0.9 })
-    );
-    standoff.position.set(3.4, 0.2, 0.8);
-    scene.add(standoff);
+      [-0.25, 0.25].forEach((z) => {
+        const slotChannel = new THREE.Mesh(
+          new THREE.BoxGeometry(2.7, 0.06, 0.15),
+          new THREE.MeshStandardMaterial({ color: 0x020617, roughness: 0.3 })
+        );
+        slotChannel.position.set(0.0, 0.22, 0.2 + z);
+        scene.add(slotChannel);
+      });
+    }
 
-    // 4. Battery Housing (World: -2.6, 1.0)
-    const battTray = new THREE.Mesh(
-      new THREE.BoxGeometry(2.6, 0.12, 1.6),
-      new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.7 })
-    );
-    battTray.position.set(-2.6, 0.16, 1.0);
-    scene.add(battTray);
+    if (questIds.includes('ssd')) {
+      // Empty M.2 Key-M Socket Connector & Brass Standoff Post
+      const m2Connector = new THREE.Mesh(
+        new THREE.BoxGeometry(0.72, 0.10, 0.35),
+        new THREE.MeshStandardMaterial({ color: 0x1f2937, roughness: 0.5 })
+      );
+      m2Connector.position.set(2.3, 0.20, -0.05);
+      scene.add(m2Connector);
 
-    // 5. WiFi Slot (World: -0.6, -1.4)
-    const wifiSlot = new THREE.Mesh(
-      new THREE.BoxGeometry(0.3, 0.22, 1.4),
-      new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.6 })
-    );
-    wifiSlot.position.set(-0.6, 0.18, -1.4);
-    scene.add(wifiSlot);
+      const standoff = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.12, 0.12, 0.14, 16),
+        new THREE.MeshStandardMaterial({ color: 0xd4af37, metalness: 0.95 })
+      );
+      standoff.position.set(2.3, 0.18, 2.05);
+      scene.add(standoff);
+    }
 
-    // 6. Fan Header (World: -3.2, -2.5)
-    const fanHeader = new THREE.Mesh(
-      new THREE.BoxGeometry(0.8, 0.24, 0.3),
-      new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.5 })
-    );
-    fanHeader.position.set(-3.2, 0.2, -2.5);
-    scene.add(fanHeader);
+    if (questIds.includes('battery')) {
+      // Empty Battery Bay Recess Outline & Keyed DC-IN Power Header
+      const dcHeader = new THREE.Mesh(
+        new THREE.BoxGeometry(0.85, 0.12, 0.32),
+        new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.4 })
+      );
+      dcHeader.position.set(0.0, 0.18, 1.4);
+      scene.add(dcHeader);
+    }
+
+    if (questIds.includes('wifi')) {
+      // Empty M.2 Key-E Wi-Fi Socket & Standoff
+      const wifiBase = new THREE.Mesh(
+        new THREE.BoxGeometry(0.65, 0.10, 0.3),
+        new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.6 })
+      );
+      wifiBase.position.set(-3.5, 0.20, 0.25);
+      scene.add(wifiBase);
+    }
+
+    if (questIds.includes('fan')) {
+      // Empty Left Blower Fan Bay Chassis Recess with 4-Pin PWM Header
+      const pwmHeader = new THREE.Mesh(
+        new THREE.BoxGeometry(0.35, 0.12, 0.2),
+        new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.4 })
+      );
+      pwmHeader.position.set(-3.8, 0.20, -2.1);
+      scene.add(pwmHeader);
+    }
 
     // Build holographic beacons ONLY for the active quest components
     socketBeaconsRef.current = {};
@@ -675,7 +753,7 @@ export default function DragPlace3DWorkbench({
     group.userData = { socketId };
 
     // Rotating Glowing Ring
-    const ringGeo = new THREE.RingGeometry(0.55, 0.75, 32);
+    const ringGeo = new THREE.RingGeometry(0.6, 0.85, 32);
     const ringMat = new THREE.MeshBasicMaterial({
       color: colorHex,
       side: THREE.DoubleSide,
@@ -689,7 +767,7 @@ export default function DragPlace3DWorkbench({
     group.add(ring);
 
     // Hologram Vertical Light Beam
-    const beamGeo = new THREE.CylinderGeometry(0.45, 0.45, 0.9, 16, 1, true);
+    const beamGeo = new THREE.CylinderGeometry(0.5, 0.5, 1.0, 16, 1, true);
     const beamMat = new THREE.MeshBasicMaterial({
       color: colorHex,
       transparent: true,
@@ -697,25 +775,25 @@ export default function DragPlace3DWorkbench({
       side: THREE.DoubleSide,
     });
     const beam = new THREE.Mesh(beamGeo, beamMat);
-    beam.position.y = 0.5;
+    beam.position.y = 0.55;
     group.add(beam);
 
     // Floating Target Diamond Marker
-    const markerGeo = new THREE.OctahedronGeometry(0.18);
+    const markerGeo = new THREE.OctahedronGeometry(0.2);
     const markerMat = new THREE.MeshStandardMaterial({
       color: colorHex,
       emissive: colorHex,
-      emissiveIntensity: 0.8,
+      emissiveIntensity: 0.85,
       metalness: 0.8,
     });
     const marker = new THREE.Mesh(markerGeo, markerMat);
     marker.name = 'beaconGlow';
-    marker.position.y = 1.05;
+    marker.position.y = 1.15;
     group.add(marker);
 
     // Raycast Hitbox
     const hitbox = new THREE.Mesh(
-      new THREE.CylinderGeometry(1.4, 1.4, 2.2, 16),
+      new THREE.CylinderGeometry(1.5, 1.5, 2.4, 16),
       new THREE.MeshBasicMaterial({ visible: false })
     );
     hitbox.position.y = 0.8;
@@ -730,26 +808,37 @@ export default function DragPlace3DWorkbench({
    */
   const buildStagingComponents = (scene, questIds) => {
     componentsRef.current = {};
-    const xOffsets = [-2.8, 0.0, 2.8];
+    const xOffsets = [-3.0, 0.0, 3.0];
 
     questIds.forEach((qId, index) => {
       const compInfo = ASSEMBLY_COMPONENT_POOL[qId];
       if (!compInfo) return;
 
       const xPos = xOffsets[index] || 0;
-      const initialPos = new THREE.Vector3(xPos, 0.22, 2.7);
+      const initialPos = new THREE.Vector3(xPos, 0.22, 5.0);
 
       // Pedestal Pad on Staging Tray
       const pad = new THREE.Mesh(
-        new THREE.BoxGeometry(2.4, 0.04, 1.8),
-        new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.5 })
+        new THREE.BoxGeometry(2.6, 0.04, 1.9),
+        new THREE.MeshStandardMaterial({ color: 0xf1f5f9, roughness: 0.4 })
       );
-      pad.position.set(xPos, 0.09, 2.7);
+      pad.position.set(xPos, 0.09, 5.0);
       scene.add(pad);
 
-      // Create Component 3D Mesh
+      // Pad Rim Accent
+      const padRim = new THREE.Mesh(
+        new THREE.BoxGeometry(2.65, 0.02, 1.95),
+        new THREE.MeshBasicMaterial({ color: compInfo.colorHex, transparent: true, opacity: 0.4 })
+      );
+      padRim.position.set(xPos, 0.08, 5.0);
+      scene.add(padRim);
+
+      // Create Detailed 3D Component Mesh
       const compGroup = create3DComponentMesh(qId, compInfo);
       compGroup.position.copy(initialPos);
+      if (qId === 'battery') {
+        compGroup.scale.set(0.38, 0.38, 0.38);
+      }
       compGroup.userData = {
         id: qId,
         name: compInfo.name,
@@ -762,6 +851,9 @@ export default function DragPlace3DWorkbench({
       if (installedSlots[qId] && socketTargetsRef.current[qId]) {
         compGroup.position.copy(socketTargetsRef.current[qId]);
         compGroup.rotation.set(0, 0, 0);
+        if (qId === 'battery') {
+          compGroup.scale.set(1, 1, 1);
+        }
         compGroup.userData.installed = true;
       }
 
@@ -771,151 +863,347 @@ export default function DragPlace3DWorkbench({
   };
 
   /**
-   * 3D Mesh Builder for Each Component in the Pool
+   * High-Fidelity 3D Mesh Builder for Each Component in the Pool
+   * Matches the modular gaming laptop models 1:1
    */
   const create3DComponentMesh = (id, compInfo) => {
     const group = new THREE.Group();
 
     if (id === 'cpu') {
-      // CPU Substrate & Nickel IHS
-      const pcb = new THREE.Mesh(
-        new THREE.BoxGeometry(1.6, 0.08, 1.6),
-        new THREE.MeshStandardMaterial({ color: 0x064e3b, roughness: 0.3 })
+      // 1. Intel Core i7 14650HX CPU
+      // Emerald green multi-layer substrate
+      const sub = new THREE.Mesh(
+        new THREE.BoxGeometry(1.7, 0.08, 1.7),
+        new THREE.MeshStandardMaterial({ color: 0x064e3b, roughness: 0.35, metalness: 0.2 })
       );
-      group.add(pcb);
+      sub.position.y = 0.04;
+      group.add(sub);
 
-      const ihs = new THREE.Mesh(
-        new THREE.BoxGeometry(1.2, 0.16, 1.2),
-        new THREE.MeshStandardMaterial({ color: 0xe2e8f0, metalness: 0.9, roughness: 0.15 })
+      // Gold Corner Pin-1 Triangle
+      const cornerMark = new THREE.Mesh(
+        new THREE.BufferGeometry().setFromPoints([
+          new THREE.Vector3(-0.78, 0.082, -0.78),
+          new THREE.Vector3(-0.55, 0.082, -0.78),
+          new THREE.Vector3(-0.78, 0.082, -0.55)
+        ]),
+        new THREE.MeshBasicMaterial({ color: 0xd4af37, side: THREE.DoubleSide })
       );
-      ihs.position.y = 0.1;
+      group.add(cornerMark);
+
+      // Nickel-plated IHS die plate
+      const ihs = new THREE.Mesh(
+        new THREE.BoxGeometry(1.3, 0.12, 1.3),
+        new THREE.MeshStandardMaterial({ color: 0xd1d5db, metalness: 0.92, roughness: 0.18 })
+      );
+      ihs.position.y = 0.12;
       group.add(ihs);
 
-      const pin001 = new THREE.Mesh(
-        new THREE.BoxGeometry(0.18, 0.02, 0.18),
-        new THREE.MeshStandardMaterial({ color: 0xf59e0b, metalness: 0.95 })
+      // Laser-engraved CPU label
+      const labelCanvas = document.createElement('canvas');
+      labelCanvas.width = 512;
+      labelCanvas.height = 512;
+      const ctx = labelCanvas.getContext('2d');
+      if (ctx) {
+        ctx.fillStyle = '#d1d5db';
+        ctx.fillRect(0, 0, 512, 512);
+        ctx.fillStyle = '#0f172a';
+        ctx.font = 'bold 36px monospace';
+        ctx.fillText('intel', 60, 120);
+        ctx.font = 'bold 28px monospace';
+        ctx.fillText('CORE i7', 60, 170);
+        ctx.font = '22px monospace';
+        ctx.fillText('i7-14650HX', 60, 220);
+        ctx.fillText('SRM24 2.10GHZ', 60, 260);
+        ctx.fillStyle = '#0284c7';
+        ctx.fillRect(360, 80, 80, 80);
+      }
+      const labelTex = new THREE.CanvasTexture(labelCanvas);
+      const labelPlane = new THREE.Mesh(
+        new THREE.PlaneGeometry(1.24, 1.24),
+        new THREE.MeshBasicMaterial({ map: labelTex })
       );
-      pin001.position.set(-0.65, 0.05, -0.65);
-      group.add(pin001);
+      labelPlane.rotation.x = -Math.PI / 2;
+      labelPlane.position.y = 0.182;
+      group.add(labelPlane);
+
+      // Decoupling MLCC capacitors
+      const capGeo = new THREE.BoxGeometry(0.08, 0.04, 0.05);
+      const capMat = new THREE.MeshStandardMaterial({ color: 0x94a3b8, metalness: 0.8, roughness: 0.2 });
+      for (let i = 0; i < 8; i++) {
+        const angle = (i / 8) * Math.PI * 2;
+        const cap = new THREE.Mesh(capGeo, capMat);
+        cap.position.set(Math.cos(angle) * 0.76, 0.08, Math.sin(angle) * 0.76);
+        cap.rotation.y = angle;
+        group.add(cap);
+      }
     } 
     else if (id === 'ram') {
-      // RAM Stick with DRAM chips
-      const pcb = new THREE.Mesh(
-        new THREE.BoxGeometry(3.0, 0.9, 0.08),
-        new THREE.MeshStandardMaterial({ color: 0x111827, roughness: 0.4 })
-      );
-      pcb.rotation.x = Math.PI / 4;
-      group.add(pcb);
-
-      const teeth = new THREE.Mesh(
-        new THREE.BoxGeometry(2.8, 0.18, 0.09),
-        new THREE.MeshStandardMaterial({ color: 0xfacc15, metalness: 0.92, roughness: 0.15 })
-      );
-      teeth.rotation.x = Math.PI / 4;
-      teeth.position.set(0, -0.32, -0.15);
-      group.add(teeth);
-
-      [-1.0, -0.35, 0.35, 1.0].forEach((x) => {
-        const chip = new THREE.Mesh(
-          new THREE.BoxGeometry(0.5, 0.45, 0.06),
-          new THREE.MeshStandardMaterial({ color: 0x1f2937, roughness: 0.6 })
-        );
-        chip.rotation.x = Math.PI / 4;
-        chip.position.set(x, 0.08, 0.05);
-        group.add(chip);
-      });
-    } 
-    else if (id === 'ssd') {
-      // M.2 NVMe SSD
+      // 2. DDR5 5600MT/s SO-DIMM Stick
       const pcb = new THREE.Mesh(
         new THREE.BoxGeometry(2.6, 0.08, 0.8),
-        new THREE.MeshStandardMaterial({ color: 0x1e1b4b, roughness: 0.4 })
+        new THREE.MeshStandardMaterial({ color: 0x111827, roughness: 0.4 })
       );
       group.add(pcb);
 
-      const nand1 = new THREE.Mesh(
-        new THREE.BoxGeometry(0.7, 0.12, 0.6),
-        new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.5 })
+      // Gold Edge Connector Fingers
+      const fingers = new THREE.Mesh(
+        new THREE.BoxGeometry(2.4, 0.02, 0.14),
+        new THREE.MeshStandardMaterial({ color: 0xfacc15, metalness: 0.95, roughness: 0.15 })
       );
-      nand1.position.set(0.4, 0.08, 0);
-      group.add(nand1);
+      fingers.position.set(0, 0.042, 0.35);
+      group.add(fingers);
 
-      const nand2 = new THREE.Mesh(
-        new THREE.BoxGeometry(0.7, 0.12, 0.6),
-        new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.5 })
-      );
-      nand2.position.set(-0.4, 0.08, 0);
-      group.add(nand2);
-
-      const controller = new THREE.Mesh(
-        new THREE.BoxGeometry(0.4, 0.14, 0.4),
-        new THREE.MeshStandardMaterial({ color: 0xd97706, metalness: 0.85, roughness: 0.2 })
-      );
-      controller.position.set(-1.0, 0.09, 0);
-      group.add(controller);
-    } 
-    else if (id === 'battery') {
-      // Battery Pack
-      const pack = new THREE.Mesh(
-        new THREE.BoxGeometry(2.4, 0.18, 1.4),
-        new THREE.MeshStandardMaterial({ color: 0x18181b, roughness: 0.4 })
-      );
-      group.add(pack);
-
-      [-0.6, 0.0, 0.6].forEach((x) => {
-        const ridge = new THREE.Mesh(
-          new THREE.BoxGeometry(0.5, 0.04, 1.2),
-          new THREE.MeshStandardMaterial({ color: 0x27272a, roughness: 0.6 })
-        );
-        ridge.position.set(x, 0.1, 0);
-        group.add(ridge);
+      // 4 DDR5 BGA Memory IC Chips
+      const chipGeo = new THREE.BoxGeometry(0.48, 0.04, 0.32);
+      const chipMat = new THREE.MeshStandardMaterial({ color: 0x1f2937, roughness: 0.6 });
+      [-0.8, -0.28, 0.28, 0.8].forEach((cx) => {
+        const chip = new THREE.Mesh(chipGeo, chipMat);
+        chip.position.set(cx, 0.06, -0.05);
+        group.add(chip);
       });
 
-      const label = new THREE.Mesh(
-        new THREE.BoxGeometry(0.9, 0.01, 0.6),
-        new THREE.MeshStandardMaterial({ color: 0x06b6d4, roughness: 0.3 })
+      // PMIC Controller Chip
+      const pmic = new THREE.Mesh(
+        new THREE.BoxGeometry(0.18, 0.03, 0.18),
+        new THREE.MeshStandardMaterial({ color: 0x475569, metalness: 0.7 })
       );
-      label.position.set(0, 0.1, 0);
-      group.add(label);
+      pmic.position.set(0, 0.055, -0.28);
+      group.add(pmic);
+
+      // DDR5 Laser Decal
+      const ramCanvas = document.createElement('canvas');
+      ramCanvas.width = 512;
+      ramCanvas.height = 128;
+      const rctx = ramCanvas.getContext('2d');
+      if (rctx) {
+        rctx.fillStyle = '#1e293b';
+        rctx.fillRect(0, 0, 512, 128);
+        rctx.fillStyle = '#f8fafc';
+        rctx.font = 'bold 28px monospace';
+        rctx.fillText('SK hynix 16GB 1Rx8', 20, 45);
+        rctx.font = '22px monospace';
+        rctx.fillText('PC5-5600B DDR5 SODIMM 1.1V', 20, 85);
+      }
+      const ramTex = new THREE.CanvasTexture(ramCanvas);
+      const ramDecal = new THREE.Mesh(
+        new THREE.PlaneGeometry(2.2, 0.4),
+        new THREE.MeshBasicMaterial({ map: ramTex })
+      );
+      ramDecal.rotation.x = -Math.PI / 2;
+      ramDecal.position.set(0, 0.082, -0.05);
+      group.add(ramDecal);
     } 
-    else if (id === 'wifi') {
-      // WiFi M.2 2230
+    else if (id === 'ssd') {
+      // 3. Samsung 990 PRO M.2 2280 NVMe Gen4 SSD
       const pcb = new THREE.Mesh(
-        new THREE.BoxGeometry(1.4, 0.06, 1.4),
-        new THREE.MeshStandardMaterial({ color: 0x1e3a8a, roughness: 0.4 })
+        new THREE.BoxGeometry(0.72, 0.06, 2.2),
+        new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.4 })
       );
       group.add(pcb);
 
-      const shield = new THREE.Mesh(
-        new THREE.BoxGeometry(1.1, 0.1, 1.0),
-        new THREE.MeshStandardMaterial({ color: 0xe2e8f0, metalness: 0.9, roughness: 0.2 })
+      // Gold Key-M Edge Fingers at Front
+      const goldPins = new THREE.Mesh(
+        new THREE.BoxGeometry(0.64, 0.02, 0.15),
+        new THREE.MeshStandardMaterial({ color: 0xf59e0b, metalness: 0.95 })
       );
-      shield.position.set(0, 0.06, 0.1);
+      goldPins.position.set(0, 0.032, -1.02);
+      group.add(goldPins);
+
+      // High-speed NVMe PCIe 4.0 Controller
+      const ctrl = new THREE.Mesh(
+        new THREE.BoxGeometry(0.42, 0.06, 0.42),
+        new THREE.MeshStandardMaterial({ color: 0xd97706, metalness: 0.85, roughness: 0.2 })
+      );
+      ctrl.position.set(0, 0.06, -0.55);
+      group.add(ctrl);
+
+      // 2x 3D TLC V-NAND Flash packages
+      const nandGeo = new THREE.BoxGeometry(0.55, 0.06, 0.55);
+      const nandMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.5 });
+      [0.05, 0.68].forEach((nz) => {
+        const nand = new THREE.Mesh(nandGeo, nandMat);
+        nand.position.set(0, 0.06, nz);
+        group.add(nand);
+      });
+
+      // Laser label decal
+      const ssdCanvas = document.createElement('canvas');
+      ssdCanvas.width = 256;
+      ssdCanvas.height = 512;
+      const sctx = ssdCanvas.getContext('2d');
+      if (sctx) {
+        sctx.fillStyle = '#0f172a';
+        sctx.fillRect(0, 0, 256, 512);
+        sctx.fillStyle = '#ef4444';
+        sctx.fillRect(0, 0, 256, 40);
+        sctx.fillStyle = '#f8fafc';
+        sctx.font = 'bold 24px monospace';
+        sctx.fillText('SAMSUNG 990 PRO', 15, 80);
+        sctx.font = '18px monospace';
+        sctx.fillText('PCIe 4.0 NVMe M.2', 15, 120);
+        sctx.fillText('1000GB V-NAND', 15, 160);
+      }
+      const ssdTex = new THREE.CanvasTexture(ssdCanvas);
+      const ssdDecal = new THREE.Mesh(
+        new THREE.PlaneGeometry(0.68, 1.3),
+        new THREE.MeshBasicMaterial({ map: ssdTex })
+      );
+      ssdDecal.rotation.x = -Math.PI / 2;
+      ssdDecal.position.set(0, 0.092, 0.2);
+      group.add(ssdDecal);
+    } 
+    else if (id === 'battery') {
+      // 4. Authentic 4-Cell Li-Polymer Battery Pack
+      const packBase = new THREE.Mesh(
+        new THREE.BoxGeometry(8.6, 0.22, 2.4),
+        new THREE.MeshStandardMaterial({ color: 0x18181b, roughness: 0.65, metalness: 0.15 })
+      );
+      packBase.position.y = 0.11;
+      group.add(packBase);
+
+      // 4 Individual Pouch Cell Pillows
+      [-3.1, -1.05, 1.05, 3.1].forEach((cx) => {
+        const pillow = new THREE.Mesh(
+          new THREE.BoxGeometry(1.85, 0.06, 2.15),
+          new THREE.MeshStandardMaterial({ color: 0x27272a, roughness: 0.55 })
+        );
+        pillow.position.set(cx, 0.23, 0);
+        group.add(pillow);
+      });
+
+      // Safety Caution Decal
+      const battCanvas = document.createElement('canvas');
+      battCanvas.width = 512;
+      battCanvas.height = 256;
+      const bctx = battCanvas.getContext('2d');
+      if (bctx) {
+        bctx.fillStyle = '#18181b';
+        bctx.fillRect(0, 0, 512, 256);
+        bctx.fillStyle = '#facc15';
+        bctx.font = 'bold 28px monospace';
+        bctx.fillText('CAUTION / ATTENTION', 30, 50);
+        bctx.fillStyle = '#f8fafc';
+        bctx.font = '20px monospace';
+        bctx.fillText('RECHARGEABLE LI-ION BATTERY', 30, 95);
+        bctx.fillText('MODEL: C41N2013 15.4V 90Wh', 30, 135);
+        bctx.fillText('4-CELL PACK • CE FC PSE', 30, 175);
+      }
+      const battTex = new THREE.CanvasTexture(battCanvas);
+      const battDecal = new THREE.Mesh(
+        new THREE.PlaneGeometry(3.6, 1.4),
+        new THREE.MeshBasicMaterial({ map: battTex })
+      );
+      battDecal.rotation.x = -Math.PI / 2;
+      battDecal.position.set(0, 0.262, 0);
+      group.add(battDecal);
+
+      // Flexible Wire Cable Harness
+      const wireColors = [0xef4444, 0xef4444, 0x3b82f6, 0xfacc15, 0x0f172a, 0x0f172a];
+      wireColors.forEach((color, idx) => {
+        const ox = -0.5 + idx * 0.18;
+        const wirePath = new THREE.CatmullRomCurve3([
+          new THREE.Vector3(ox, 0.24, -1.0),
+          new THREE.Vector3(ox, 0.28, -1.3),
+          new THREE.Vector3(ox, 0.20, -1.5)
+        ]);
+        const wire = new THREE.Mesh(
+          new THREE.TubeGeometry(wirePath, 12, 0.035, 8, false),
+          new THREE.MeshStandardMaterial({ color, roughness: 0.5 })
+        );
+        group.add(wire);
+      });
+    } 
+    else if (id === 'wifi') {
+      // 5. Intel Killer Wi-Fi 6E AX211 M.2 2230
+      const pcb = new THREE.Mesh(
+        new THREE.BoxGeometry(0.75, 0.04, 0.95),
+        new THREE.MeshStandardMaterial({ color: 0x064e3b, roughness: 0.4 })
+      );
+      pcb.position.y = 0.05;
+      group.add(pcb);
+
+      // Nickel-plated Metal EMI Shield Can
+      const shield = new THREE.Mesh(
+        new THREE.BoxGeometry(0.68, 0.08, 0.72),
+        new THREE.MeshStandardMaterial({ color: 0xd1d5db, metalness: 0.92, roughness: 0.18 })
+      );
+      shield.position.set(0, 0.09, -0.05);
       group.add(shield);
 
-      [-0.3, 0.3].forEach((x) => {
+      // Wi-Fi 6E Label Decal
+      const wifiCanvas = document.createElement('canvas');
+      wifiCanvas.width = 256;
+      wifiCanvas.height = 256;
+      const wctx = wifiCanvas.getContext('2d');
+      if (wctx) {
+        wctx.fillStyle = '#d1d5db';
+        wctx.fillRect(0, 0, 256, 256);
+        wctx.fillStyle = '#0f172a';
+        wctx.font = 'bold 30px monospace';
+        wctx.fillText('Wi-Fi 6E', 40, 70);
+        wctx.font = 'bold 22px monospace';
+        wctx.fillText('AX211 M.2', 40, 110);
+        wctx.fillText('BT 5.3 160M', 40, 150);
+      }
+      const wifiTex = new THREE.CanvasTexture(wifiCanvas);
+      const wifiDecal = new THREE.Mesh(
+        new THREE.PlaneGeometry(0.6, 0.65),
+        new THREE.MeshBasicMaterial({ map: wifiTex })
+      );
+      wifiDecal.rotation.x = -Math.PI / 2;
+      wifiDecal.position.set(0, 0.132, -0.05);
+      group.add(wifiDecal);
+
+      // Dual Gold IPEX Antenna Terminals
+      [-0.18, 0.18].forEach((ix) => {
         const ipex = new THREE.Mesh(
-          new THREE.CylinderGeometry(0.06, 0.06, 0.08, 12),
-          new THREE.MeshStandardMaterial({ color: 0xf59e0b, metalness: 0.95 })
+          new THREE.CylinderGeometry(0.04, 0.04, 0.03, 12),
+          new THREE.MeshStandardMaterial({ color: 0xd4af37, metalness: 0.95 })
         );
-        ipex.position.set(x, 0.12, -0.45);
+        ipex.position.set(ix, 0.14, -0.36);
         group.add(ipex);
       });
     } 
     else if (id === 'fan') {
-      // Blower Fan
-      const housing = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.9, 0.9, 0.24, 24),
-        new THREE.MeshStandardMaterial({ color: 0x1f2937, roughness: 0.5 })
+      // 6. Laptop Centrifugal Blower Cooling Fan
+      const shroud = new THREE.Mesh(
+        new THREE.CylinderGeometry(1.2, 1.25, 0.52, 32),
+        new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.5, metalness: 0.3 })
       );
-      group.add(housing);
+      shroud.position.y = 0.26;
+      group.add(shroud);
 
-      const hub = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.35, 0.35, 0.28, 20),
-        new THREE.MeshStandardMaterial({ color: 0xec4899, metalness: 0.7, roughness: 0.3 })
+      // Center Intake Hole
+      const intake = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.72, 0.72, 0.54, 32),
+        new THREE.MeshBasicMaterial({ color: 0x020617 })
       );
-      hub.position.y = 0.02;
+      intake.position.y = 0.27;
+      group.add(intake);
+
+      // Metallic Green Hub Badge
+      const hub = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.35, 0.35, 0.56, 24),
+        new THREE.MeshStandardMaterial({ color: 0x10b981, metalness: 0.8, roughness: 0.2 })
+      );
+      hub.position.y = 0.28;
       group.add(hub);
+
+      // Rotating Impeller Turbine Group
+      const rotor = new THREE.Group();
+      rotor.position.y = 0.26;
+
+      const bladeGeo = new THREE.BoxGeometry(0.04, 0.38, 0.42);
+      const bladeMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.35, metalness: 0.4 });
+      for (let b = 0; b < 24; b++) {
+        const angle = (b / 24) * Math.PI * 2;
+        const blade = new THREE.Mesh(bladeGeo, bladeMat);
+        blade.position.set(Math.cos(angle) * 0.58, 0, Math.sin(angle) * 0.58);
+        blade.rotation.y = -angle + 0.35;
+        rotor.add(blade);
+      }
+      group.add(rotor);
+      fanRotatorsRef.current.push(rotor);
     }
 
     // Large invisible raycast hitbox for effortless interaction
@@ -927,30 +1215,6 @@ export default function DragPlace3DWorkbench({
     hitBox.userData = { id, name: compInfo.name };
     group.add(hitBox);
 
-    return group;
-  };
-
-  /**
-   * Helper: Heatsink Fins
-   */
-  const createHeatsink = (w, h, d, color) => {
-    const group = new THREE.Group();
-    const base = new THREE.Mesh(
-      new THREE.BoxGeometry(w, h * 0.25, d),
-      new THREE.MeshStandardMaterial({ color, metalness: 0.75, roughness: 0.25 })
-    );
-    group.add(base);
-
-    const finCount = Math.floor(d * 4);
-    const spacing = d / finCount;
-    for (let i = 0; i < finCount; i++) {
-      const fin = new THREE.Mesh(
-        new THREE.BoxGeometry(w * 0.96, h * 0.75, 0.04),
-        new THREE.MeshStandardMaterial({ color: 0x475569, metalness: 0.8, roughness: 0.2 })
-      );
-      fin.position.set(0, h * 0.45, -d / 2 + (i + 0.5) * spacing);
-      group.add(fin);
-    }
     return group;
   };
 

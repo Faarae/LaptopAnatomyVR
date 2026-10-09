@@ -16,6 +16,7 @@ export default function SpeedChallengeGame({ onScoreChange, onComplete }) {
       options: ['CPU Die', 'GPU VRM', 'BIOS Chip', 'Audio Codec'],
       correct: 'CPU Die',
       threeType: 'cpu',
+      realImage: '/images/components/pin-8.jpg',
     },
     {
       id: 'ram',
@@ -24,6 +25,7 @@ export default function SpeedChallengeGame({ onScoreChange, onComplete }) {
       options: ['NVMe Slot', 'DDR5 SO-DIMM', 'Thunderbolt IC', 'CMOS Battery'],
       correct: 'DDR5 SO-DIMM',
       threeType: 'ram',
+      realImage: '/images/components/pin-4.jpg',
     },
     {
       id: 'ssd',
@@ -32,6 +34,7 @@ export default function SpeedChallengeGame({ onScoreChange, onComplete }) {
       options: ['Wi-Fi Card', 'Touchpad Controller', 'M.2 NVMe SSD', 'PCIe Switch'],
       correct: 'M.2 NVMe SSD',
       threeType: 'ssd',
+      realImage: '/images/components/pin-3.jpg',
     },
     {
       id: 'gpu',
@@ -40,6 +43,7 @@ export default function SpeedChallengeGame({ onScoreChange, onComplete }) {
       options: ['Discrete GPU Die', 'Sound Blaster', 'LAN PHY', 'Hall Sensor'],
       correct: 'Discrete GPU Die',
       threeType: 'gpu',
+      realImage: '/images/components/pin-1.jpg',
     },
     {
       id: 'wifi',
@@ -48,6 +52,7 @@ export default function SpeedChallengeGame({ onScoreChange, onComplete }) {
       options: ['Ethernet PHY', 'Wi-Fi 6E Module', 'Bluetooth Ant-2', 'eDP Driver'],
       correct: 'Wi-Fi 6E Module',
       threeType: 'wifi',
+      realImage: '/images/components/pin-6.jpg',
     },
     {
       id: 'fan',
@@ -56,6 +61,7 @@ export default function SpeedChallengeGame({ onScoreChange, onComplete }) {
       options: ['Speaker Chamber', 'Blower Fan & Fins', 'Hinge Assembly', 'Battery Rail'],
       correct: 'Blower Fan & Fins',
       threeType: 'fan',
+      realImage: '/images/components/pin-2.jpg',
     },
     {
       id: 'battery',
@@ -64,6 +70,7 @@ export default function SpeedChallengeGame({ onScoreChange, onComplete }) {
       options: ['Subwoofer Unit', 'Keyboard Matrix', 'CMOS / Battery Cell', 'Type-C PD Chip'],
       correct: 'CMOS / Battery Cell',
       threeType: 'battery',
+      realImage: '/images/components/pin-9.jpg',
     },
     {
       id: 'motherboard',
@@ -72,6 +79,7 @@ export default function SpeedChallengeGame({ onScoreChange, onComplete }) {
       options: ['Daughterboard', 'Motherboard PCB', 'Trackpad Controller', 'IO Hub'],
       correct: 'Motherboard PCB',
       threeType: 'motherboard',
+      realImage: '/images/components/pin-10.jpg',
     },
   ];
 

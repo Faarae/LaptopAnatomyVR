@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { 
   Trophy, Sparkles, CheckCircle2, XCircle, ArrowRight, RotateCcw, 
   HelpCircle, Flame, Award, Zap, Play, ArrowLeft, Lightbulb, Star, ShieldCheck, BarChart3,
-  Box, Compass
+  Box, Compass, Camera
 } from 'lucide-react';
-import { getRandomQuizMatch } from '../../data/quizQuestions';
+import { getRandomQuizMatch, COMPONENT_REAL_PHOTOS } from '../../data/quizQuestions';
 import { getQuizRecords, saveQuizMatchResult } from '../../utils/quizStorage';
 import Component3DViewer from '../3d/Component3DViewer';
 
@@ -41,6 +41,7 @@ export default function QuickQuizGame({ onScoreChange, onComplete, onBackToHub, 
   const [selectedOptionId, setSelectedOptionId] = useState(null);
   const [isAnswered, setIsAnswered] = useState(false);
   const [comboGainNotice, setComboGainNotice] = useState(null);
+  const [quizViewMode, setQuizViewMode] = useState('3d'); // '3d' | 'photo'
 
   // Result Summary State
   const [matchResult, setMatchResult] = useState(null);
@@ -68,6 +69,7 @@ export default function QuickQuizGame({ onScoreChange, onComplete, onBackToHub, 
     setSelectedOptionId(null);
     setIsAnswered(false);
     setComboGainNotice(null);
+    setQuizViewMode('3d');
     setMatchResult(null);
     setGameStage('playing');
   };
@@ -112,6 +114,7 @@ export default function QuickQuizGame({ onScoreChange, onComplete, onBackToHub, 
       setSelectedOptionId(null);
       setIsAnswered(false);
       setComboGainNotice(null);
+      setQuizViewMode('3d');
     } else {
       // Match Complete - Evaluate Grade & Save Records
       const finalAccuracy = Math.round((correctCount / matchQuestions.length) * 100);
@@ -351,16 +354,40 @@ export default function QuickQuizGame({ onScoreChange, onComplete, onBackToHub, 
           {/* Left Column: 3D Hardware Component Stage */}
           <div className="lg:col-span-5 flex flex-col gap-3">
             <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-sm">
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-2">
-                  <Box className="w-4 h-4 text-emerald-600" />
-                  <span className="text-[10px] font-mono tracking-wider uppercase text-slate-400 font-semibold">
-                    3D COMPONENT VISUAL
+              <div className="flex items-center justify-between mb-2 pb-2 border-b border-slate-100">
+                <div className="flex items-center gap-1.5">
+                  <Box className="w-3.5 h-3.5 text-emerald-600" />
+                  <span className="text-[10px] font-mono tracking-wider uppercase text-slate-500 font-bold">
+                    {quizViewMode === '3d' ? '3D VISUAL' : 'FOTO RIIL'}
                   </span>
                 </div>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 font-semibold uppercase">
-                  {currentQ.componentType || 'HARDWARE'}
-                </span>
+
+                {/* Mode Switcher */}
+                <div className="flex items-center gap-1 bg-slate-100 p-0.5 rounded-lg border border-slate-200 text-[10px]">
+                  <button
+                    type="button"
+                    onClick={() => setQuizViewMode('3d')}
+                    className={`px-2 py-0.5 rounded-md font-bold transition-all ${
+                      quizViewMode === '3d'
+                        ? 'bg-white text-emerald-700 shadow-xs'
+                        : 'text-slate-600 hover:text-slate-900'
+                    }`}
+                  >
+                    3D
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setQuizViewMode('photo')}
+                    className={`px-2 py-0.5 rounded-md font-bold transition-all flex items-center gap-1 ${
+                      quizViewMode === 'photo'
+                        ? 'bg-white text-emerald-700 shadow-xs'
+                        : 'text-slate-600 hover:text-slate-900'
+                    }`}
+                  >
+                    <Camera className="w-2.5 h-2.5" />
+                    Foto
+                  </button>
+                </div>
               </div>
 
               {/* Component Visual Label */}
@@ -369,19 +396,32 @@ export default function QuickQuizGame({ onScoreChange, onComplete, onBackToHub, 
                 <span className="truncate">{currentQ.visualLabel || 'Model 3D Komponen'}</span>
               </div>
 
-              {/* 3D Component Viewer with isolated model */}
-              <div className="rounded-xl overflow-hidden bg-slate-50 border border-slate-100">
-                <Component3DViewer
-                  key={currentQ.id}
-                  type={currentQ.componentType || 'cpu'}
-                  heightClass="h-[220px] sm:h-[250px]"
-                  className="border-0 bg-transparent shadow-none"
-                />
+              {/* 3D Component Viewer or Real Hardware Photo */}
+              <div className="rounded-xl overflow-hidden bg-slate-50 border border-slate-100 h-[220px] sm:h-[250px] flex items-center justify-center relative">
+                {quizViewMode === '3d' ? (
+                  <Component3DViewer
+                    key={currentQ.id}
+                    type={currentQ.componentType || 'cpu'}
+                    heightClass="h-[220px] sm:h-[250px]"
+                    className="border-0 bg-transparent shadow-none"
+                  />
+                ) : (
+                  <div className="w-full h-full relative group">
+                    <img
+                      src={COMPONENT_REAL_PHOTOS[currentQ.componentType] || '/images/components/pin-1.jpg'}
+                      alt={currentQ.visualLabel}
+                      className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
+                    />
+                    <div className="absolute bottom-1 right-1 bg-black/60 backdrop-blur-xs text-white text-[9px] font-mono px-1.5 py-0.5 rounded">
+                      Foto Riil Hardware
+                    </div>
+                  </div>
+                )}
               </div>
 
               <p className="text-[11px] font-mono text-slate-400 mt-2 flex items-center gap-1.5">
                 <Compass className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                <span>Putar model 3D komponen ini untuk mengamati detail fisiknya.</span>
+                <span>{quizViewMode === '3d' ? 'Putar model 3D untuk inspeksi 360°.' : 'Foto asli komponen perangkat keras aktual.'}</span>
               </p>
             </div>
           </div>

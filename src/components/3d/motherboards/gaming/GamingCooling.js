@@ -75,6 +75,7 @@ export function buildGamingCooling(parentGroup) {
 
   fanConfigs.forEach(({ x, z, name }) => {
     const fanAssembly = new THREE.Group();
+    fanAssembly.name = name;
     fanAssembly.position.set(x, 0.20, z);
 
     // Fan Outer Shroud Casing

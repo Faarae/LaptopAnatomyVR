@@ -16,6 +16,7 @@ export const ASSEMBLY_COMPONENT_POOL = {
     shortName: 'Prosesor CPU',
     category: 'Prosesor Komputasi',
     icon: Cpu,
+    image: '/images/components/pin-8.jpg',
     socketName: 'Soket CPU LGA-1700',
     colorHex: 0xf59e0b,
     accentClass: 'text-amber-600 bg-amber-50 border-amber-200',
@@ -28,6 +29,7 @@ export const ASSEMBLY_COMPONENT_POOL = {
     shortName: 'Memori RAM DDR5',
     category: 'Memori Utama Akses Cepat',
     icon: Layers,
+    image: '/images/components/pin-4.jpg',
     socketName: 'Slot RAM SO-DIMM A1',
     colorHex: 0x10b981,
     accentClass: 'text-emerald-600 bg-emerald-50 border-emerald-200',
@@ -40,6 +42,7 @@ export const ASSEMBLY_COMPONENT_POOL = {
     shortName: 'Storage NVMe SSD',
     category: 'Penyimpanan Kecepatan Tinggi',
     icon: HardDrive,
+    image: '/images/components/pin-3.jpg',
     socketName: 'Slot M.2 NVMe PCIe Gen4',
     colorHex: 0x8b5cf6,
     accentClass: 'text-purple-600 bg-purple-50 border-purple-200',
@@ -52,6 +55,7 @@ export const ASSEMBLY_COMPONENT_POOL = {
     shortName: 'Baterai Daya Utama',
     category: 'Catu Daya DC & Regulator',
     icon: Battery,
+    image: '/images/components/pin-9.jpg',
     socketName: 'Konektor Baterai Utama DC-IN',
     colorHex: 0x06b6d4,
     accentClass: 'text-cyan-600 bg-cyan-50 border-cyan-200',
@@ -64,6 +68,7 @@ export const ASSEMBLY_COMPONENT_POOL = {
     shortName: 'Kartu Wi-Fi 6E',
     category: 'Jaringan Nirkabel & Bluetooth',
     icon: Wifi,
+    image: '/images/components/pin-6.jpg',
     socketName: 'Slot M.2 Wi-Fi Key-E',
     colorHex: 0x3b82f6,
     accentClass: 'text-blue-600 bg-blue-50 border-blue-200',
@@ -76,6 +81,7 @@ export const ASSEMBLY_COMPONENT_POOL = {
     shortName: 'Kipas Pendingin Dual-Fan',
     category: 'Sistem Termal & Sirkulasi',
     icon: Fan,
+    image: '/images/components/pin-2.jpg',
     socketName: 'Header Kipas Pendingin PWM 12V',
     colorHex: 0xec4899,
     accentClass: 'text-pink-600 bg-pink-50 border-pink-200',
@@ -320,9 +326,19 @@ export default function DragPlaceGame({
                   >
                     <div className="flex items-center justify-between mb-0.5">
                       <div className="flex items-center gap-2">
-                        <div className={`p-1 rounded-lg ${comp.accentClass}`}>
-                          <Icon className="w-3.5 h-3.5" />
-                        </div>
+                        {comp.image ? (
+                          <div className="w-7 h-7 rounded-lg overflow-hidden bg-slate-100 border border-slate-200 shrink-0 relative">
+                            <img
+                              src={comp.image}
+                              alt={comp.shortName}
+                              className="w-full h-full object-cover object-center"
+                            />
+                          </div>
+                        ) : (
+                          <div className={`p-1 rounded-lg ${comp.accentClass}`}>
+                            <Icon className="w-3.5 h-3.5" />
+                          </div>
+                        )}
                         <div>
                           <span className="text-[11px] font-display font-bold text-slate-900 block leading-tight">
                             {comp.shortName}

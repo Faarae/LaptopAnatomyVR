@@ -569,7 +569,9 @@ export default function LaptopDetail({ laptopId, onNavigate }) {
               </div>
               <div className="h-36 w-full relative bg-slate-50/70 rounded-b-xl overflow-hidden flex items-center justify-center">
                 <Component3DViewer
-                  type={activePin.threeType || 'cpu'}
+                  type={activePin.threeType || activePin.componentKey || 'cpu'}
+                  category={laptop?.category || 'Gaming'}
+                  laptopId={laptopId}
                   autoRotate={true}
                   heightClass="h-full"
                   hideControls={true}

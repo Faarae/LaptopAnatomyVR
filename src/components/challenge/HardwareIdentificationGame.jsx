@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ShieldCheck, CheckCircle2, XCircle, ArrowRight, Sparkles, Cpu, Layers, HardDrive, Fan, Wifi, Zap } from 'lucide-react';
+import { ShieldCheck, CheckCircle2, XCircle, ArrowRight, Sparkles, Cpu, Layers, HardDrive, Fan, Wifi, Zap, Camera } from 'lucide-react';
 import Component3DViewer from '../3d/Component3DViewer';
 
 /**
@@ -10,6 +10,8 @@ const IDENTIFICATION_MISSIONS = [
     id: 1,
     title: "High-Speed Storage Controller",
     threeType: "ssd",
+    realImage: "/images/components/pin-3.jpg",
+    imageName: "pin-3.jpg",
     specs: {
       "Interface Bus": "PCIe Gen 4.0 x4 NVMe 1.4",
       "Form Factor": "M.2 2280 (22mm x 80mm)",
@@ -29,11 +31,13 @@ const IDENTIFICATION_MISSIONS = [
     id: 2,
     title: "Central Instruction Processor",
     threeType: "cpu",
+    realImage: "/images/components/pin-8.jpg",
+    imageName: "pin-8.jpg",
     specs: {
-      "Socket Type": "BGA-1744 / LGA-1700",
+      "Socket Type": "BGA-1964 / Mobile BGA",
       "Architecture": "Hybrid Core (P-Cores + E-Cores)",
-      "Thermal Envelope": "45W Base TDP (115W Boost)",
-      "Cache Structure": "24MB Shared L3 Cache",
+      "Thermal Envelope": "55W Base TDP (157W Boost)",
+      "Cache Structure": "30MB Shared L3 Cache",
     },
     prompt: "Modul pemrosesan utama dengan mikroarsitektur hibrida dan soket terintegrasi adalah:",
     options: [
@@ -48,6 +52,8 @@ const IDENTIFICATION_MISSIONS = [
     id: 3,
     title: "Volatile Workspace Buffer",
     threeType: "ram",
+    realImage: "/images/components/pin-4.jpg",
+    imageName: "pin-4.jpg",
     specs: {
       "Pin Count": "262-Pin SO-DIMM",
       "Transfer Rate": "5600 MT/s (DDR5)",
@@ -67,6 +73,8 @@ const IDENTIFICATION_MISSIONS = [
     id: 4,
     title: "Active Thermal Convection Blower",
     threeType: "fan",
+    realImage: "/images/components/pin-2.jpg",
+    imageName: "pin-2.jpg",
     specs: {
       "Motor Topology": "3-Phase 6-Pole Brushless DC",
       "Blade Material": "0.15mm Liquid Crystal Polymer (LCP)",
@@ -86,9 +94,11 @@ const IDENTIFICATION_MISSIONS = [
     id: 5,
     title: "Massively Parallel Shading Unit",
     threeType: "gpu",
+    realImage: "/images/components/pin-1.jpg",
+    imageName: "pin-1.jpg",
     specs: {
       "Silicon Die": "Polished Mirror Die Interposer",
-      "Memory Bus": "128-bit / 256-bit GDDR6 VRAM",
+      "Memory Bus": "128-bit GDDR6 VRAM (16 Gbps)",
       "Specialized Silicon": "Dedicated RT (Ray Tracing) & Tensor Cores",
       "Power Envelope": "Up to 140W Dynamic Boost TGP",
     },
@@ -106,12 +116,14 @@ const IDENTIFICATION_MISSIONS = [
 /**
  * HardwareIdentificationGame
  * Challenge 06: Component Recognition and technical specification analysis.
+ * Now featuring 3D component models and real hardware photos toggle.
  */
 export default function HardwareIdentificationGame({ onScoreChange, onComplete, onStepChange }) {
   const [missionIndex, setMissionIndex] = useState(0);
   const [selectedOpt, setSelectedOpt] = useState(null);
   const [isAnswered, setIsAnswered] = useState(false);
   const [totalScore, setTotalScore] = useState(0);
+  const [viewMode, setViewMode] = useState('3d'); // '3d' | 'photo'
 
   const curMission = IDENTIFICATION_MISSIONS[missionIndex];
 
@@ -133,6 +145,7 @@ export default function HardwareIdentificationGame({ onScoreChange, onComplete, 
       setMissionIndex(nextIdx);
       setSelectedOpt(null);
       setIsAnswered(false);
+      setViewMode('3d');
       onStepChange?.(nextIdx + 1);
     } else {
       // Game Complete
@@ -165,28 +178,69 @@ export default function HardwareIdentificationGame({ onScoreChange, onComplete, 
       {/* Main Analysis Stage: 3D Viewport on Left, Specs & Options on Right */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-3.5 sm:gap-4 my-auto items-stretch">
         
-        {/* Left: 3D Component Model Viewport */}
+        {/* Left: 3D Component Model / Real Photo Viewport */}
         <div className="lg:col-span-5 rounded-2xl bg-white border border-slate-200/90 p-3 flex flex-col justify-between shadow-sm">
           <div className="flex items-center justify-between text-[10px] font-mono text-slate-500 border-b border-slate-200 pb-1.5 shrink-0">
             <span className="text-emerald-700 font-bold flex items-center gap-1.5">
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-              3D HARDWARE MODEL
+              {viewMode === '3d' ? '3D HARDWARE MODEL' : 'FOTO FISIK RIIL'}
             </span>
-            <span className="text-amber-700 font-semibold bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">INSPECT ROTATION</span>
+            
+            {/* View Mode Switcher */}
+            <div className="flex items-center gap-1 bg-slate-100 p-0.5 rounded-lg border border-slate-200 text-[10px]">
+              <button
+                type="button"
+                onClick={() => setViewMode('3d')}
+                className={`px-2 py-0.5 rounded-md font-bold transition-all ${
+                  viewMode === '3d' 
+                    ? 'bg-white text-emerald-700 shadow-xs' 
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                3D Model
+              </button>
+              <button
+                type="button"
+                onClick={() => setViewMode('photo')}
+                className={`px-2 py-0.5 rounded-md font-bold transition-all flex items-center gap-1 ${
+                  viewMode === 'photo' 
+                    ? 'bg-white text-emerald-700 shadow-xs' 
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                <Camera className="w-2.5 h-2.5" />
+                Foto Riil
+              </button>
+            </div>
           </div>
 
           <div className="my-2 h-[160px] sm:h-[185px] flex items-center justify-center">
-            <Component3DViewer 
-              key={curMission.threeType}
-              type={curMission.threeType}
-              heightClass="h-[160px] sm:h-[185px]"
-              className="border-0 bg-transparent shadow-none"
-              autoRotateSpeed={2.0}
-            />
+            {viewMode === '3d' ? (
+              <Component3DViewer 
+                key={curMission.threeType}
+                type={curMission.threeType}
+                heightClass="h-[160px] sm:h-[185px]"
+                className="border-0 bg-transparent shadow-none"
+                autoRotateSpeed={2.0}
+              />
+            ) : (
+              <div className="w-full h-full rounded-xl overflow-hidden bg-slate-100 border border-slate-200 flex items-center justify-center relative group">
+                <img 
+                  src={curMission.realImage} 
+                  alt={curMission.title}
+                  className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
+                />
+                <div className="absolute bottom-1 right-1 bg-black/60 backdrop-blur-xs text-white text-[9px] font-mono px-1.5 py-0.5 rounded">
+                  Foto Riil Hardware
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="text-[10px] font-mono text-slate-500 text-center border-t border-slate-200 pt-1.5 shrink-0 font-medium">
-            Periksa form factor dan tata letak silikon modul di atas
+            {viewMode === '3d' 
+              ? 'Putar komponen 360° untuk melihat bentuk fisik silikon' 
+              : 'Foto aktual komponen perangkat keras asli'}
           </div>
         </div>
 

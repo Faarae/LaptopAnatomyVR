@@ -11,6 +11,7 @@ const ALL_COMPONENTS_POOL = [
     label: 'CPU', 
     subtitle: 'Central Processing Unit', 
     threeType: 'cpu', 
+    realImage: '/images/components/pin-8.jpg',
     matchId: 'func-cpu',
     funcLabel: 'Executes Core Machine Logic',
     funcDesc: 'Processes program instructions, runs algorithms, and governs system interrupts.'
@@ -20,6 +21,7 @@ const ALL_COMPONENTS_POOL = [
     label: 'GPU', 
     subtitle: 'Dedicated Graphics Unit', 
     threeType: 'gpu', 
+    realImage: '/images/components/pin-1.jpg',
     matchId: 'func-gpu',
     funcLabel: 'Renders 3D Geometry & Displays',
     funcDesc: 'Accelerates real-time shaders, display buffers, and parallel frame rasterization.'
@@ -29,6 +31,7 @@ const ALL_COMPONENTS_POOL = [
     label: 'RAM', 
     subtitle: 'Random Access Memory', 
     threeType: 'ram', 
+    realImage: '/images/components/pin-4.jpg',
     matchId: 'func-ram',
     funcLabel: 'High-Speed Volatile Workstation',
     funcDesc: 'Temporarily holds open app variables with nanosecond access latency.'
@@ -38,6 +41,7 @@ const ALL_COMPONENTS_POOL = [
     label: 'SSD NVMe', 
     subtitle: 'Solid State Storage Drive', 
     threeType: 'ssd', 
+    realImage: '/images/components/pin-3.jpg',
     matchId: 'func-ssd',
     funcLabel: 'Persistent High-Speed Storage',
     funcDesc: 'Retains OS files, games, and large databases non-volatilely when powered down.'
@@ -47,6 +51,7 @@ const ALL_COMPONENTS_POOL = [
     label: 'Cooling Fan', 
     subtitle: 'Thermal Exhaust Blower', 
     threeType: 'fan', 
+    realImage: '/images/components/pin-2.jpg',
     matchId: 'func-fan',
     funcLabel: 'Thermal Convection & Heat Exhaust',
     funcDesc: 'Expels hot air through radiator fins to prevent thermal throttling.'
@@ -56,6 +61,7 @@ const ALL_COMPONENTS_POOL = [
     label: 'Battery', 
     subtitle: 'DC Power Reservoir', 
     threeType: 'battery', 
+    realImage: '/images/components/pin-9.jpg',
     matchId: 'func-battery',
     funcLabel: 'Untethered Energy Supply',
     funcDesc: 'Stores chemical potential energy to deliver stable voltage away from AC outlets.'
@@ -65,6 +71,7 @@ const ALL_COMPONENTS_POOL = [
     label: 'Wi-Fi Card', 
     subtitle: 'Wireless Network Module', 
     threeType: 'wifi', 
+    realImage: '/images/components/pin-6.jpg',
     matchId: 'func-wifi',
     funcLabel: 'Radio Frequency Data Transport',
     funcDesc: 'Transmits packet data over 2.4/5/6 GHz bands and links Bluetooth devices.'
@@ -74,6 +81,7 @@ const ALL_COMPONENTS_POOL = [
     label: 'Motherboard', 
     subtitle: 'Main Logic Circuit Board', 
     threeType: 'motherboard', 
+    realImage: '/images/components/pin-10.jpg',
     matchId: 'func-motherboard',
     funcLabel: 'Central Interconnect Backbone',
     funcDesc: 'Routes power and high-speed electrical traces between all components.'
@@ -266,17 +274,25 @@ export default function MatchItGame({ onScoreChange, onComplete }) {
                   `}
                 >
                   <div className="flex items-center gap-3">
-                    {/* Real 3D Component Viewer Thumbnail */}
+                    {/* Real 3D Component Viewer / Real Photo on Match */}
                     <div className={`
                       w-12 h-12 rounded-xl border overflow-hidden shrink-0 flex items-center justify-center relative
                       ${isMatched ? 'bg-white border-emerald-300' : isSelected ? 'bg-white border-amber-300' : 'bg-slate-50 border-slate-200'}
                     `}>
-                      <Component3DViewer 
-                        type={comp.threeType} 
-                        heightClass="h-12" 
-                        className="border-0 bg-transparent shadow-none" 
-                        autoRotateSpeed={2.2} 
-                      />
+                      {isMatched && comp.realImage ? (
+                        <img 
+                          src={comp.realImage} 
+                          alt={comp.label}
+                          className="w-full h-full object-cover object-center animate-in zoom-in-75 duration-300"
+                        />
+                      ) : (
+                        <Component3DViewer 
+                          type={comp.threeType} 
+                          heightClass="h-12" 
+                          className="border-0 bg-transparent shadow-none" 
+                          autoRotateSpeed={2.2} 
+                        />
+                      )}
                     </div>
                     <div>
                       <div className="flex items-center gap-2">

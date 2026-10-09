@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { 
   ArrowRight, X, Cpu, Battery, Fan, CircuitBoard, Wifi, Sparkles, 
-  Layers, HardDrive, Zap, Box, ChevronRight, ChevronLeft 
+  Layers, HardDrive, Zap, Box, ChevronRight, ChevronLeft, Camera 
 } from 'lucide-react';
 import { COMPONENTS } from '../../data/componentData';
 import Component3DViewer from '../3d/Component3DViewer';
@@ -30,6 +30,7 @@ export default function ComponentLibrary({ onNavigate }) {
   const [hoveredCard, setHoveredCard] = useState(null);
   const [selectedCompId, setSelectedCompId] = useState(null);
   const [activeTab, setActiveTab] = useState('overview'); // 'overview' | 'specs' | 'working' | 'role'
+  const [modalVisualMode, setModalVisualMode] = useState('3d'); // '3d' | 'photo'
 
   const activeComp = COMPONENTS.find(c => c.id === selectedCompId);
   const activeIdx = COMPONENTS.findIndex(c => c.id === selectedCompId);
@@ -37,11 +38,13 @@ export default function ComponentLibrary({ onNavigate }) {
   const handleNextComp = () => {
     const nextIdx = (activeIdx + 1) % COMPONENTS.length;
     setSelectedCompId(COMPONENTS[nextIdx].id);
+    setModalVisualMode('3d');
   };
 
   const handlePrevComp = () => {
     const prevIdx = (activeIdx - 1 + COMPONENTS.length) % COMPONENTS.length;
     setSelectedCompId(COMPONENTS[prevIdx].id);
+    setModalVisualMode('3d');
   };
 
   return (
@@ -97,23 +100,34 @@ export default function ComponentLibrary({ onNavigate }) {
               />
 
               <div>
-                {/* Top Header Row with Icon & 3D Badge */}
+                {/* Top Header Row with Icon, Real Photo & 3D Badge */}
                 <div className="flex items-center justify-between mb-2">
-                  <div 
-                    className={`
-                      w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-200
-                      ${isHovered 
-                        ? 'bg-emerald-600 text-white shadow-xs' 
-                        : 'bg-emerald-50 text-emerald-600 border border-emerald-100'
-                      }
-                    `}
-                  >
-                    <Icon className="w-4 h-4" />
+                  <div className="flex items-center gap-2">
+                    <div 
+                      className={`
+                        w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-200
+                        ${isHovered 
+                          ? 'bg-emerald-600 text-white shadow-xs' 
+                          : 'bg-emerald-50 text-emerald-600 border border-emerald-100'
+                        }
+                      `}
+                    >
+                      <Icon className="w-4 h-4" />
+                    </div>
+                    {comp.image && (
+                      <div className="w-7 h-7 rounded-lg overflow-hidden border border-slate-200 bg-slate-100 shrink-0">
+                        <img 
+                          src={comp.image} 
+                          alt={comp.name} 
+                          className="w-full h-full object-cover object-center group-hover:scale-110 transition-transform duration-300"
+                        />
+                      </div>
+                    )}
                   </div>
 
                   <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-slate-50 text-emerald-700 border border-emerald-200/60 font-medium flex items-center gap-1">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                    3D Model
+                    3D + Foto
                   </span>
                 </div>
 
@@ -223,25 +237,68 @@ export default function ComponentLibrary({ onNavigate }) {
             {/* Modal Body: Two Columns */}
             <div className="flex-1 overflow-y-auto p-5 sm:p-6 grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
               
-              {/* Left Column: 3D Model WebGL Canvas */}
+              {/* Left Column: 3D Model or Real Photo WebGL Canvas */}
               <div className="lg:col-span-5 flex flex-col justify-between rounded-2xl bg-slate-50 border border-slate-200 p-3">
                 <div className="flex items-center justify-between text-[11px] font-mono text-slate-500 pb-2 border-b border-slate-200">
-                  <span className="text-emerald-700 font-semibold">3D DIGITAL TWIN VIEWER</span>
-                  <span className="text-slate-500 font-medium">ORBIT ENABLED</span>
+                  <span className="text-emerald-700 font-bold">
+                    {modalVisualMode === '3d' ? '3D DIGITAL TWIN' : 'FOTO FISIK RIIL'}
+                  </span>
+                  
+                  {/* Mode Switcher */}
+                  <div className="flex items-center gap-1 bg-white p-0.5 rounded-lg border border-slate-200 text-[10px]">
+                    <button
+                      type="button"
+                      onClick={() => setModalVisualMode('3d')}
+                      className={`px-2 py-0.5 rounded-md font-bold transition-all ${
+                        modalVisualMode === '3d'
+                          ? 'bg-emerald-50 text-emerald-700 shadow-2xs'
+                          : 'text-slate-500 hover:text-slate-900'
+                      }`}
+                    >
+                      3D Model
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setModalVisualMode('photo')}
+                      className={`px-2 py-0.5 rounded-md font-bold transition-all flex items-center gap-1 ${
+                        modalVisualMode === 'photo'
+                          ? 'bg-emerald-50 text-emerald-700 shadow-2xs'
+                          : 'text-slate-500 hover:text-slate-900'
+                      }`}
+                    >
+                      <Camera className="w-2.5 h-2.5" />
+                      Foto Riil
+                    </button>
+                  </div>
                 </div>
 
-                {/* Three.js 3D Viewport */}
-                <div className="my-2 flex-1 min-h-[220px] sm:min-h-[260px] rounded-xl overflow-hidden bg-white border border-slate-200/80">
-                  <Component3DViewer 
-                    type={activeComp.threeType} 
-                    heightClass="h-[220px] sm:h-[260px] lg:h-[280px]" 
-                  />
+                {/* Viewport: Three.js 3D Viewport or Real Photo */}
+                <div className="my-2 flex-1 min-h-[220px] sm:min-h-[260px] rounded-xl overflow-hidden bg-white border border-slate-200/80 flex items-center justify-center relative">
+                  {modalVisualMode === '3d' ? (
+                    <Component3DViewer 
+                      type={activeComp.threeType} 
+                      heightClass="h-[220px] sm:h-[260px] lg:h-[280px]" 
+                    />
+                  ) : (
+                    <div className="w-full h-full relative group">
+                      <img
+                        src={activeComp.image}
+                        alt={activeComp.fullName}
+                        className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
+                      />
+                      <div className="absolute bottom-2 right-2 bg-black/60 backdrop-blur-xs text-white text-[10px] font-mono px-2 py-0.5 rounded-md">
+                        {activeComp.imageName}
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* VR Teardown Tip */}
                 <div className="p-2.5 rounded-xl bg-white border border-slate-200 text-[11px] text-slate-600 font-sans leading-relaxed shadow-2xs">
-                  <span className="text-emerald-700 font-mono font-bold block mb-0.5">3D INSPECTION TIP:</span>
-                  {activeComp.details.vrInsight}
+                  <span className="text-emerald-700 font-mono font-bold block mb-0.5">
+                    {modalVisualMode === '3d' ? '3D INSPECTION TIP:' : 'INFO FOTO FISIK:'}
+                  </span>
+                  {modalVisualMode === '3d' ? activeComp.details.vrInsight : `Komponen aktual perangkat keras laptop: ${activeComp.fullName}.`}
                 </div>
               </div>
 

@@ -11,6 +11,19 @@
  * - correctAnswer: string ('A'|'B'|'C'|'D')
  * - explanation: string
  */
+export const COMPONENT_REAL_PHOTOS = {
+  cpu: '/images/components/pin-8.jpg',
+  ram: '/images/components/pin-4.jpg',
+  ssd: '/images/components/pin-3.jpg',
+  gpu: '/images/components/pin-1.jpg',
+  heatsink: '/images/components/pin-5.jpg',
+  fan: '/images/components/pin-2.jpg',
+  battery: '/images/components/pin-9.jpg',
+  socket: '/images/components/pin-7.jpg',
+  pcie: '/images/components/pin-10.jpg',
+  wifi: '/images/components/pin-6.jpg',
+};
+
 export const QUESTION_BANK = [
   {
     id: 1,

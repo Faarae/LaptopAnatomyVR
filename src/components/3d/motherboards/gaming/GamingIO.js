@@ -24,6 +24,7 @@ export function buildGamingIO(parentGroup) {
 
   // 1. Wi-Fi 6E M.2 2230 Module (Position: x: -3.5, z: 1.2)
   const wifiGroup = new THREE.Group();
+  wifiGroup.name = 'gamingWiFiModule';
   wifiGroup.position.set(-3.5, 0.19, 1.2);
 
   // M.2 2230 Mini PCB
