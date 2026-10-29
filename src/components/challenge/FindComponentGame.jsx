@@ -122,10 +122,10 @@ export default function FindComponentGame({ onScoreChange, onComplete, onStepCha
       
       {/* 1. Top Mission Directive & Real Target Photo Indicator */}
       <div className="shrink-0 mb-2">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-white border border-slate-200/90 rounded-2xl p-2.5 sm:p-3 shadow-xs">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-white border border-slate-200/90 rounded-xl p-2.5 sm:p-3 shadow-xs">
           <div className="flex items-start gap-3">
             {/* Target Real Photo Thumbnail */}
-            <div className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-xl overflow-hidden bg-slate-100 border border-slate-200 shrink-0 shadow-xs group">
+            <div className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-lg overflow-hidden bg-slate-100 border border-slate-200 shrink-0 shadow-xs group">
               <img 
                 src={curMission.image} 
                 alt={curMission.targetName}
@@ -139,21 +139,20 @@ export default function FindComponentGame({ onScoreChange, onComplete, onStepCha
             </div>
 
             <div>
-              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-sky-50 border border-sky-200 text-sky-700 text-[10px] font-mono tracking-wider uppercase font-semibold mb-1">
-                <Crosshair className="w-3 h-3 text-amber-500" />
+              <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-teal-50 border border-teal-200 text-teal-700 text-[10px] font-mono tracking-wider uppercase font-semibold mb-1">
                 <span>MISI {missionIndex + 1} DARI {missions.length} // TARGET SPASIAL</span>
               </div>
               <h2 className="text-xs sm:text-base font-bold font-display text-slate-900 leading-tight">
-                CARI: <span className="text-sky-700 underline decoration-sky-300 underline-offset-2">{curMission.title}</span>
+                CARI: <span className="text-teal-700 underline decoration-teal-300 underline-offset-2">{curMission.title}</span>
               </h2>
               <p className="text-[11px] text-slate-500 font-sans mt-0.5 max-w-xl">
-                💡 {curMission.hint}
+                {curMission.hint}
               </p>
             </div>
           </div>
 
           <div className="sm:self-center shrink-0 flex items-center justify-between sm:flex-col sm:items-end gap-1">
-            <span className="px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-mono font-bold">
+            <span className="px-2.5 py-1 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-mono font-bold">
               SKOR: {totalScore} XP
             </span>
             <span className="text-[10px] font-mono text-slate-600 hidden sm:inline">
@@ -163,7 +162,7 @@ export default function FindComponentGame({ onScoreChange, onComplete, onStepCha
         </div>
 
         {wrongFeedback && !discovered && (
-          <div className="mt-1.5 inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-rose-50 border border-rose-300 text-rose-700 text-[11px] font-mono animate-shake shadow-xs w-full">
+          <div className="mt-1.5 inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-rose-50 border border-rose-300 text-rose-700 text-[11px] font-mono animate-shake shadow-xs w-full">
             <AlertTriangle className="w-3.5 h-3.5 text-rose-500 shrink-0" />
             <span>{wrongFeedback}</span>
           </div>
@@ -173,7 +172,7 @@ export default function FindComponentGame({ onScoreChange, onComplete, onStepCha
       {/* 2. Central 3D Motherboard Viewport */}
       <div 
         className={`
-          relative w-full rounded-2xl bg-white border border-slate-200/90 overflow-hidden shadow-sm
+          relative w-full rounded-xl bg-white border border-slate-200/90 overflow-hidden shadow-sm
           ${shakeWrong ? 'animate-shake border-rose-400 ring-2 ring-rose-200' : ''}
         `}
       >
@@ -184,12 +183,12 @@ export default function FindComponentGame({ onScoreChange, onComplete, onStepCha
           onPinClick={handlePinSelect}
           showModal={false}
           showPinStrip={false}
-          heightClass="h-[270px] sm:h-[320px] md:h-[350px]"
+          heightClass="h-[250px] sm:h-[320px] md:h-[350px]"
         />
 
         {/* Floating Quick Pin Selector Strip at Bottom of 3D Canvas */}
-        <div className="absolute bottom-2 left-2 right-2 z-10 flex items-center justify-center gap-1 sm:gap-1.5 py-1.5 px-3 rounded-2xl bg-white/95 backdrop-blur-md border border-slate-200/90 shadow-md overflow-x-auto">
-          <span className="text-[9px] font-mono text-slate-500 uppercase tracking-wider hidden sm:inline mr-1 font-semibold">
+        <div className="absolute bottom-2 left-2 right-2 z-10 flex items-center justify-start sm:justify-center gap-1 sm:gap-1.5 py-1.5 px-2.5 sm:px-3 rounded-xl bg-white/95 backdrop-blur-md border border-slate-200/90 shadow-md overflow-x-auto">
+          <span className="text-[9px] font-mono text-slate-500 uppercase tracking-wider hidden sm:inline mr-1 font-semibold shrink-0">
             PIN LAPTOP MB:
           </span>
           {GAMING_MOTHERBOARD_PINS.map((pin) => {
@@ -199,7 +198,7 @@ export default function FindComponentGame({ onScoreChange, onComplete, onStepCha
                 key={pin.id}
                 onClick={() => handlePinSelect(pin)}
                 className={`
-                  w-6 h-6 sm:w-7 sm:h-7 rounded-lg font-mono text-[11px] font-bold transition-all shrink-0 flex items-center justify-center
+                  w-6 h-6 sm:w-7 sm:h-7 rounded-lg font-mono text-[11px] font-bold transition-all shrink-0 flex items-center justify-center cursor-pointer
                   ${isTarget
                     ? 'bg-emerald-500 text-white shadow-[0_0_12px_rgba(16,185,129,0.4)] scale-110'
                     : 'bg-slate-100 text-slate-700 border border-slate-200 hover:border-emerald-400 hover:bg-emerald-50 hover:text-emerald-800 active:scale-95'
@@ -217,15 +216,15 @@ export default function FindComponentGame({ onScoreChange, onComplete, onStepCha
       {/* 3. Bottom Educational "Quick Take" Drawer */}
       <div className="min-h-[72px] sm:min-h-[76px] shrink-0 pt-2">
         {discovered ? (
-          <div className="w-full p-2.5 sm:p-3 rounded-2xl bg-white border-2 border-emerald-400 flex items-center justify-between gap-3 animate-in fade-in slide-in-from-bottom-2 duration-300 shadow-md">
+          <div className="w-full p-2.5 sm:p-3 rounded-xl bg-white border-2 border-emerald-400 flex flex-col sm:flex-row sm:items-center justify-between gap-3 animate-in fade-in slide-in-from-bottom-2 duration-300 shadow-md">
             <div className="flex items-start gap-2.5">
-              <div className="relative w-12 h-12 rounded-xl overflow-hidden bg-slate-100 border border-emerald-300 shrink-0 mt-0.5 shadow-xs">
+              <div className="relative w-12 h-12 rounded-lg overflow-hidden bg-slate-100 border border-emerald-300 shrink-0 mt-0.5 shadow-xs">
                 <img 
                   src={curMission.image} 
                   alt={curMission.targetName}
                   className="w-full h-full object-cover object-center" 
                 />
-                <div className="absolute top-0.5 right-0.5 bg-emerald-500 text-white p-0.5 rounded-full shadow-xs">
+                <div className="absolute top-0.5 right-0.5 bg-emerald-500 text-white p-0.5 rounded-xs shadow-xs">
                   <CheckCircle2 className="w-3 h-3" />
                 </div>
               </div>
@@ -245,7 +244,7 @@ export default function FindComponentGame({ onScoreChange, onComplete, onStepCha
 
             <button
               onClick={handleContinue}
-              className="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-mono font-bold transition-all flex items-center gap-1.5 shrink-0 shadow-sm active:scale-95"
+              className="w-full sm:w-auto px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-mono font-bold transition-all flex items-center justify-center gap-1.5 shrink-0 shadow-sm active:scale-95 cursor-pointer"
             >
               <span>{missionIndex + 1 < missions.length ? 'TARGET BERIKUTNYA' : 'SELESAI MISI'}</span>
               <ArrowRight className="w-3.5 h-3.5" />
@@ -253,8 +252,8 @@ export default function FindComponentGame({ onScoreChange, onComplete, onStepCha
           </div>
         ) : (
           <div className="w-full text-center text-[11px] font-mono text-slate-600 bg-white py-2 px-3 rounded-xl border border-slate-200/90 shadow-xs flex items-center justify-center gap-2">
-            <Compass className="w-3.5 h-3.5 text-sky-600" />
-            <span>Putar motherboard 3D atau klik langsung chevron panah V 3D / tombol pin <strong className="text-slate-800">{curMission.targetName}</strong>.</span>
+            <Compass className="w-3.5 h-3.5 text-teal-600 shrink-0" />
+            <span>Putar motherboard 3D atau ketuk langsung pin <strong className="text-slate-800">{curMission.targetName}</strong>.</span>
           </div>
         )}
       </div>

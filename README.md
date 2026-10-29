@@ -1,74 +1,49 @@
-# Laptop Anatomy VR 💻🥽
+# Laptop Anatomy Education
 
-**Laptop Anatomy VR** adalah aplikasi edukasi interaktif berbasis web (dipersiapkan untuk Virtual Reality / WebXR) yang dirancang untuk mengenalkan arsitektur dan komponen internal laptop kepada pengguna melalui visualisasi 3D WebGL, eksplorasi motherboard interaktif, dan sistem kuis taktis.
-
-Proyek ini dikembangkan untuk kebutuhan evaluasi UTS mata kuliah **Realitas Berkembang**.
+**Laptop Anatomy Education** adalah platform pembelajaran arsitektur perangkat keras laptop berbasis web yang mengintegrasikan tiga pilar utama: **Edukasi VR (3D WebGL)**, **Edukasi AR (Marker-Based WebAR / MindAR)**, dan **Challenge Lab (6 Misi Evaluasi & Perakitan 3D)**.
 
 ---
 
-## 🎯 Fitur & Modul Utama Aplikasi
+## Tiga Pilar Utama
 
-* ✅ **Landing Page Imersif**: Pengenalan platform dengan 3D mouse parallax, floating idle animation, screen scanline beam, hotspot pulsa bertahap, dan 7-layer ambient technology background.
-* ✅ **Seamless Header & Branding**: Menggunakan logo resmi [`LAVR-logo.svg`](public/LAVR-logo.svg) pada navbar dan favicon browser, header transparan menyatu dengan hero, serta dropdown navigasi hierarkis (*Explore ▾* dan *Challenge ▾*).
-* ✅ **Laptop Explorer (Selection & Detail)**:
-  * Pemilihan laptop berbasis 3D tilt cards (*Entry Level, Gaming, Creator*).
-  * Sub-halaman detail laptop dengan **Fullscreen WebGL Background (`100vh`)** ditenagai Three.js 60 FPS.
-  * Floating HUD Cards: Profil laptop & klik spesifikasi interaktif di kiri, serta dossier arsitektur pin di kanan.
-  * Mengklik spesifikasi internal (CPU, GPU, RAM, SSD, Cooling, Battery) secara otomatis mengarahkan kamera 3D ke pin motherboard terkait.
-* ✅ **Mesin 3D Motherboard WebGL (10 Pin Anotasi)**:
-  * 10 pin spasial interaktif berhalo cahaya sesuai skema fisik (*PCIe, Fan, Storage, RAM Dual-Channel, VRM Heatsink, Wireless PCI, Primary Memory, CPU Socket LGA, Southbridge & CMOS, Secondary PCI*).
-  * Kontrol Orbit 360°, zoom, raycasting hover/klik, auto-rotate, wireframe, dan preset sudut pandang (*Isometric, Top-Down, I/O Profile*).
-* ✅ **Challenge Lab (5 Interactive Mini-Games)**:
-  * **01 Quick Quiz**: Kuis 10 soal acak dari 20 bank soal dengan **Panggung Inspector Model 3D Komponen Fisik** (dapat diputar 360°), combo streak multiplier, feedback arsitektur, grade rating, dan rekor di `localStorage`.
-  * **02 Match It**: Pemasangan bus data dan bandwidth antar-komponen.
-  * **03 Drag & Place**: Pemasangan komponen dengan **preview model 3D** saat komponen diangkat.
-  * **04 Find Component**: Misi pencarian spasial 10 pin langsung pada papan motherboard 3D WebGL.
-  * **05 Speed Challenge**: Tantangan identifikasi kilat berbatas waktu.
-* ✅ **Component Library**: Katalog 8 komponen inti dengan animasi idle hardware (*fan rotate, cpu breathe, ram scan, ssd blink, battery pulse*).
-* ✅ **Strict Zero-Scroll**: Seluruh halaman dikunci pas dalam 1 layar tampilan (`100vh`, `overflow: hidden`) tanpa scrollbar vertikal.
+1. **Edukasi VR (Eksplorasi 3D Virtual)**
+   - **Eksplorasi Arsitektur Laptop**: Bedah motherboard 3D interaktif pada 3 kategori laptop (*Ultrabook Slim X1*, *Gaming Performance Beast*, dan *Creator Studio Pro*) dengan 10 pin hotspot.
+   - **Katalog Komponen 3D**: Inspeksi 8 komponen inti (CPU, GPU, RAM, SSD, Cooling Fan, Battery, Wi-Fi Card, Motherboard) lengkap dengan mode perbandingan Model 3D dan Foto Fisik Riil.
+2. **Edukasi AR (Studio Pemindaian WebAR)**
+   - Terintegrasi langsung di dalam aplikasi menggunakan **MindAR v1.2.5** dan **A-Frame v1.5.0**.
+   - Mendukung pemindaian 3 kartu marker sasaran (`TARGET 01: CPU`, `TARGET 02: RAM`, `TARGET 03: SSD`), kontrol skala 3D (`0.25x–2.50x`), rotasi 360°, serta **Narasi Audio (TTS Bahasa Indonesia)**.
+   - Direktori mandiri untuk kebutuhan branch/deploy khusus WebAR juga tersedia di `laptop-anatomy-ar/`.
+3. **Challenge Lab (6 Misi Evaluasi & Perakitan 3D)**
+   - **01 Quick Quiz**: Kuis diagnostik 10 soal acak dari 20 bank soal teknis dengan panggung model 3D, timer 30 detik, dan streak multiplier.
+   - **02 Match It**: Interkoneksi kabel laser antara model 3D komponen dengan fungsi komputasinya.
+   - **03 Drag & Place**: Meja kerja perakitan soket CPU BGA, RAM DDR5, dan M.2 NVMe pada papan sirkuit 3D.
+   - **04 Find Component**: Pemindaian spasial titik lokasi komponen langsung di atas motherboard 3D.
+   - **05 Speed Challenge**: Sprint identifikasi model 3D berputar dalam batas waktu 45 detik.
+   - **06 Hardware Identification**: Analisis matriks spesifikasi teknis dan pengenalan geometri silikon 3D.
 
 ---
 
-## 🎨 Palet Warna & Desain Sistem
+## Sistem Desain ("Bright Futuristic Lab" — Tritone Palette)
 
-| Elemen | Hex Code | Keterangan |
-| :--- | :--- | :--- |
-| **Primary Background** | `#04150F` | Deep forest dark canvas |
-| **Secondary Background** | `#061C14` | Viewport & section gradient |
-| **Card Background** | `#0C2017` / `#0D2B1D` | Translucent glassmorphism container |
-| **Primary Accent** | `#22C55E` | Emerald green neon glow |
-| **Secondary Accent** | `#FACC15` | Cyber gold / warning telemetry |
-| **Main Text** | `#FFFFFF` | High-contrast display typography |
-| **Secondary Text** | `#86EFAC` / `#94A3B8` | Monospace & muted technical labels |
-
-* **Tipografi**: Space Grotesk (Headings & Display), Inter (Body & UI text), JetBrains Mono (Technical Telemetry).
+Mengacu pada dokumentasi [`DESKRIPSI_UI.md`](DESKRIPSI_UI.md):
+- **Primary Canvas**: `#F8FAFC` (`Slate-50`) & `#FFFFFF` (`Pure White`)
+- **Brand Primary Green**: `#10B981` (`Emerald-500` / `Emerald-600`) — CTA primer, Edukasi VR, dan status validasi
+- **Royal Purple Accent**: `#8B5CF6` (`Violet-500` / `Violet-600`) — Edukasi AR, Creator Studio, dan aksen spasial
+- **Radiant Gold Accent**: `#F59E0B` (`Amber-500` / `Amber-600`) — Challenge Lab, skor XP, streak, dan pin sirkuit
 
 ---
 
-## 🚀 Panduan Menjalankan Aplikasi
+## Cara Menjalankan Aplikasi
 
-1. **Clone / Buka Direktori Proyek**:
-   ```bash
-   cd "d:\Belajar\Realitas Berkembang\UTS"
-   ```
-2. **Install Dependensi**:
+1. **Install Dependensi**:
    ```bash
    npm install
    ```
-3. **Jalankan Development Server**:
+2. **Jalankan Server Development (HTTPS Aktif untuk Kamera WebAR)**:
    ```bash
    npm run dev
    ```
-   Akses di browser: `http://localhost:5173` atau `http://localhost:5174`.
-4. **Build Produksi**:
+3. **Build Produksi**:
    ```bash
    npm run build
-   npm run preview
    ```
-
----
-
-## 📄 Laporan Proyek Lengkap
-
-* Laporan progress mendalam dapat dilihat pada [PROGRESS.md](PROGRESS.md).
-* Laporan khusus sistem Challenge Lab & 5 Mini-Game dapat dilihat pada [CHALLENGE_LAB_REPORT.md](CHALLENGE_LAB_REPORT.md).

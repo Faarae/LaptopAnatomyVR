@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { CheckCircle2, RotateCcw, Shuffle, Sparkles } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Check, RotateCcw } from 'lucide-react';
 import Component3DViewer from '../3d/Component3DViewer';
+import { playSuccessChime, playErrorSfx } from '../../utils/soundEffects';
 
 /**
  * Full Pool of Available Hardware Components for Match It
@@ -91,32 +92,29 @@ const ALL_COMPONENTS_POOL = [
 /**
  * MatchItGame
  * Mini-game 02: Interactive hardware <-> function matching game with REAL 3D ASSETS.
- * Features random component selection from an 8-item hardware pool, dynamic SVG laser cables, and audio-tactile feedback.
+ * Standardized with rounded-xl / rounded-lg radii, Check icon validation, and futuristic chime SFX.
  */
 export default function MatchItGame({ onScoreChange, onComplete }) {
-  // State for active game round: randomized 4 components & shuffled functions
   const [roundSeed, setRoundSeed] = useState(0);
   const [components, setComponents] = useState([]);
   const [functions, setFunctions] = useState([]);
 
-  // Matched pairs mapping: { [compId]: funcId }
   const [matchedPairs, setMatchedPairs] = useState({});
   const [selectedComp, setSelectedComp] = useState(null);
   const [selectedFunc, setSelectedFunc] = useState(null);
   const [shakeId, setShakeId] = useState(null);
 
-  // Initialize and randomize components on load or roundSeed change
   useEffect(() => {
-    // 1. Shuffle full pool and pick 4 items
     const shuffledPool = [...ALL_COMPONENTS_POOL].sort(() => Math.random() - 0.5);
     const chosen4 = shuffledPool.slice(0, 4);
 
-    // 2. Prepare function items and shuffle their order
-    const funcList = chosen4.map(item => ({
-      id: item.matchId,
-      label: item.funcLabel,
-      desc: item.funcDesc,
-    })).sort(() => Math.random() - 0.5);
+    const funcList = chosen4
+      .map((item) => ({
+        id: item.matchId,
+        label: item.funcLabel,
+        desc: item.funcDesc,
+      }))
+      .sort(() => Math.random() - 0.5);
 
     setComponents(chosen4);
     setFunctions(funcList);
@@ -127,50 +125,46 @@ export default function MatchItGame({ onScoreChange, onComplete }) {
   }, [roundSeed]);
 
   const handleSelectComp = (compId) => {
-    if (matchedPairs[compId]) return; // Already matched
+    if (matchedPairs[compId]) return;
     setSelectedComp(compId);
     setShakeId(null);
 
-    // If a function was already selected, evaluate match
     if (selectedFunc) {
       evaluateMatch(compId, selectedFunc);
     }
   };
 
   const handleSelectFunc = (funcId) => {
-    // Check if already matched
     if (Object.values(matchedPairs).includes(funcId)) return;
     setSelectedFunc(funcId);
     setShakeId(null);
 
-    // If a component was already selected, evaluate match
     if (selectedComp) {
       evaluateMatch(selectedComp, funcId);
     }
   };
 
   const evaluateMatch = (compId, funcId) => {
-    const compObj = components.find(c => c.id === compId);
+    const compObj = components.find((c) => c.id === compId);
     if (compObj && compObj.matchId === funcId) {
-      // Correct Match!
+      playSuccessChime();
       const newPairs = { ...matchedPairs, [compId]: funcId };
       setMatchedPairs(newPairs);
       setSelectedComp(null);
       setSelectedFunc(null);
       onScoreChange?.(100);
 
-      // Check if all 4 matched
       if (Object.keys(newPairs).length === components.length) {
         setTimeout(() => {
           onComplete?.({
             score: 400,
-            accuracy: "100%",
-            timeSpent: "00:38",
+            accuracy: '100%',
+            timeSpent: '00:38',
           });
         }, 800);
       }
     } else {
-      // Incorrect Match
+      playErrorSfx();
       setShakeId(`${compId}-${funcId}`);
       setTimeout(() => {
         setSelectedComp(null);
@@ -181,7 +175,7 @@ export default function MatchItGame({ onScoreChange, onComplete }) {
   };
 
   const handleReshuffle = () => {
-    setRoundSeed(s => s + 1);
+    setRoundSeed((s) => s + 1);
   };
 
   return (
@@ -218,8 +212,8 @@ export default function MatchItGame({ onScoreChange, onComplete }) {
           </defs>
 
           {Object.entries(matchedPairs).map(([cId, fId]) => {
-            const compIndex = components.findIndex(c => c.id === cId);
-            const funcIndex = functions.findIndex(f => f.id === fId);
+            const compIndex = components.findIndex((c) => c.id === cId);
+            const funcIndex = functions.findIndex((f) => f.id === fId);
             if (compIndex === -1 || funcIndex === -1) return null;
 
             const startY = 42 + compIndex * 82;
@@ -228,7 +222,7 @@ export default function MatchItGame({ onScoreChange, onComplete }) {
             const endX = 580;
 
             return (
-              <g key={cId} className="animate-in fade-in duration-300">
+              <g key={cId} className="animate-fade-slide-up">
                 <path
                   d={`M ${startX} ${startY} C ${startX + 60} ${startY}, ${endX - 60} ${endY}, ${endX} ${endY}`}
                   fill="none"
@@ -263,68 +257,96 @@ export default function MatchItGame({ onScoreChange, onComplete }) {
                   key={comp.id}
                   onClick={() => handleSelectComp(comp.id)}
                   className={`
-                    relative rounded-2xl p-2 sm:p-2.5 border flex items-center justify-between cursor-pointer transition-all duration-200
-                    ${isMatched 
-                      ? 'bg-emerald-50 border-emerald-400 shadow-xs' 
-                      : isSelected 
-                        ? 'bg-amber-50 border-amber-400 shadow-xs scale-[1.01]' 
-                        : 'bg-white border-slate-200 hover:border-emerald-300 hover:bg-slate-50 shadow-2xs'
+                    relative rounded-xl p-2 sm:p-2.5 border flex items-center justify-between cursor-pointer transition-all duration-150 active:scale-[0.99]
+                    ${
+                      isMatched
+                        ? 'bg-emerald-50 border-emerald-500 shadow-xs'
+                        : isSelected
+                        ? 'bg-amber-50 border-amber-400 shadow-xs'
+                        : 'bg-white border-slate-200 hover:border-emerald-400 hover:bg-slate-50 shadow-2xs'
                     }
-                    ${isShaking ? 'animate-shake' : ''}
+                    ${isShaking ? 'animate-shake border-rose-400 bg-rose-50' : ''}
                   `}
                 >
                   <div className="flex items-center gap-3">
-                    {/* Real 3D Component Viewer / Real Photo on Match */}
-                    <div className={`
-                      w-12 h-12 rounded-xl border overflow-hidden shrink-0 flex items-center justify-center relative
-                      ${isMatched ? 'bg-white border-emerald-300' : isSelected ? 'bg-white border-amber-300' : 'bg-slate-50 border-slate-200'}
-                    `}>
+                    <div
+                      className={`
+                        w-12 h-12 rounded-lg border overflow-hidden shrink-0 flex items-center justify-center relative
+                        ${
+                          isMatched
+                            ? 'bg-white border-emerald-300'
+                            : isSelected
+                            ? 'bg-white border-amber-300'
+                            : 'bg-slate-50 border-slate-200'
+                        }
+                      `}
+                    >
                       {isMatched && comp.realImage ? (
-                        <img 
-                          src={comp.realImage} 
+                        <img
+                          src={comp.realImage}
                           alt={comp.label}
-                          className="w-full h-full object-cover object-center animate-in zoom-in-75 duration-300"
+                          className="w-full h-full object-cover object-center"
                         />
                       ) : (
-                        <Component3DViewer 
-                          type={comp.threeType} 
-                          heightClass="h-12" 
-                          className="border-0 bg-transparent shadow-none" 
-                          autoRotateSpeed={2.2} 
+                        <Component3DViewer
+                          type={comp.threeType}
+                          heightClass="h-12"
+                          className="border-0 bg-transparent shadow-none"
+                          autoRotateSpeed={2.2}
                         />
                       )}
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="font-display font-bold text-xs sm:text-sm text-slate-900">{comp.label}</span>
+                        <span className="font-display font-bold text-xs sm:text-sm text-slate-900">
+                          {comp.label}
+                        </span>
                         {isMatched && (
-                          <span className="px-1.5 py-0.2 rounded-full bg-emerald-100 text-emerald-800 text-[9px] font-mono font-bold">
-                            MATCHED ✓
+                          <span className="px-1.5 py-0.5 rounded-md bg-emerald-600 text-white text-[9px] font-mono font-bold">
+                            COCOK
                           </span>
                         )}
                         {isSelected && (
-                          <span className="px-1.5 py-0.2 rounded-full bg-amber-100 text-amber-800 text-[9px] font-mono font-bold animate-pulse">
-                            SELECTED
+                          <span className="px-1.5 py-0.5 rounded-md bg-amber-100 text-amber-800 text-[9px] font-mono font-bold">
+                            DIPILIH
                           </span>
                         )}
                       </div>
-                      <span className="text-[11px] text-slate-500 font-sans block">{comp.subtitle}</span>
+                      <span className="text-[11px] text-slate-500 font-sans block">
+                        {comp.subtitle}
+                      </span>
                     </div>
                   </div>
 
-                  {/* Right Cable Port Dot */}
-                  <div className={`
-                    hidden md:block absolute -right-2 top-1/2 -translate-y-1/2 w-4 h-4 rounded-full border-2 bg-white transition-all
-                    ${isMatched ? 'border-emerald-500 shadow-sm' : isSelected ? 'border-amber-500 shadow-sm' : 'border-slate-300'}
-                  `}>
-                    <div className={`w-1.5 h-1.5 rounded-full mx-auto mt-0.5 ${isMatched ? 'bg-emerald-500' : isSelected ? 'bg-amber-500' : 'bg-transparent'}`} />
+                  {/* Right Cable Port Node */}
+                  <div
+                    className={`
+                      hidden md:flex absolute -right-2 top-1/2 -translate-y-1/2 w-4 h-4 rounded-sm border-2 bg-white items-center justify-center transition-all
+                      ${
+                        isMatched
+                          ? 'border-emerald-500'
+                          : isSelected
+                          ? 'border-amber-500'
+                          : 'border-slate-300'
+                      }
+                    `}
+                  >
+                    <div
+                      className={`w-1.5 h-1.5 rounded-xs ${
+                        isMatched
+                          ? 'bg-emerald-500'
+                          : isSelected
+                          ? 'bg-amber-500'
+                          : 'bg-transparent'
+                      }`}
+                    />
                   </div>
                 </div>
               );
             })}
           </div>
 
-          {/* CENTER GAP (Connector area on desktop, md:col-span-2) */}
+          {/* CENTER GAP */}
           <div className="hidden md:flex md:col-span-2 flex-col items-center justify-center">
             <span className="text-[10px] font-mono text-slate-400 uppercase tracking-widest text-center font-bold">
               3D BUS<br />INTERCONNECT
@@ -343,31 +365,52 @@ export default function MatchItGame({ onScoreChange, onComplete }) {
                   key={func.id}
                   onClick={() => handleSelectFunc(func.id)}
                   className={`
-                    relative rounded-2xl p-2 sm:p-2.5 border flex items-center justify-between cursor-pointer transition-all duration-200
-                    ${isMatched 
-                      ? 'bg-emerald-50 border-emerald-400 shadow-xs' 
-                      : isSelected 
-                        ? 'bg-amber-50 border-amber-400 shadow-xs scale-[1.01]' 
-                        : 'bg-white border-slate-200 hover:border-emerald-300 hover:bg-slate-50 shadow-2xs'
+                    relative rounded-xl p-2 sm:p-2.5 border flex items-center justify-between cursor-pointer transition-all duration-150 active:scale-[0.99]
+                    ${
+                      isMatched
+                        ? 'bg-emerald-50 border-emerald-500 shadow-xs'
+                        : isSelected
+                        ? 'bg-amber-50 border-amber-400 shadow-xs'
+                        : 'bg-white border-slate-200 hover:border-emerald-400 hover:bg-slate-50 shadow-2xs'
                     }
-                    ${isShaking ? 'animate-shake' : ''}
+                    ${isShaking ? 'animate-shake border-rose-400 bg-rose-50' : ''}
                   `}
                 >
-                  {/* Left Cable Port Dot */}
-                  <div className={`
-                    hidden md:block absolute -left-2 top-1/2 -translate-y-1/2 w-4 h-4 rounded-full border-2 bg-white transition-all
-                    ${isMatched ? 'border-emerald-500 shadow-sm' : isSelected ? 'border-amber-500 shadow-sm' : 'border-slate-300'}
-                  `}>
-                    <div className={`w-1.5 h-1.5 rounded-full mx-auto mt-0.5 ${isMatched ? 'bg-emerald-500' : isSelected ? 'bg-amber-500' : 'bg-transparent'}`} />
+                  {/* Left Cable Port Node */}
+                  <div
+                    className={`
+                      hidden md:flex absolute -left-2 top-1/2 -translate-y-1/2 w-4 h-4 rounded-sm border-2 bg-white items-center justify-center transition-all
+                      ${
+                        isMatched
+                          ? 'border-emerald-500'
+                          : isSelected
+                          ? 'border-amber-500'
+                          : 'border-slate-300'
+                      }
+                    `}
+                  >
+                    <div
+                      className={`w-1.5 h-1.5 rounded-xs ${
+                        isMatched
+                          ? 'bg-emerald-500'
+                          : isSelected
+                          ? 'bg-amber-500'
+                          : 'bg-transparent'
+                      }`}
+                    />
                   </div>
 
                   <div>
-                    <h3 className="font-display font-bold text-xs sm:text-sm text-slate-900">{func.label}</h3>
-                    <p className="text-[11px] text-slate-500 font-sans leading-tight mt-0.5">{func.desc}</p>
+                    <h3 className="font-display font-bold text-xs sm:text-sm text-slate-900">
+                      {func.label}
+                    </h3>
+                    <p className="text-[11px] text-slate-500 font-sans leading-tight mt-0.5">
+                      {func.desc}
+                    </p>
                   </div>
 
                   {isMatched && (
-                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 ml-2" />
+                    <Check strokeWidth={2.25} className="w-4 h-4 text-emerald-600 shrink-0 ml-2" />
                   )}
                 </div>
               );
@@ -381,17 +424,18 @@ export default function MatchItGame({ onScoreChange, onComplete }) {
       {/* Footer Controls Strip */}
       <div className="flex items-center justify-between shrink-0 pt-2 border-t border-slate-100">
         <div className="flex items-center gap-2 font-mono text-xs text-emerald-700 font-bold">
-          <span className="w-2 h-2 rounded-full bg-emerald-500" />
+          <span className="w-2 h-2 rounded-xs bg-emerald-500" />
           <span>{Object.keys(matchedPairs).length} DARI 4 TERHUBUNG</span>
         </div>
 
         <button
+          type="button"
           onClick={handleReshuffle}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 bg-white hover:border-emerald-300 text-slate-600 hover:text-emerald-700 transition-all text-xs font-mono active:scale-95 shadow-2xs"
-          title="Pick 4 New Random Components"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:border-emerald-400 text-slate-700 hover:text-emerald-700 transition-all text-xs font-mono font-semibold active:scale-95 shadow-2xs cursor-pointer"
+          title="Acak 4 Komponen Baru"
         >
-          <Shuffle className="w-3.5 h-3.5 text-emerald-600" />
-          <span>ACAK KOMPONEN</span>
+          <RotateCcw strokeWidth={1.75} className="w-3.5 h-3.5" />
+          <span>Acak Komponen</span>
         </button>
       </div>
 

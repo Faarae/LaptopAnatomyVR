@@ -121,7 +121,7 @@ export default function ChallengeLab({ onNavigate, initialTab = 'hub' }) {
   const curConfig = gameConfigs[activeGame] || gameConfigs.match;
 
   return (
-    <div className="w-full h-[calc(100vh-4.5rem)] max-h-[calc(100vh-4.5rem)] overflow-hidden flex flex-col justify-between bg-transparent text-[#E8EEEA] select-none relative">
+    <div className="w-full min-h-[calc(100dvh-3.75rem)] lg:h-[calc(100vh-3.75rem)] lg:max-h-[calc(100vh-3.75rem)] lg:overflow-hidden flex flex-col justify-between bg-transparent text-[#0F172A] select-none relative">
       
       {/* ─────────────────────────────────────────────────────────────
           1. CHALLENGE LAB MAIN LANDING HUB
@@ -141,7 +141,7 @@ export default function ChallengeLab({ onNavigate, initialTab = 'hub' }) {
           Shown whenever a challenge sub-page is active and in 'briefing' mode
          ───────────────────────────────────────────────────────────── */}
       {activeGame !== 'hub' && gameMode === 'briefing' && (
-        <div className="w-full max-w-5xl mx-auto py-2 px-3 sm:px-6 flex-1 flex flex-col justify-center overflow-hidden animate-in fade-in duration-300">
+        <div className="w-full max-w-5xl mx-auto py-3 px-3.5 sm:px-6 flex-1 flex flex-col justify-center lg:overflow-hidden animate-in fade-in duration-300">
           <GameBriefingView
             gameId={activeGame}
             onStartGame={() => {
@@ -157,7 +157,7 @@ export default function ChallengeLab({ onNavigate, initialTab = 'hub' }) {
           3. HARDWARE QUIZ PLAYING SUB-PAGE (Full Q&A System)
          ───────────────────────────────────────────────────────────── */}
       {activeGame === 'quiz' && gameMode === 'playing' && (
-        <div className="w-full max-w-5xl mx-auto py-2 px-4 sm:px-6 flex-1 flex flex-col justify-center overflow-hidden animate-in fade-in duration-300">
+        <div className="w-full max-w-5xl mx-auto py-3 px-3.5 sm:px-6 flex-1 flex flex-col justify-center lg:overflow-hidden animate-in fade-in duration-300">
           <QuickQuizGame
             key={gameKey}
             autoStart={true}
@@ -172,7 +172,7 @@ export default function ChallengeLab({ onNavigate, initialTab = 'hub' }) {
           4. FULLSCREEN 3D DRAG & PLACE WORKBENCH (Like Laptop Explore)
          ───────────────────────────────────────────────────────────── */}
       {activeGame === 'drag' && gameMode === 'playing' && (
-        <div className="relative w-full h-[calc(100vh-4.5rem)] max-h-[calc(100vh-4.5rem)] overflow-hidden select-none bg-slate-100 animate-in fade-in duration-300">
+        <div className="relative w-full h-[calc(100dvh-3.75rem)] max-h-[calc(100dvh-3.75rem)] overflow-hidden select-none bg-slate-100 animate-in fade-in duration-300">
           <DragPlaceGame
             key={gameKey}
             onScoreChange={handleScoreAdd}
@@ -187,7 +187,7 @@ export default function ChallengeLab({ onNavigate, initialTab = 'hub' }) {
           5. TACTILE MINI-GAME PLAYING SUB-PAGES (Match, Find, Speed, Identify)
          ───────────────────────────────────────────────────────────── */}
       {activeGame !== 'hub' && activeGame !== 'quiz' && activeGame !== 'drag' && gameMode === 'playing' && (
-        <div className="w-full max-w-5xl mx-auto py-2 px-4 sm:px-6 flex-1 flex flex-col justify-center overflow-hidden animate-in fade-in duration-300">
+        <div className="w-full max-w-5xl mx-auto py-3 px-3.5 sm:px-6 flex-1 flex flex-col justify-center lg:overflow-hidden animate-in fade-in duration-300">
           <GameShell
             title={curConfig.title}
             mission={curConfig.mission}

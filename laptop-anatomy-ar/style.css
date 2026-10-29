@@ -1,0 +1,816 @@
+/* ==========================================================================
+   LAPTOP ANATOMY EDUCATION - WEBAR STUDIO STYLESHEET
+   Standardized Design System:
+     - Radii: 8px (rounded-lg) to 12px (rounded-xl)
+     - Neutral Slate surfaces (#F8FAFC, #FFFFFF, #0F172A) + Emerald accents
+     - Zero capsule badge soup, clean functional buttons
+   ========================================================================== */
+
+:root {
+  --bg-light: #F8FAFC;
+  --text-dark: #0F172A;
+  --text-muted: #64748B;
+  --emerald-main: #059669;
+  --emerald-light: #10b981;
+  --radius-xl: 12px;
+  --radius-lg: 8px;
+  --radius-md: 6px;
+  --safe-bottom: env(safe-area-inset-bottom, 16px);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body, html {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: var(--bg-light);
+  color: var(--text-dark);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  user-select: none;
+}
+
+.app-view {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  transition: opacity 0.2s ease;
+}
+
+.view-hidden {
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+}
+
+/* ==========================================================================
+   1. STUDIO OVERVIEW & MARKER WORKSPACE
+   ========================================================================== */
+#landingView {
+  overflow-y: auto;
+  background-color: #F8FAFC;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.vr-navbar {
+  width: 100%;
+  padding: 14px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #E2E8F0;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(12px);
+  position: sticky;
+  top: 0;
+  z-index: 30;
+}
+
+.vr-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #0F172A;
+  letter-spacing: -0.02em;
+}
+
+.vr-nav-meta {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #64748B;
+  letter-spacing: 0.05em;
+}
+
+.hero-wrapper {
+  position: relative;
+  min-height: calc(100vh - 56px);
+  display: flex;
+  align-items: center;
+  padding: 32px 24px 48px;
+  overflow: hidden;
+  max-width: 1280px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* Embedded Mode inside React Studio */
+body.is-embedded .vr-navbar {
+  display: none;
+}
+
+body.is-embedded .hero-wrapper {
+  min-height: 100vh;
+  padding: 24px;
+}
+
+body.hide-internal-hud .top-hud-bar,
+body.hide-internal-hud .controls-dock,
+body.hide-internal-hud .bottom-sheet {
+  display: none !important;
+}
+
+.hero-exploded-bg {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.hero-exploded-img {
+  position: absolute;
+  right: -5%;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 92%;
+  width: auto;
+  max-width: none;
+  object-fit: contain;
+  opacity: 0.92;
+}
+
+.hero-mask-gradient {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to right, #F8FAFC 0%, rgba(248, 250, 252, 0.96) 50%, rgba(248, 250, 252, 0.4) 78%, transparent 100%);
+  z-index: 2;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 10;
+  max-width: 640px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.eyebrow-text {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #64748B;
+}
+
+.hero-headline {
+  font-size: clamp(2rem, 4.5vw, 3rem);
+  font-weight: 800;
+  line-height: 1.15;
+  color: #0F172A;
+  letter-spacing: -0.025em;
+}
+
+.hero-desc {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: #475569;
+  max-width: 560px;
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.btn-vr-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 22px;
+  border-radius: var(--radius-lg);
+  background: #0F172A;
+  color: #ffffff;
+  font-size: 0.875rem;
+  font-weight: 600;
+  border: 1px solid #0F172A;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.btn-vr-primary:hover {
+  background: #1E293B;
+}
+
+.btn-vr-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 18px;
+  border-radius: var(--radius-lg);
+  background: #ffffff;
+  border: 1px solid #CBD5E1;
+  color: #334155;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-vr-secondary:hover {
+  background: #F8FAFC;
+  border-color: #94A3B8;
+  color: #0F172A;
+}
+
+.marker-showcase {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.marker-showcase-title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #64748B;
+}
+
+.marker-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.clean-marker-card {
+  background: #ffffff;
+  border: 1px solid #E2E8F0;
+  border-radius: var(--radius-xl);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  cursor: pointer;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.clean-marker-card:hover {
+  border-color: #94A3B8;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
+}
+
+.clean-marker-img {
+  width: 100%;
+  aspect-ratio: 4/5;
+  border-radius: var(--radius-lg);
+  object-fit: cover;
+  background: #0b1120;
+  border: 1px solid #E2E8F0;
+}
+
+.marker-card-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.clean-marker-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #059669;
+}
+
+.clean-marker-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #0F172A;
+}
+
+.clean-marker-sub {
+  font-size: 0.72rem;
+  color: #64748B;
+}
+
+@media (max-width: 768px) {
+  .hero-wrapper {
+    padding: 20px 16px 40px;
+    align-items: flex-start;
+  }
+  .hero-exploded-img {
+    right: -25%;
+    opacity: 0.35;
+  }
+  .marker-cards-grid {
+    grid-template-columns: 1fr;
+  }
+  .hero-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+  .btn-vr-primary, .btn-vr-secondary {
+    width: 100%;
+  }
+}
+
+/* ==========================================================================
+   2. AR SCANNER CAMERA VIEWPORT & TRANSPARENCY
+   ========================================================================== */
+#scannerView {
+  background: transparent !important;
+  z-index: 5;
+}
+
+#aframeContainer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  background: transparent !important;
+  overflow: hidden;
+}
+
+video {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  z-index: 0 !important;
+  pointer-events: none !important;
+}
+
+a-scene, .a-canvas {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  z-index: 1 !important;
+  background: transparent !important;
+}
+
+.scanner-hud {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 15;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.top-hud-bar {
+  pointer-events: auto;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.8) 0%, transparent 100%);
+}
+
+.btn-hud-rect {
+  padding: 8px 14px;
+  border-radius: var(--radius-lg);
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: #ffffff;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+}
+
+.status-pill {
+  flex: 1;
+  max-width: 340px;
+  padding: 8px 14px;
+  border-radius: var(--radius-lg);
+  background: rgba(15, 23, 42, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  background: #eab308;
+}
+
+.status-searching {
+  border-color: rgba(234, 179, 8, 0.5);
+  color: #fef08a;
+}
+
+.status-found {
+  border-color: #10b981;
+  color: #a7f3d0;
+}
+.status-found .status-dot {
+  background: #10b981;
+}
+
+.status-lost {
+  border-color: #f59e0b;
+  color: #fde68a;
+}
+.status-lost .status-dot {
+  background: #f59e0b;
+}
+
+/* Reticle & Vertical Scanning Laser */
+.reticle-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 220px;
+  height: 260px;
+  pointer-events: none;
+  opacity: 0.78;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  overflow: hidden;
+}
+
+.reticle-hidden {
+  opacity: 0.14;
+  transform: translate(-50%, -50%) scale(1.04);
+}
+
+.corner-bracket {
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  border-color: #10b981;
+  border-style: solid;
+}
+
+.cb-tl { top: 0; left: 0; border-width: 2px 0 0 2px; }
+.cb-tr { top: 0; right: 0; border-width: 2px 2px 0 0; }
+.cb-bl { bottom: 0; left: 0; border-width: 0 0 2px 2px; }
+.cb-br { bottom: 0; right: 0; border-width: 0 2px 2px 0; }
+
+@keyframes reticle-laser-sweep {
+  0%, 100% {
+    top: 4%;
+    opacity: 0.7;
+  }
+  50% {
+    top: 94%;
+    opacity: 1;
+  }
+}
+
+.reticle-laser-line {
+  position: absolute;
+  left: 6%;
+  right: 6%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent 0%, #10b981 20%, #34d399 50%, #10b981 80%, transparent 100%);
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.85);
+  animation: reticle-laser-sweep 2.6s ease-in-out infinite;
+}
+
+.reticle-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 10px;
+  height: 10px;
+  border: 1px solid #10b981;
+}
+
+/* Structured Rectangular Controls Dock */
+.controls-dock {
+  pointer-events: auto;
+  position: absolute;
+  right: 16px;
+  bottom: 100px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  z-index: 20;
+}
+
+.btn-action-rect {
+  width: 44px;
+  height: 38px;
+  border-radius: var(--radius-lg);
+  background: rgba(15, 23, 42, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: #ffffff;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.78rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.btn-action-rect:hover {
+  background: rgba(30, 41, 59, 0.95);
+}
+
+.btn-action-rect:active {
+  transform: scale(0.9);
+}
+
+.btn-action-active, .btn-tts-active {
+  background: #059669;
+  color: #ffffff;
+  border-color: #10b981;
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.45);
+}
+
+/* Bottom Sheet Inspector */
+.bottom-sheet {
+  pointer-events: auto;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  max-height: 68vh;
+  background: rgba(15, 23, 42, 0.94);
+  backdrop-filter: blur(16px);
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  border-top-left-radius: var(--radius-xl);
+  border-top-right-radius: var(--radius-xl);
+  padding: 12px 20px var(--safe-bottom);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s ease;
+  z-index: 25;
+}
+
+.sheet-collapsed {
+  transform: translateY(calc(100% - 62px));
+}
+
+.sheet-handle {
+  width: 40px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 2px;
+  align-self: center;
+  cursor: pointer;
+  margin-bottom: 8px;
+}
+
+.sheet-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  cursor: pointer;
+}
+
+.sheet-title-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.sheet-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #10b981;
+}
+
+.sheet-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.btn-sheet-tts {
+  padding: 6px 14px;
+  border-radius: var(--radius-lg);
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  color: #ffffff;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.sheet-body {
+  overflow-y: auto;
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: calc(68vh - 100px);
+  padding-bottom: 8px;
+}
+
+.sheet-tabs {
+  display: flex;
+  gap: 6px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  padding-bottom: 8px;
+}
+
+.tab-btn {
+  background: none;
+  border: 1px solid transparent;
+  color: #94A3B8;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+}
+
+.tab-btn.tab-active {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.18);
+}
+
+.tab-content {
+  display: none;
+  font-size: 0.88rem;
+  line-height: 1.55;
+  color: #e2e8f0;
+}
+
+.tab-content.tab-content-active {
+  display: block;
+}
+
+.specs-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.84rem;
+}
+
+.specs-table tr {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.specs-table td {
+  padding: 8px 4px;
+}
+
+.specs-table td:first-child {
+  color: #94A3B8;
+  width: 45%;
+}
+
+.specs-table td:last-child {
+  color: #ffffff;
+  font-weight: 600;
+  text-align: right;
+}
+
+/* ==========================================================================
+   MODALS & TOAST
+   ========================================================================== */
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(6px);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.modal-backdrop.modal-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.modal-content {
+  background: #ffffff;
+  color: #0F172A;
+  border: 1px solid #E2E8F0;
+  border-radius: var(--radius-xl);
+  max-width: 540px;
+  width: 100%;
+  max-height: 85vh;
+  overflow-y: auto;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.18);
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #E2E8F0;
+  padding-bottom: 12px;
+}
+
+.modal-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #0F172A;
+}
+
+.btn-close-modal {
+  background: none;
+  border: none;
+  color: #64748B;
+  font-size: 1.4rem;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.modal-marker-row {
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  border-radius: var(--radius-lg);
+  padding: 12px;
+  display: flex;
+  gap: 14px;
+  align-items: center;
+}
+
+.modal-marker-thumb {
+  width: 72px;
+  height: 90px;
+  object-fit: cover;
+  border-radius: var(--radius-md);
+  border: 1px solid #CBD5E1;
+}
+
+.modal-marker-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  color: #059669;
+  font-weight: 700;
+}
+
+.modal-marker-name {
+  font-size: 0.92rem;
+  color: #0F172A;
+  font-weight: 700;
+  margin-top: 2px;
+}
+
+.toast-msg {
+  position: fixed;
+  top: 68px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-16px);
+  background: rgba(15, 23, 42, 0.94);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: #ffffff;
+  padding: 8px 16px;
+  border-radius: var(--radius-lg);
+  font-size: 0.8rem;
+  font-weight: 500;
+  z-index: 150;
+  pointer-events: none;
+  opacity: 0;
+  transition: transform 0.2s, opacity 0.2s;
+}
+
+.toast-visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { ShieldCheck, CheckCircle2, XCircle, ArrowRight, Sparkles, Cpu, Layers, HardDrive, Fan, Wifi, Zap, Camera } from 'lucide-react';
+import { Check, X, ArrowRight } from 'lucide-react';
 import Component3DViewer from '../3d/Component3DViewer';
+import { playSuccessChime, playErrorSfx } from '../../utils/soundEffects';
 
 /**
  * Technical Question Bank for Hardware Identification Challenge
@@ -116,14 +117,18 @@ const IDENTIFICATION_MISSIONS = [
 /**
  * HardwareIdentificationGame
  * Challenge 06: Component Recognition and technical specification analysis.
- * Now featuring 3D component models and real hardware photos toggle.
+ * Standardized with rounded-xl / rounded-lg radii, Check / X validation, and futuristic chime SFX.
  */
-export default function HardwareIdentificationGame({ onScoreChange, onComplete, onStepChange }) {
+export default function HardwareIdentificationGame({
+  onScoreChange,
+  onComplete,
+  onStepChange,
+}) {
   const [missionIndex, setMissionIndex] = useState(0);
   const [selectedOpt, setSelectedOpt] = useState(null);
   const [isAnswered, setIsAnswered] = useState(false);
   const [totalScore, setTotalScore] = useState(0);
-  const [viewMode, setViewMode] = useState('3d'); // '3d' | 'photo'
+  const [viewMode, setViewMode] = useState('3d');
 
   const curMission = IDENTIFICATION_MISSIONS[missionIndex];
 
@@ -133,9 +138,12 @@ export default function HardwareIdentificationGame({ onScoreChange, onComplete, 
     setIsAnswered(true);
 
     if (opt.correct) {
+      playSuccessChime();
       const points = 100;
-      setTotalScore(prev => prev + points);
+      setTotalScore((prev) => prev + points);
       onScoreChange?.(points);
+    } else {
+      playErrorSfx();
     }
   };
 
@@ -148,11 +156,10 @@ export default function HardwareIdentificationGame({ onScoreChange, onComplete, 
       setViewMode('3d');
       onStepChange?.(nextIdx + 1);
     } else {
-      // Game Complete
       onComplete?.({
         score: totalScore,
-        accuracy: "100%",
-        timeSpent: "01:15",
+        accuracy: '100%',
+        timeSpent: '01:15',
       });
     }
   };
@@ -161,39 +168,38 @@ export default function HardwareIdentificationGame({ onScoreChange, onComplete, 
     <div className="w-full h-full max-w-5xl mx-auto px-4 py-1.5 flex flex-col justify-between select-none">
       
       {/* Top Directive Header */}
-      <div className="flex items-center justify-between shrink-0 mb-1">
+      <div className="flex items-center justify-between shrink-0 mb-2">
         <div>
-          <span className="text-[10px] font-mono text-emerald-700 font-bold uppercase tracking-wider bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200 inline-block mb-1">
-            SPECIFICATION ANALYSIS // MODUL {missionIndex + 1} DARI {IDENTIFICATION_MISSIONS.length}
-          </span>
+          <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-0.5">
+            Analisis Spesifikasi // Modul {missionIndex + 1} dari {IDENTIFICATION_MISSIONS.length}
+          </p>
           <h3 className="text-base sm:text-lg font-bold font-display text-slate-900">
             {curMission.title}
           </h3>
         </div>
-        <div className="px-3.5 py-1 rounded-full bg-white border border-slate-200/90 text-xs font-mono text-amber-700 font-bold shadow-xs">
+        <div className="px-3.5 py-1.5 rounded-lg bg-white border border-slate-200 text-xs font-mono text-emerald-700 font-bold shadow-2xs">
           SKOR: {totalScore} XP
         </div>
       </div>
 
       {/* Main Analysis Stage: 3D Viewport on Left, Specs & Options on Right */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-3.5 sm:gap-4 my-auto items-stretch">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 my-auto items-stretch">
         
         {/* Left: 3D Component Model / Real Photo Viewport */}
-        <div className="lg:col-span-5 rounded-2xl bg-white border border-slate-200/90 p-3 flex flex-col justify-between shadow-sm">
-          <div className="flex items-center justify-between text-[10px] font-mono text-slate-500 border-b border-slate-200 pb-1.5 shrink-0">
-            <span className="text-emerald-700 font-bold flex items-center gap-1.5">
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-              {viewMode === '3d' ? '3D HARDWARE MODEL' : 'FOTO FISIK RIIL'}
+        <div className="lg:col-span-5 rounded-xl bg-white border border-slate-200 p-4 flex flex-col justify-between shadow-xs">
+          <div className="flex items-center justify-between text-[11px] font-mono text-slate-500 border-b border-slate-200 pb-2 shrink-0">
+            <span className="text-slate-800 font-bold">
+              {viewMode === '3d' ? 'MODEL 3D KOMPONEN' : 'FOTO FISIK RIIL'}
             </span>
             
             {/* View Mode Switcher */}
-            <div className="flex items-center gap-1 bg-slate-100 p-0.5 rounded-lg border border-slate-200 text-[10px]">
+            <div className="flex items-center gap-1 bg-slate-100 p-0.5 rounded-lg border border-slate-200 text-[11px]">
               <button
                 type="button"
                 onClick={() => setViewMode('3d')}
-                className={`px-2 py-0.5 rounded-md font-bold transition-all ${
-                  viewMode === '3d' 
-                    ? 'bg-white text-emerald-700 shadow-xs' 
+                className={`px-2.5 py-0.5 rounded-md font-semibold transition-all active:scale-95 cursor-pointer ${
+                  viewMode === '3d'
+                    ? 'bg-white text-slate-900 shadow-2xs'
                     : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
@@ -202,13 +208,12 @@ export default function HardwareIdentificationGame({ onScoreChange, onComplete, 
               <button
                 type="button"
                 onClick={() => setViewMode('photo')}
-                className={`px-2 py-0.5 rounded-md font-bold transition-all flex items-center gap-1 ${
-                  viewMode === 'photo' 
-                    ? 'bg-white text-emerald-700 shadow-xs' 
+                className={`px-2.5 py-0.5 rounded-md font-semibold transition-all active:scale-95 cursor-pointer ${
+                  viewMode === 'photo'
+                    ? 'bg-white text-slate-900 shadow-2xs'
                     : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
-                <Camera className="w-2.5 h-2.5" />
                 Foto Riil
               </button>
             </div>
@@ -216,7 +221,7 @@ export default function HardwareIdentificationGame({ onScoreChange, onComplete, 
 
           <div className="my-2 h-[160px] sm:h-[185px] flex items-center justify-center">
             {viewMode === '3d' ? (
-              <Component3DViewer 
+              <Component3DViewer
                 key={curMission.threeType}
                 type={curMission.threeType}
                 heightClass="h-[160px] sm:h-[185px]"
@@ -224,38 +229,38 @@ export default function HardwareIdentificationGame({ onScoreChange, onComplete, 
                 autoRotateSpeed={2.0}
               />
             ) : (
-              <div className="w-full h-full rounded-xl overflow-hidden bg-slate-100 border border-slate-200 flex items-center justify-center relative group">
-                <img 
-                  src={curMission.realImage} 
+              <div className="w-full h-full rounded-lg overflow-hidden bg-slate-100 border border-slate-200 flex items-center justify-center relative group">
+                <img
+                  src={curMission.realImage}
                   alt={curMission.title}
                   className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
                 />
-                <div className="absolute bottom-1 right-1 bg-black/60 backdrop-blur-xs text-white text-[9px] font-mono px-1.5 py-0.5 rounded">
+                <div className="absolute bottom-2 right-2 bg-slate-900/80 text-white text-[10px] font-mono px-2 py-0.5 rounded-md">
                   Foto Riil Hardware
                 </div>
               </div>
             )}
           </div>
 
-          <div className="text-[10px] font-mono text-slate-500 text-center border-t border-slate-200 pt-1.5 shrink-0 font-medium">
-            {viewMode === '3d' 
-              ? 'Putar komponen 360° untuk melihat bentuk fisik silikon' 
+          <div className="text-[11px] font-mono text-slate-500 text-center border-t border-slate-200 pt-2 shrink-0">
+            {viewMode === '3d'
+              ? 'Putar komponen 360° untuk melihat bentuk fisik silikon'
               : 'Foto aktual komponen perangkat keras asli'}
           </div>
         </div>
 
         {/* Right: Technical Specs Matrix & Multiple Choice */}
-        <div className="lg:col-span-7 flex flex-col justify-between rounded-2xl bg-white border border-slate-200/90 p-3.5 sm:p-4 shadow-sm">
+        <div className="lg:col-span-7 flex flex-col justify-between rounded-xl bg-white border border-slate-200 p-4 shadow-xs">
           
           <div>
             {/* Specs Matrix */}
-            <div className="grid grid-cols-2 gap-2 mb-3">
+            <div className="grid grid-cols-2 gap-2.5 mb-3">
               {Object.entries(curMission.specs).map(([specK, specV], i) => (
-                <div key={i} className="p-2 rounded-xl bg-slate-50 border border-slate-200/90">
-                  <span className="text-[9px] font-mono text-slate-500 uppercase tracking-wide block font-semibold">
+                <div key={i} className="p-2.5 rounded-lg bg-slate-50 border border-slate-200">
+                  <span className="text-[10px] font-mono text-slate-400 uppercase tracking-wide block font-semibold">
                     {specK}
                   </span>
-                  <span className="text-xs font-semibold font-mono text-sky-700">
+                  <span className="text-xs font-bold font-mono text-slate-900">
                     {specV}
                   </span>
                 </div>
@@ -267,38 +272,43 @@ export default function HardwareIdentificationGame({ onScoreChange, onComplete, 
               {curMission.prompt}
             </p>
 
-            {/* 4 Options */}
+            {/* 4 Options with Check / X Validation */}
             <div className="space-y-2">
               {curMission.options.map((opt) => {
                 const isSelected = selectedOpt === opt.id;
-                let btnStyle = "bg-white border-slate-200/90 text-slate-800 hover:border-emerald-400 hover:bg-emerald-50/40 shadow-xs";
+                let btnStyle =
+                  'bg-white border-slate-200 text-slate-800 hover:border-emerald-400 hover:bg-emerald-50/40 shadow-2xs active:scale-[0.99]';
 
                 if (isAnswered) {
                   if (opt.correct) {
-                    btnStyle = "bg-emerald-50 border-2 border-emerald-500 text-emerald-800 shadow-xs font-bold";
+                    btnStyle =
+                      'bg-emerald-50 border-2 border-emerald-500 text-emerald-950 font-bold shadow-xs';
                   } else if (isSelected) {
-                    btnStyle = "bg-rose-50 border-2 border-rose-400 text-rose-800 font-semibold";
+                    btnStyle =
+                      'bg-rose-50 border-2 border-rose-400 text-rose-950 font-semibold animate-shake';
                   } else {
-                    btnStyle = "bg-slate-50 border-slate-200 text-slate-400 opacity-60";
+                    btnStyle = 'bg-slate-50 border-slate-200 text-slate-400 opacity-60';
                   }
                 }
 
                 return (
                   <button
                     key={opt.id}
+                    type="button"
+                    data-no-sfx="true"
                     disabled={isAnswered}
                     onClick={() => handleSelectOption(opt)}
                     className={`
-                      w-full p-2.5 sm:p-3 rounded-2xl border text-left text-xs font-mono transition-all duration-150 flex items-center justify-between
+                      w-full p-3 rounded-lg border text-left text-xs font-mono transition-all duration-150 flex items-center justify-between cursor-pointer
                       ${btnStyle}
                     `}
                   >
                     <span>{opt.label}</span>
                     {isAnswered && opt.correct && (
-                      <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                      <Check strokeWidth={2.25} className="w-4 h-4 text-emerald-600 shrink-0" />
                     )}
                     {isAnswered && isSelected && !opt.correct && (
-                      <XCircle className="w-4 h-4 text-rose-500 shrink-0" />
+                      <X strokeWidth={2.25} className="w-4 h-4 text-rose-600 shrink-0" />
                     )}
                   </button>
                 );
@@ -308,18 +318,21 @@ export default function HardwareIdentificationGame({ onScoreChange, onComplete, 
 
           {/* Answer Feedback & Next Button */}
           {isAnswered && (
-            <div className="pt-3 border-t border-slate-200 mt-3 flex items-center justify-between gap-3 animate-in fade-in duration-200">
-              <p className="text-[11px] text-slate-600 font-sans leading-tight flex-1">
-                <strong className="text-amber-700 font-mono mr-1">ANALISIS:</strong>
+            <div className="pt-3 border-t border-slate-200 mt-3 flex items-center justify-between gap-3 animate-fade-slide-up">
+              <p className="text-xs text-slate-600 font-sans leading-tight flex-1">
+                <strong className="text-emerald-700 font-mono mr-1">ANALISIS:</strong>
                 {curMission.explanation}
               </p>
 
               <button
+                type="button"
                 onClick={handleNextStep}
-                className="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-mono font-bold transition-all flex items-center gap-1.5 shrink-0 shadow-sm active:scale-95"
+                className="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-mono font-bold transition-all flex items-center gap-1.5 shrink-0 shadow-sm shadow-emerald-600/20 active:scale-95 cursor-pointer"
               >
-                <span>{missionIndex < IDENTIFICATION_MISSIONS.length - 1 ? 'LANJUT' : 'SELESAI'}</span>
-                <ArrowRight className="w-3.5 h-3.5" />
+                <span>
+                  {missionIndex < IDENTIFICATION_MISSIONS.length - 1 ? 'LANJUT' : 'SELESAI'}
+                </span>
+                <ArrowRight strokeWidth={2} className="w-3.5 h-3.5" />
               </button>
             </div>
           )}

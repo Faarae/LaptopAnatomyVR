@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Timer, Zap, Trophy } from 'lucide-react';
 import Component3DViewer from '../3d/Component3DViewer';
+import { playSuccessChime, playErrorSfx } from '../../utils/soundEffects';
 
 /**
  * SpeedChallengeGame
  * Mini-game 05: Fast-paced diagnostic sprint under a countdown clock with REAL 3D HARDWARE MODELS.
- * Features combo streaks, urgency-scaled timer animations, and rapid 3D component identification.
+ * Standardized with rounded-xl / rounded-lg radii, streak counter, and futuristic chime SFX.
  */
 export default function SpeedChallengeGame({ onScoreChange, onComplete }) {
   const challengePool = [
@@ -83,7 +83,7 @@ export default function SpeedChallengeGame({ onScoreChange, onComplete }) {
     },
   ];
 
-  const [timeLeft, setTimeLeft] = useState(45); // 45 seconds countdown
+  const [timeLeft, setTimeLeft] = useState(45);
   const [roundIdx, setRoundIdx] = useState(0);
   const [streak, setStreak] = useState(1);
   const [localScore, setLocalScore] = useState(0);
@@ -94,7 +94,6 @@ export default function SpeedChallengeGame({ onScoreChange, onComplete }) {
 
   const curChallenge = challengePool[roundIdx % challengePool.length];
 
-  // Countdown timer effect
   useEffect(() => {
     if (timeLeft <= 0 || isGameOver) {
       handleFinishGame();
@@ -102,7 +101,7 @@ export default function SpeedChallengeGame({ onScoreChange, onComplete }) {
     }
 
     const timer = setInterval(() => {
-      setTimeLeft(prev => {
+      setTimeLeft((prev) => {
         if (prev <= 1) {
           clearInterval(timer);
           handleFinishGame();
@@ -119,7 +118,8 @@ export default function SpeedChallengeGame({ onScoreChange, onComplete }) {
     if (isGameOver) return;
     setIsGameOver(true);
 
-    const accuracyVal = totalAnswered > 0 ? Math.round((correctCount / totalAnswered) * 100) : 100;
+    const accuracyVal =
+      totalAnswered > 0 ? Math.round((correctCount / totalAnswered) * 100) : 100;
     onComplete?.({
       score: localScore,
       accuracy: `${accuracyVal}%`,
@@ -130,59 +130,70 @@ export default function SpeedChallengeGame({ onScoreChange, onComplete }) {
   const handleSelectOption = (opt) => {
     if (isGameOver) return;
 
-    setTotalAnswered(prev => prev + 1);
+    setTotalAnswered((prev) => prev + 1);
 
     if (opt === curChallenge.correct) {
-      // Correct!
+      playSuccessChime();
       const earnedScore = 100 * streak;
-      setLocalScore(prev => prev + earnedScore);
-      setCorrectCount(prev => prev + 1);
-      setStreak(prev => Math.min(prev + 1, 5)); // Cap streak at 5x
-      setTimeLeft(prev => Math.min(prev + 2, 60)); // +2s bonus
+      setLocalScore((prev) => prev + earnedScore);
+      setCorrectCount((prev) => prev + 1);
+      setStreak((prev) => Math.min(prev + 1, 5));
+      setTimeLeft((prev) => Math.min(prev + 2, 60));
       onScoreChange?.(earnedScore);
-      setRoundIdx(prev => prev + 1);
+      setRoundIdx((prev) => prev + 1);
     } else {
-      // Wrong!
-      setStreak(1); // Reset streak
-      setTimeLeft(prev => Math.max(prev - 2, 0)); // -2s penalty
+      playErrorSfx();
+      setStreak(1);
+      setTimeLeft((prev) => Math.max(prev - 2, 0));
       setShakeWrong(true);
       setTimeout(() => setShakeWrong(false), 400);
-      setRoundIdx(prev => prev + 1);
+      setRoundIdx((prev) => prev + 1);
     }
   };
 
   return (
     <div className="w-full h-full max-w-4xl mx-auto px-4 py-1.5 flex flex-col justify-between select-none">
       
-      {/* Top Timer Bar & Streak Multiplier */}
-      <div className="flex items-center justify-between shrink-0 mb-1">
+      {/* Top Timer Bar & Visual Streak Multiplier */}
+      <div className="flex items-center justify-between shrink-0 mb-2">
         
-        {/* Urgency-scaled timer badge */}
-        <div className={`
-          flex items-center gap-2 px-3.5 py-1.5 rounded-2xl border font-mono transition-all duration-300 shadow-xs
-          ${timeLeft <= 5 
-            ? 'bg-rose-50 border-rose-300 text-rose-700 font-bold' 
-            : timeLeft <= 10 
-              ? 'bg-amber-50 border-amber-300 text-amber-700 font-bold' 
-              : 'bg-white border-slate-200/90 text-emerald-700 font-bold'
-          }
-        `}>
-          <Timer className="w-4 h-4 animate-spin" style={{ animationDuration: timeLeft <= 10 ? '2s' : '5s' }} />
+        {/* Urgency-scaled timer box */}
+        <div
+          className={`
+            flex items-center gap-2.5 px-3.5 py-1.5 rounded-lg border font-mono transition-all duration-300 shadow-2xs
+            ${
+              timeLeft <= 5
+                ? 'bg-rose-50 border-rose-400 text-rose-700 font-bold animate-pulse'
+                : timeLeft <= 10
+                ? 'bg-amber-50 border-amber-300 text-amber-700 font-bold'
+                : 'bg-white border-slate-200 text-emerald-700 font-bold'
+            }
+          `}
+        >
           <span className="text-sm sm:text-base font-bold">
             00:{String(timeLeft).padStart(2, '0')}
           </span>
-          <span className="text-[9px] uppercase tracking-wider text-slate-500 font-semibold">
-            {timeLeft <= 5 ? 'CRITICAL' : timeLeft <= 10 ? 'URGENT' : 'REMAINING'}
+          <span className="text-[10px] uppercase tracking-wider text-slate-500 font-semibold">
+            {timeLeft <= 5 ? 'KRITIS' : timeLeft <= 10 ? 'CEPAT' : 'SISA WAKTU'}
           </span>
         </div>
 
-        {/* Streak Combo Badge */}
-        <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-2xl bg-white border border-slate-200/90 shadow-xs">
-          <Zap className="w-4 h-4 text-amber-500 animate-bounce" />
-          <span className="font-mono text-xs sm:text-sm font-bold text-amber-700">
-            STREAK × {streak}
+        {/* Visual Streak Combo Box */}
+        <div className="flex items-center gap-2.5 px-3.5 py-1.5 rounded-lg bg-white border border-slate-200 shadow-2xs">
+          <span className="font-mono text-xs sm:text-sm font-bold text-slate-900">
+            STREAK ×{streak}
           </span>
-          <span className="text-[9px] font-mono text-emerald-700 font-semibold">
+          <div className="flex items-center gap-0.5">
+            {[1, 2, 3, 4, 5].map((bar) => (
+              <span
+                key={bar}
+                className={`w-1.5 h-3.5 rounded-xs transition-colors ${
+                  streak >= bar ? 'bg-emerald-500' : 'bg-slate-200'
+                }`}
+              />
+            ))}
+          </div>
+          <span className="text-[10px] font-mono text-emerald-700 font-bold">
             +{streak * 100} XP
           </span>
         </div>
@@ -190,22 +201,23 @@ export default function SpeedChallengeGame({ onScoreChange, onComplete }) {
       </div>
 
       {/* Center 3D Hardware Diagnostic Target */}
-      <div className={`
-        relative w-full max-w-lg mx-auto h-[210px] sm:h-[240px] rounded-2xl bg-white border border-slate-200/90 p-3 my-auto flex flex-col items-center justify-between shadow-sm
-        ${shakeWrong ? 'animate-shake border-rose-400 ring-2 ring-rose-200' : ''}
-      `}>
-        {/* Circuit Pattern */}
-        <div className="absolute inset-0 cyber-circuit-grid opacity-10 pointer-events-none rounded-2xl overflow-hidden" />
-
-        {/* Target Header */}
+      <div
+        className={`
+          relative w-full max-w-lg mx-auto h-[210px] sm:h-[240px] rounded-xl bg-white border border-slate-200 p-3 my-auto flex flex-col items-center justify-between shadow-xs
+          ${shakeWrong ? 'animate-shake border-rose-400 ring-2 ring-rose-200' : ''}
+        `}
+      >
         <div className="relative z-10 w-full flex items-center justify-between text-[10px] font-mono text-slate-500 border-b border-slate-200 pb-1.5 shrink-0">
-          <span className="text-emerald-700 font-bold">3D DIAGNOSTIC TARGET // #{roundIdx + 1}</span>
-          <span className="text-amber-700 font-semibold bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">{curChallenge.category}</span>
+          <span className="text-emerald-700 font-bold">
+            TARGET DIAGNOSTIK 3D // #{roundIdx + 1}
+          </span>
+          <span className="text-slate-700 font-semibold uppercase">
+            {curChallenge.category}
+          </span>
         </div>
 
-        {/* REAL 3D MODEL VIEWPORT */}
         <div className="relative z-10 w-full h-[140px] sm:h-[165px] my-auto flex items-center justify-center">
-          <Component3DViewer 
+          <Component3DViewer
             key={`${curChallenge.id}-${roundIdx}`}
             type={curChallenge.threeType}
             heightClass="h-[135px] sm:h-[160px]"
@@ -214,19 +226,20 @@ export default function SpeedChallengeGame({ onScoreChange, onComplete }) {
           />
         </div>
 
-        {/* Status Line */}
-        <div className="relative z-10 text-[9px] font-mono text-slate-500 shrink-0 border-t border-slate-200 pt-1.5 w-full text-center font-medium">
-          ORBIT 3D TARGET • SELECT MATCHING COMPONENT NAME
+        <div className="relative z-10 text-[10px] font-mono text-slate-500 shrink-0 border-t border-slate-200 pt-1.5 w-full text-center font-medium">
+          AMATI OBJEK 3D • PILIH NAMA KOMPONEN YANG TEPAT
         </div>
       </div>
 
       {/* 4 Rapid Options (2x2 Grid) */}
-      <div className="grid grid-cols-2 gap-2 sm:gap-3 max-w-2xl mx-auto w-full shrink-0 pt-1">
+      <div className="grid grid-cols-2 gap-2.5 sm:gap-3 max-w-2xl mx-auto w-full shrink-0 pt-2">
         {curChallenge.options.map((opt, idx) => (
           <button
             key={idx}
+            type="button"
+            data-no-sfx="true"
             onClick={() => handleSelectOption(opt)}
-            className="p-2.5 sm:p-3 rounded-2xl bg-white hover:bg-emerald-50/70 border border-slate-200 hover:border-emerald-500 text-center font-mono text-xs sm:text-sm font-bold text-slate-800 hover:text-emerald-800 transition-all duration-150 active:scale-95 shadow-xs hover:shadow-sm"
+            className="p-3 rounded-lg bg-white hover:bg-emerald-50/60 border border-slate-200 hover:border-emerald-500 text-center font-mono text-xs sm:text-sm font-bold text-slate-800 hover:text-emerald-800 transition-all duration-150 active:scale-95 shadow-2xs hover:shadow-md cursor-pointer"
           >
             {opt}
           </button>

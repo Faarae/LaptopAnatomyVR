@@ -128,7 +128,9 @@ export default function DragPlaceGame({
   // 3. Active selected item for click-to-place workflow
   const [activeItem, setActiveItem] = useState(null);
   const [isCompleted, setIsCompleted] = useState(false);
-  const [isQuestPanelOpen, setIsQuestPanelOpen] = useState(true);
+  const [isQuestPanelOpen, setIsQuestPanelOpen] = useState(() =>
+    typeof window !== 'undefined' ? window.innerWidth >= 768 : true
+  );
 
   // When activeQuestIds changes (e.g. on randomize), sync installedSlots
   useEffect(() => {
@@ -195,7 +197,7 @@ export default function DragPlaceGame({
   }, [activeQuestIds, installedSlots]);
 
   return (
-    <div className="relative w-full h-[calc(100vh-4.5rem)] max-h-[calc(100vh-4.5rem)] overflow-hidden select-none bg-slate-100">
+    <div className="relative w-full h-[calc(100dvh-3.75rem)] max-h-[calc(100dvh-3.75rem)] overflow-hidden select-none bg-slate-100">
       
       {/* ── FULLSCREEN WEBGL 3D WORKBENCH CANVAS (Isometric Perspective) ── */}
       <DragPlace3DWorkbench
@@ -204,70 +206,69 @@ export default function DragPlaceGame({
         onComponentSnap={handleComponentSnap}
         activeItem={activeItem}
         setActiveItem={setActiveItem}
-        className="absolute inset-0 w-full h-full block z-0"
+        className="absolute inset-0 w-full h-full block z-0 touch-none"
       />
 
       {/* ── TOP FLOATING CONTROL HUD BAR ── */}
-      <div className="absolute top-3 left-4 right-4 z-20 flex items-center justify-between pointer-events-none">
+      <div className="absolute top-2.5 sm:top-3 left-2.5 right-2.5 sm:left-4 sm:right-4 z-20 flex flex-wrap items-center justify-between gap-2 pointer-events-none">
         
         {/* Left: Back button & Mode Badge */}
-        <div className="pointer-events-auto flex items-center gap-2.5">
+        <div className="pointer-events-auto flex items-center gap-2">
           {onBackToBriefing && (
             <button
               onClick={onBackToBriefing}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/95 border border-slate-200/90 text-slate-700 text-xs font-mono hover:border-emerald-300 hover:text-emerald-700 transition-all backdrop-blur-md shadow-sm"
+              className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg bg-white/95 border border-slate-200/90 text-slate-700 text-xs font-mono hover:border-emerald-300 hover:text-emerald-700 transition-all backdrop-blur-md shadow-2xs cursor-pointer"
               title="Kembali ke Penjelasan Misi"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline font-semibold">Misi Briefing</span>
+              <span className="hidden sm:inline font-semibold">Panduan Misi</span>
             </button>
           )}
 
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/95 border border-slate-200/90 shadow-sm backdrop-blur-md">
-            <Box className="w-3.5 h-3.5 text-emerald-600" />
+          <div className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 rounded-lg bg-white/95 border border-slate-200/90 shadow-2xs backdrop-blur-md">
             <span className="text-xs font-display font-bold text-slate-800">
-              Drag & Place 3D Workbench
+              Drag &amp; Place 3D
             </span>
-            <span className="px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[9px] font-mono font-bold">
+            <span className="hidden sm:inline px-1.5 py-0.5 rounded-md bg-emerald-50 border border-emerald-200 text-emerald-700 text-[9px] font-mono font-bold">
               ISOMETRIC POV
             </span>
           </div>
         </div>
 
         {/* Right: Actions, Randomizer, and Progress Badge */}
-        <div className="pointer-events-auto flex items-center gap-2">
+        <div className="pointer-events-auto flex items-center gap-1.5 sm:gap-2">
           
           {/* Randomize / Ganti Komponen Button */}
           <button
             onClick={handleRandomizeNewSession}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/95 border border-slate-200/90 text-slate-700 text-xs font-mono font-bold hover:border-emerald-400 hover:text-emerald-700 hover:bg-slate-50 transition-all shadow-sm backdrop-blur-md"
+            className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg bg-white/95 border border-slate-200/90 text-slate-700 text-xs font-mono font-bold hover:border-emerald-400 hover:text-emerald-700 hover:bg-slate-50 transition-all shadow-2xs backdrop-blur-md cursor-pointer"
             title="Acak dan ganti kombinasi komponen yang harus dirakit"
           >
             <Shuffle className="w-3.5 h-3.5 text-emerald-600" />
-            <span className="hidden sm:inline">Acak Komponen Baru</span>
+            <span className="hidden sm:inline">Acak Komponen</span>
           </button>
 
           {/* Reset Current Assembly */}
           <button
             onClick={handleResetCurrent}
-            className="p-1.5 rounded-xl bg-white/95 border border-slate-200/90 text-slate-600 hover:text-slate-900 hover:bg-slate-50 shadow-sm transition-all backdrop-blur-md"
+            className="p-1.5 rounded-lg bg-white/95 border border-slate-200/90 text-slate-600 hover:text-slate-900 hover:bg-slate-50 shadow-2xs transition-all backdrop-blur-md cursor-pointer"
             title="Reset Posisi Komponen Saat Ini"
           >
             <RotateCcw className="w-4 h-4" />
           </button>
 
           {/* Progress Indicator */}
-          <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/95 border border-slate-200/90 shadow-sm backdrop-blur-md font-mono text-xs text-emerald-700 font-bold">
-            <span className={`w-2 h-2 rounded-full ${installedCount === activeQuestIds.length ? 'bg-emerald-500' : 'bg-amber-500 animate-pulse'}`} />
-            <span>{installedCount} / {activeQuestIds.length} TERPASANG</span>
+          <div className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-1.5 rounded-lg bg-white/95 border border-slate-200/90 shadow-2xs backdrop-blur-md font-mono text-[11px] sm:text-xs text-emerald-700 font-bold">
+            <span className={`w-2 h-2 rounded-xs ${installedCount === activeQuestIds.length ? 'bg-emerald-500' : 'bg-amber-500 animate-pulse'}`} />
+            <span>{installedCount}/{activeQuestIds.length} <span className="hidden sm:inline">TERPASANG</span></span>
           </div>
         </div>
 
       </div>
 
-      {/* ── LEFT FLOATING GLASS PANEL: ACTIVE QUESTS & COMPONENT STATUS (COLLAPSIBLE) ── */}
+      {/* ── LEFT / MOBILE FLOATING PANEL: ACTIVE QUESTS & COMPONENT STATUS (COLLAPSIBLE) ── */}
       {isQuestPanelOpen ? (
-        <div className="absolute top-16 left-4 bottom-14 w-68 sm:w-72 z-20 flex flex-col justify-between pointer-events-auto backdrop-blur-xl bg-white/92 border border-slate-200/90 rounded-2xl p-3 shadow-xl overflow-y-auto animate-fadeIn">
+        <div className="absolute top-14 sm:top-16 left-2.5 right-2.5 sm:right-auto sm:left-4 bottom-auto max-h-[60dvh] sm:max-h-none sm:bottom-14 sm:w-72 z-20 flex flex-col justify-between pointer-events-auto backdrop-blur-xl bg-white/95 border border-slate-200 rounded-xl p-3 shadow-xl overflow-y-auto animate-fade-slide-up">
           
           <div className="space-y-2.5">
             {/* Header with Collapse Button */}
@@ -279,12 +280,12 @@ export default function DragPlaceGame({
                 </span>
               </div>
               <div className="flex items-center gap-1.5">
-                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-bold border border-emerald-200">
+                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-md bg-emerald-50 text-emerald-700 font-bold border border-emerald-200">
                   {installedCount}/{activeQuestIds.length}
                 </span>
                 <button
                   onClick={() => setIsQuestPanelOpen(false)}
-                  className="p-1 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
+                  className="p-1 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
                   title="Sembunyikan Panel (Lihat 3D Penuh)"
                 >
                   <ChevronLeft className="w-4 h-4" />
@@ -293,7 +294,7 @@ export default function DragPlaceGame({
             </div>
 
             <p className="text-[10px] text-slate-500 font-sans leading-tight">
-              Tarik aset 3D dari baki ke soket motherboard yang menyala, atau klik kartu untuk memilih.
+              Tarik aset 3D ke soket motherboard yang menyala, atau ketuk kartu di bawah lalu ketuk soket di 3D.
             </p>
 
             {/* Active Quest Cards List */}
@@ -314,20 +315,23 @@ export default function DragPlaceGame({
                         setActiveItem(null);
                       } else {
                         setActiveItem(questId);
+                        if (window.innerWidth < 768) {
+                          setIsQuestPanelOpen(false);
+                        }
                       }
                     }}
-                    className={`p-2.5 rounded-xl border transition-all cursor-pointer ${
+                    className={`p-2.5 rounded-lg border transition-all cursor-pointer ${
                       isInstalled
                         ? 'bg-emerald-50/80 border-emerald-300 ring-1 ring-emerald-300/40 cursor-default'
                         : isSelected
-                          ? 'bg-amber-50/90 border-amber-300 ring-2 ring-amber-300/60 shadow-sm animate-pulse'
+                          ? 'bg-amber-50/90 border-amber-300 ring-2 ring-amber-300/60 shadow-2xs animate-pulse'
                           : 'bg-slate-50/80 border-slate-200/80 hover:border-emerald-300 hover:bg-slate-100/70'
                     }`}
                   >
                     <div className="flex items-center justify-between mb-0.5">
                       <div className="flex items-center gap-2">
                         {comp.image ? (
-                          <div className="w-7 h-7 rounded-lg overflow-hidden bg-slate-100 border border-slate-200 shrink-0 relative">
+                          <div className="w-7 h-7 rounded-md overflow-hidden bg-slate-100 border border-slate-200 shrink-0 relative">
                             <img
                               src={comp.image}
                               alt={comp.shortName}
@@ -335,7 +339,7 @@ export default function DragPlaceGame({
                             />
                           </div>
                         ) : (
-                          <div className={`p-1 rounded-lg ${comp.accentClass}`}>
+                          <div className={`p-1 rounded-md ${comp.accentClass}`}>
                             <Icon className="w-3.5 h-3.5" />
                           </div>
                         )}
@@ -349,14 +353,14 @@ export default function DragPlaceGame({
                         </div>
                       </div>
 
-                      <span className={`text-[9px] font-mono font-bold px-1.5 py-0.5 rounded ${
+                      <span className={`text-[9px] font-mono font-bold px-1.5 py-0.5 rounded-md ${
                         isInstalled 
                           ? 'bg-emerald-100 text-emerald-800' 
                           : isSelected 
                             ? 'bg-amber-200 text-amber-900' 
                             : 'bg-slate-200 text-slate-600'
                       }`}>
-                        {isInstalled ? 'TERKUNCI ✓' : isSelected ? 'SIAP PASANG' : 'KOSONG'}
+                        {isInstalled ? 'TERKUNCI ✓' : isSelected ? 'SIAP PASANG' : 'PILIH'}
                       </span>
                     </div>
 
@@ -371,18 +375,17 @@ export default function DragPlaceGame({
 
           {/* Bottom Quick Guide */}
           <div className="mt-2.5 pt-2 border-t border-slate-100 space-y-2">
-            <div className="p-2 rounded-xl bg-slate-50 border border-slate-200/70 flex items-start gap-1.5">
+            <div className="p-2 rounded-lg bg-slate-50 border border-slate-200/70 flex items-start gap-1.5">
               <Info className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
               <p className="text-[10px] text-slate-600 font-sans leading-tight">
-                <strong className="text-slate-800 font-semibold">Tips:</strong> Drag model 3D ke beacon bercahaya di motherboard.
+                <strong className="text-slate-800 font-semibold">Tips:</strong> Ketuk modul atau tarik model 3D ke beacon bercahaya di motherboard.
               </p>
             </div>
 
             {/* Victory notification if all placed */}
             {isCompleted && (
-              <div className="p-2.5 rounded-xl bg-emerald-600 text-white flex items-center justify-between shadow-lg animate-in fade-in duration-300">
+              <div className="p-2.5 rounded-lg bg-emerald-600 text-white flex items-center justify-between shadow-lg animate-in fade-in duration-300">
                 <div className="flex items-center gap-2">
-                  <Trophy className="w-4 h-4 text-amber-300 animate-bounce" />
                   <div>
                     <div className="text-xs font-display font-bold">Misi Selesai!</div>
                     <div className="text-[9px] text-emerald-100 font-mono">+500 XP Diraih</div>
@@ -395,10 +398,10 @@ export default function DragPlaceGame({
 
         </div>
       ) : (
-        /* Collapsed Floating Pill Button */
+        /* Collapsed Floating Button */
         <button
           onClick={() => setIsQuestPanelOpen(true)}
-          className="absolute top-16 left-4 z-20 px-3.5 py-2 rounded-full bg-white/95 border border-slate-200/90 shadow-xl backdrop-blur-xl flex items-center gap-2 text-xs font-mono font-bold text-slate-800 hover:border-emerald-400 hover:text-emerald-700 hover:bg-slate-50 transition-all pointer-events-auto animate-fadeIn"
+          className="absolute top-14 sm:top-16 left-2.5 sm:left-4 z-20 px-3 sm:px-3.5 py-2 rounded-xl bg-white/95 border border-slate-200/90 shadow-lg backdrop-blur-xl flex items-center gap-2 text-xs font-mono font-bold text-slate-800 hover:border-emerald-400 hover:text-emerald-700 hover:bg-slate-50 transition-all pointer-events-auto cursor-pointer"
           title="Tampilkan Target Perakitan"
         >
           <ShieldCheck className="w-4 h-4 text-emerald-600" />
@@ -408,9 +411,12 @@ export default function DragPlaceGame({
       )}
 
       {/* ── BOTTOM FLOATING ACTION TIP ── */}
-      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/95 border border-slate-200/90 shadow-xl backdrop-blur-xl pointer-events-auto text-[11px] font-mono text-slate-600">
-        <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
-        <span>Sudut Pandang Kamera: <strong>Isometrik Tetap</strong> (Gunakan mouse untuk sedikit menggeser/zoom)</span>
+      <div className="absolute bottom-2.5 sm:bottom-3 left-2.5 right-2.5 sm:left-1/2 sm:right-auto sm:-translate-x-1/2 z-20 flex items-center justify-center gap-2 px-3 sm:px-4 py-1.5 rounded-xl bg-white/95 border border-slate-200/90 shadow-lg backdrop-blur-xl pointer-events-auto text-[10px] sm:text-[11px] font-mono text-slate-600 text-center">
+        <span>
+          {activeItem
+            ? `Modul ${ASSEMBLY_COMPONENT_POOL[activeItem]?.shortName} dipilih — Ketuk soket menyala di motherboard!`
+            : 'Tarik komponen 3D atau ketuk Target Perakitan lalu ketuk soket menyala'}
+        </span>
       </div>
 
     </div>

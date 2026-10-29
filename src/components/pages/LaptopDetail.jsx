@@ -2,13 +2,10 @@ import React, { useState, useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { 
-  ArrowLeft, Cpu, Sparkles, HardDrive, Fan, Battery, Layers, 
-  CheckCircle2, Compass, RotateCw, Eye, Zap, Info, Box, ExternalLink,
-  Camera, Image as ImageIcon, ShieldCheck, Flame, Palette
+  ArrowLeft, Cpu, Sparkles, HardDrive, Fan, Battery, Layers, RefreshCw
 } from 'lucide-react';
 import Component3DViewer from '../3d/Component3DViewer';
 import { getLaptopById } from '../../data/laptopData';
-import { MOTHERBOARD_PINS, getPinByNumber } from '../../data/motherboardPins';
 import { GAMING_MOTHERBOARD_PINS, getGamingPinByNumber } from '../../data/gamingMotherboardData';
 import { ENTRY_MOTHERBOARD_PINS, getEntryPinByNumber } from '../../data/entryMotherboardData';
 import { CREATOR_MOTHERBOARD_PINS, getCreatorPinByNumber } from '../../data/creatorMotherboardData';
@@ -17,14 +14,12 @@ import { buildEntryMotherboard } from '../3d/motherboards/entry/EntryMotherboard
 import { buildCreatorMotherboard } from '../3d/motherboards/creator/CreatorMotherboard';
 
 /**
- * LaptopDetail (Explore Sub-Page)
+ * LaptopDetail (Edukasi VR Sub-Page)
  * FULLSCREEN WebGL 3D Motherboard Digital Twin Experience:
  * - 100% WebGL Canvas filling the background (Hardware Accelerated 60 FPS)
  * - Category Isolation: Dedicated 3D Motherboards for Entry Level, Gaming, and Creator
  * - OrbitControls for seamless 3D rotation, pan, zoom (Camera config 100% preserved)
- * - Floating glassmorphic HUD & technical dossier panels
- * - STRICT zero-scroll viewport (fits within 100vh)
- * - Click spec item on the left -> 3D camera smoothly focuses & highlights component
+ * - Structured Workspace Panels & Segmented Controls (rounded-lg / rounded-xl)
  */
 export default function LaptopDetail({ laptopId, onNavigate }) {
   const laptop = getLaptopById(laptopId);
@@ -32,7 +27,6 @@ export default function LaptopDetail({ laptopId, onNavigate }) {
   const isCreator = laptop.id === 'laptop-c' || laptop.category === 'Creator';
   const isEntry = !isGaming && !isCreator;
 
-  // Active dataset and pin resolver
   let currentPins = ENTRY_MOTHERBOARD_PINS;
   let getPin = getEntryPinByNumber;
 
@@ -44,13 +38,13 @@ export default function LaptopDetail({ laptopId, onNavigate }) {
     getPin = getCreatorPinByNumber;
   }
 
-  // Active highlighted pin state (default Pin #02 for CPU across all categories)
   const defaultPinNum = 2;
   const [selectedPinNumber, setSelectedPinNumber] = useState(defaultPinNum);
   const [hoveredPin, setHoveredPin] = useState(null);
   const [isAutoRotate, setIsAutoRotate] = useState(false);
   const [cameraView, setCameraView] = useState('isometric');
   const [photoError, setPhotoError] = useState(false);
+  const [mobilePanel, setMobilePanel] = useState('none'); // 'none' | 'specs' | 'dossier'
 
   const selectedPinNumberRef = useRef(selectedPinNumber);
   useEffect(() => {
@@ -72,7 +66,6 @@ export default function LaptopDetail({ laptopId, onNavigate }) {
 
   const activePin = getPin(selectedPinNumber) || currentPins[0];
 
-  // Spec items mapped to category-specific pin numbers
   let specItems = [];
   if (isGaming) {
     specItems = [
@@ -93,7 +86,6 @@ export default function LaptopDetail({ laptopId, onNavigate }) {
       { label: "90Wh Studio Endurance", value: laptop.specs.battery, icon: Battery, accent: "#EAB308", pinNum: 9, pinName: "Pin #09: 90Wh Battery & 100W PD" },
     ];
   } else {
-    // Entry Level
     specItems = [
       { label: "Processor (CPU)", value: laptop.specs.cpu, icon: Cpu, accent: "#0D9488", pinNum: 2, pinName: "Pin #02: Intel Core i5-1335U" },
       { label: "Integrated Graphics (iGPU)", value: laptop.specs.gpu, icon: Sparkles, accent: "#14B8A6", pinNum: 1, pinName: "Pin #01: Intel Iris Xe Graphics" },
@@ -104,9 +96,6 @@ export default function LaptopDetail({ laptopId, onNavigate }) {
     ];
   }
 
-  /**
-   * Three.js Fullscreen WebGL Motherboard Setup (Camera settings 100% Preserved)
-   */
   useEffect(() => {
     const canvas = canvasRef.current;
     const container = containerRef.current;
@@ -115,18 +104,15 @@ export default function LaptopDetail({ laptopId, onNavigate }) {
     const width = container.clientWidth;
     const height = container.clientHeight;
 
-    // 1. Scene
     const scene = new THREE.Scene();
     sceneRef.current = scene;
     scene.background = new THREE.Color(0xf8fafc);
     scene.fog = new THREE.FogExp2(0xf8fafc, 0.022);
 
-    // 2. Camera (UNTOUCHED: EXACT PRESERVED SETTINGS)
     const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
     camera.position.set(0, 10, 11);
     cameraRef.current = camera;
 
-    // 3. Renderer
     const renderer = new THREE.WebGLRenderer({
       canvas,
       antialias: true,
@@ -139,7 +125,6 @@ export default function LaptopDetail({ laptopId, onNavigate }) {
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     rendererRef.current = renderer;
 
-    // 4. OrbitControls (UNTOUCHED: EXACT PRESERVED SETTINGS)
     const controls = new OrbitControls(camera, canvas);
     controls.enableDamping = true;
     controls.dampingFactor = 0.05;
@@ -149,7 +134,6 @@ export default function LaptopDetail({ laptopId, onNavigate }) {
     controls.target.set(0, 0, 0);
     controlsRef.current = controls;
 
-    // 5. Lighting
     const ambientLight = new THREE.AmbientLight(0xffffff, 2.1);
     scene.add(ambientLight);
 
@@ -172,7 +156,6 @@ export default function LaptopDetail({ laptopId, onNavigate }) {
     cyanFill.position.set(6, 5, 6);
     scene.add(cyanFill);
 
-    // 6. Build Motherboard (Category Isolated)
     if (isGaming) {
       const { pinMeshes, fanRotators, updateHighlight } = buildGamingMotherboard(scene);
       pinMeshesRef.current = pinMeshes;
@@ -190,7 +173,6 @@ export default function LaptopDetail({ laptopId, onNavigate }) {
       updateHighlightRef.current = updateHighlight;
     }
 
-    // 7. Raycaster for clicking 3D pins
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
 
@@ -257,7 +239,6 @@ export default function LaptopDetail({ laptopId, onNavigate }) {
     canvas.addEventListener('pointermove', onPointerMove);
     canvas.addEventListener('click', onPointerClick);
 
-    // 8. Animation loop (Smooth 60 FPS WebGL loop with fan rotation & camera interpolation)
     let clock = new THREE.Clock();
 
     const animate = () => {
@@ -265,7 +246,6 @@ export default function LaptopDetail({ laptopId, onNavigate }) {
       const delta = clock.getDelta();
       const elapsedTime = clock.getElapsedTime();
 
-      // Smooth camera interpolation
       if (targetCamPosRef.current) {
         camera.position.lerp(targetCamPosRef.current.position, 0.06);
         controls.target.lerp(targetCamPosRef.current.target, 0.06);
@@ -274,14 +254,12 @@ export default function LaptopDetail({ laptopId, onNavigate }) {
         }
       }
 
-      // Rotate fans in real-time
       if (fanRotatorsRef.current.length > 0) {
         fanRotatorsRef.current.forEach((fan) => {
           fan.rotation.y += delta * 12.0;
         });
       }
 
-      // Animate 3D V-Arrow Indicators (Timbul & Bersinar Sepanjang Bentuknya saat ditekan)
       const activePinNum = selectedPinNumberRef.current;
       pinMeshesRef.current.forEach((group) => {
         const pinData = group.userData.pinData;
@@ -292,13 +270,11 @@ export default function LaptopDetail({ laptopId, onNavigate }) {
 
         if (arrowGroup) {
           const bob = Math.sin(elapsedTime * 3.5 + pinData.pinNumber * 0.7) * 0.05;
-          // Timbul: Menjulang naik ke atas saat pin ditekan / aktif
           arrowGroup.position.y = (isSelected ? 0.32 : 0) + bob;
         }
 
         if (vMesh && vMesh.material) {
           if (isSelected) {
-            // Timbul membesar sepanjang bentuk huruf V & bersinar terang
             vMesh.scale.set(1.38, 1.38, 1.38);
             vMesh.material.emissiveIntensity = 2.6 + Math.sin(elapsedTime * 6) * 0.6;
             vMesh.material.emissive.setHex(0x34d399);
@@ -337,7 +313,6 @@ export default function LaptopDetail({ laptopId, onNavigate }) {
     };
   }, [laptopId, isAutoRotate]);
 
-  // Focus camera and update highlights when selected pin changes
   useEffect(() => {
     const pin = getPin(selectedPinNumber);
     if (pin) {
@@ -361,7 +336,6 @@ export default function LaptopDetail({ laptopId, onNavigate }) {
     }
   };
 
-  // View Presets (UNTOUCHED: EXACT PRESERVED SETTINGS)
   const setCameraAngle = (view) => {
     setCameraView(view);
     if (!cameraRef.current || !controlsRef.current) return;
@@ -384,100 +358,107 @@ export default function LaptopDetail({ laptopId, onNavigate }) {
     }
   };
 
-
   return (
     <div 
       ref={containerRef}
-      className="relative w-full h-[calc(100vh-4.5rem)] max-h-[calc(100vh-4.5rem)] overflow-hidden select-none bg-slate-100"
+      className="relative w-full h-[calc(100dvh-3.75rem)] max-h-[calc(100dvh-3.75rem)] overflow-hidden select-none bg-slate-100"
     >
       {/* ── FULLSCREEN WEBGL 3D BACKGROUND CANVAS ── */}
       <canvas 
         ref={canvasRef} 
-        className="absolute inset-0 w-full h-full block cursor-grab active:cursor-grabbing z-0" 
+        className="absolute inset-0 w-full h-full block cursor-grab active:cursor-grabbing z-0 touch-none" 
       />
 
       {/* Hovered Pin Floating Tag */}
       {hoveredPin && (
-        <div className="absolute top-16 left-1/2 -translate-x-1/2 z-30 p-2 px-3.5 rounded-xl bg-white/95 border border-emerald-300 text-xs font-mono text-slate-800 shadow-xl pointer-events-none animate-fadeIn flex items-center gap-2">
-          <span className="w-5 h-5 rounded-lg bg-emerald-600 text-white font-bold flex items-center justify-center text-[10px]">
+        <div className="hidden sm:flex absolute top-16 left-1/2 -translate-x-1/2 z-30 p-2 px-3.5 rounded-lg bg-white/95 border border-emerald-400 text-xs font-mono text-slate-800 shadow-lg pointer-events-none items-center gap-2">
+          <span className="w-5 h-5 rounded-md bg-emerald-600 text-white font-bold flex items-center justify-center text-[10px]">
             {hoveredPin.pinNumber}
           </span>
-          <span className="font-semibold text-emerald-700">{hoveredPin.shortName}</span>
-          <span className="text-[10px] text-slate-500">({hoveredPin.category})</span>
+          <span className="font-semibold text-slate-900">{hoveredPin.shortName}</span>
+          <span className="text-[10px] text-emerald-700">({hoveredPin.category})</span>
         </div>
       )}
 
-      {/* ── TOP FLOATING CONTROL HUD BAR ── */}
-      <div className="absolute top-3 left-4 right-4 z-20 flex items-center justify-between pointer-events-none">
+      {/* ── TOP FLOATING CONTROL HUD BAR (Responsive Mobile + Desktop) ── */}
+      <div className="absolute top-2.5 sm:top-3 left-2.5 right-2.5 sm:left-4 sm:right-4 z-20 flex flex-col sm:flex-row sm:items-center justify-between gap-2 pointer-events-none">
         {/* Left: Back button & Title */}
-        <div className="pointer-events-auto flex items-center gap-3">
+        <div className="pointer-events-auto flex items-center justify-between sm:justify-start gap-2 sm:gap-3">
           <button
+            type="button"
             onClick={() => onNavigate('laptop-selection')}
-            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/95 border border-slate-200/90 text-slate-700 text-xs font-mono hover:border-emerald-300 hover:text-emerald-700 transition-all backdrop-blur-md shadow-sm"
+            className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-3.5 py-1.5 rounded-lg bg-white/95 border border-slate-300 text-slate-700 text-xs font-sans font-semibold hover:bg-emerald-50 hover:border-emerald-400 hover:text-emerald-700 transition-all backdrop-blur-md shadow-2xs cursor-pointer shrink-0"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
-            <span>Kembali ke Pilihan Laptop</span>
+            <span>Kembali</span>
           </button>
 
-          <div className="flex items-center gap-2 px-3 py-1 rounded-xl bg-white/90 border border-slate-200/90 backdrop-blur-md shadow-xs">
-            <span className="text-xs font-mono text-slate-400">{laptop.code} //</span>
-            <span className="text-xs font-mono font-bold text-slate-800">{laptop.name}</span>
-            <span className={`text-[10px] font-mono px-2 py-0.5 rounded-full border font-semibold ${
-              isGaming ? 'bg-emerald-100/70 text-emerald-800 border-emerald-300' :
-              isCreator ? 'bg-sky-100/70 text-sky-800 border-sky-300' :
-              'bg-teal-100/70 text-teal-800 border-teal-300'
-            }`}>
-              {isGaming ? '🔥 GAMING HARDWARE' : isCreator ? '🎨 CREATOR STUDIO' : '⚡ ENERGY EFFICIENT'}
+          <div className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-1.5 rounded-lg bg-white/95 border border-slate-200 backdrop-blur-md shadow-2xs min-w-0">
+            <span className="text-[11px] sm:text-xs font-mono text-slate-500 hidden sm:inline">{laptop.code} /</span>
+            <span className="text-xs font-display font-bold text-slate-900 truncate">{laptop.name}</span>
+            <span className="text-[10px] font-mono uppercase tracking-wider text-emerald-700 font-semibold border-l border-slate-200 pl-1.5 sm:pl-2 shrink-0">
+              {laptop.category}
             </span>
           </div>
         </div>
 
-        {/* Right: Camera Angle & Rotate Controls */}
-        <div className="pointer-events-auto flex items-center gap-1.5 p-1 rounded-xl bg-white/90 border border-slate-200/90 backdrop-blur-md shadow-sm">
+        {/* Right: Camera Angle & Rotate Segmented Bar */}
+        <div className="pointer-events-auto inline-flex items-center justify-between sm:justify-start gap-1 p-1 rounded-lg bg-white/95 border border-slate-200 backdrop-blur-md shadow-2xs overflow-x-auto max-w-full">
           <button
+            type="button"
             onClick={() => setCameraAngle('isometric')}
-            className={`px-2.5 py-1 rounded-lg text-[10px] font-mono transition-all ${
-              cameraView === 'isometric' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 font-semibold' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+            className={`px-2 sm:px-2.5 py-1 rounded-md text-[11px] sm:text-xs font-sans font-semibold active:scale-90 transition-all cursor-pointer shrink-0 ${
+              cameraView === 'isometric' ? 'bg-emerald-600 text-white shadow-2xs' : 'text-slate-600 hover:text-emerald-700 hover:bg-emerald-50/50'
             }`}
           >
-            Iso 3D
+            Isometrik
           </button>
           <button
+            type="button"
             onClick={() => setCameraAngle('topdown')}
-            className={`px-2.5 py-1 rounded-lg text-[10px] font-mono transition-all ${
-              cameraView === 'topdown' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 font-semibold' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+            className={`px-2 sm:px-2.5 py-1 rounded-md text-[11px] sm:text-xs font-sans font-semibold active:scale-90 transition-all cursor-pointer shrink-0 ${
+              cameraView === 'topdown' ? 'bg-emerald-600 text-white shadow-2xs' : 'text-slate-600 hover:text-emerald-700 hover:bg-emerald-50/50'
             }`}
           >
-            Top Blueprint
+            Tampak Atas
           </button>
           <button
+            type="button"
             onClick={() => setCameraAngle('front')}
-            className={`px-2.5 py-1 rounded-lg text-[10px] font-mono transition-all ${
-              cameraView === 'front' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 font-semibold' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+            className={`px-2 sm:px-2.5 py-1 rounded-md text-[11px] sm:text-xs font-sans font-semibold active:scale-90 transition-all cursor-pointer shrink-0 ${
+              cameraView === 'front' ? 'bg-emerald-600 text-white shadow-2xs' : 'text-slate-600 hover:text-emerald-700 hover:bg-emerald-50/50'
             }`}
           >
-            Front Angle
+            Tampak Depan
           </button>
           <button
+            type="button"
             onClick={() => setIsAutoRotate(!isAutoRotate)}
-            className={`p-1.5 rounded-lg text-xs transition-all ${
-              isAutoRotate ? 'bg-emerald-50 text-emerald-700' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+            className={`px-2 sm:px-2.5 py-1 rounded-md text-[11px] sm:text-xs font-sans font-semibold active:scale-90 transition-all cursor-pointer inline-flex items-center gap-1 shrink-0 ${
+              isAutoRotate
+                ? 'bg-violet-600 text-white shadow-sm shadow-violet-500/25'
+                : 'text-slate-600 hover:text-violet-700 hover:bg-violet-50/50'
             }`}
-            title="Toggle Auto-Rotate"
+            title="Putar Otomatis 360 Derajat"
           >
-            <RotateCw className="w-3.5 h-3.5" />
+            <RefreshCw
+              strokeWidth={1.75}
+              className={`w-3.5 h-3.5 ${isAutoRotate ? 'animate-spin' : ''}`}
+              style={{ animationDuration: '6s' }}
+            />
+            <span>360°</span>
           </button>
         </div>
       </div>
 
-      {/* ── LEFT FLOATING GLASS PANEL: HARDWARE SPECS SELECTOR ── */}
-      <div className="absolute top-16 left-4 bottom-16 w-72 sm:w-80 lg:w-84 z-20 flex flex-col justify-between pointer-events-auto backdrop-blur-xl bg-white/92 border border-slate-200/90 rounded-2xl p-4 shadow-xl overflow-y-auto">
+      {/* ── DESKTOP LEFT FLOATING PANEL: HARDWARE SPECS SELECTOR (lg:flex) ── */}
+      <div className="hidden lg:flex absolute top-16 left-4 bottom-16 w-84 z-20 flex-col justify-between pointer-events-auto backdrop-blur-xl bg-white/95 border border-slate-200 rounded-xl p-4 shadow-lg overflow-y-auto">
         <div className="space-y-3">
-          <div className="flex items-center justify-between border-b border-slate-100 pb-2">
-            <span className="text-[10px] font-mono text-emerald-700 uppercase tracking-wider font-semibold">
-              ARSITEKTUR HARDWARE
+          <div className="flex items-center justify-between border-b border-slate-200 pb-2">
+            <span className="text-[11px] font-mono text-slate-500 uppercase tracking-wider font-semibold">
+              Arsitektur Perangkat Keras
             </span>
-            <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 font-medium">
+            <span className="text-[11px] font-mono text-slate-700 font-semibold">
               {laptop.alias}
             </span>
           </div>
@@ -486,37 +467,39 @@ export default function LaptopDetail({ laptopId, onNavigate }) {
             {laptop.description}
           </p>
 
-          <h4 className="text-[10px] font-mono uppercase tracking-wider text-slate-500 font-semibold pt-1">
-            Komponen Utama (Klik untuk fokus 3D):
+          <h4 className="text-[11px] font-mono uppercase tracking-wider text-slate-500 font-semibold pt-1">
+            Daftar Modul (Klik untuk Fokus):
           </h4>
 
           {/* Clickable Component Spec Cards */}
           <div className="space-y-2">
             {specItems.map((spec, idx) => {
-              const Icon = spec.icon;
               const isSelected = selectedPinNumber === spec.pinNum;
               return (
                 <div
                   key={idx}
                   onClick={() => setSelectedPinNumber(spec.pinNum)}
-                  className={`p-2.5 rounded-xl border transition-all cursor-pointer ${
+                  className={`p-2.5 rounded-lg border transition-all duration-200 cursor-pointer active:scale-[0.98] ${
                     isSelected
-                      ? 'bg-emerald-50/80 border-emerald-300 shadow-xs ring-1 ring-emerald-500/20'
-                      : 'bg-slate-50 border-slate-200/70 hover:border-emerald-200 hover:bg-slate-100/70'
+                      ? 'bg-emerald-50/50 border-emerald-500 ring-2 ring-emerald-500/15 shadow-xs'
+                      : 'bg-slate-50 border-slate-200 hover:border-emerald-400/60 hover:bg-white'
                   }`}
                 >
                   <div className="flex items-center justify-between mb-0.5">
-                    <div className="flex items-center gap-2">
-                      <Icon className="w-3.5 h-3.5 text-emerald-600" />
-                      <span className="text-[11px] font-mono font-medium text-slate-800">
-                        {spec.label}
-                      </span>
-                    </div>
-                    <span className="text-[9px] font-mono text-emerald-700 px-1.5 py-0.5 rounded bg-emerald-100/70 font-bold">
-                      Pin #{spec.pinNum < 10 ? `0${spec.pinNum}` : spec.pinNum}
+                    <span className="text-xs font-display font-bold text-slate-900">
+                      {spec.label}
+                    </span>
+                    <span className="inline-flex items-center gap-1.5 text-[10px] font-mono text-emerald-700 font-bold">
+                      {isSelected && (
+                        <span className="relative flex h-2 w-2">
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-xs bg-emerald-400 opacity-75" />
+                          <span className="relative inline-flex rounded-xs h-2 w-2 bg-emerald-500" />
+                        </span>
+                      )}
+                      <span>PIN #{spec.pinNum < 10 ? `0${spec.pinNum}` : spec.pinNum}</span>
                     </span>
                   </div>
-                  <p className="text-[11px] font-sans text-slate-600 font-medium pl-5 truncate">
+                  <p className="text-[11px] font-sans text-slate-600 truncate">
                     {spec.value}
                   </p>
                 </div>
@@ -526,48 +509,46 @@ export default function LaptopDetail({ laptopId, onNavigate }) {
         </div>
 
         {/* Bottom hint */}
-        <div className="pt-2 border-t border-slate-100 text-[10px] font-mono text-slate-400 flex items-center gap-1.5">
-          <Compass className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-          <span>Klik pin atau putar papan 3D dengan mouse untuk eksplorasi.</span>
+        <div className="pt-2 border-t border-slate-200 text-[11px] font-sans text-slate-500">
+          Klik angka pin pada papan sirkuit atau daftar di atas untuk melihat rincian.
         </div>
       </div>
 
-      {/* ── RIGHT FLOATING GLASS PANEL: ACTIVE COMPONENT TECHNICAL DOSSIER ── */}
+      {/* ── DESKTOP RIGHT FLOATING PANEL: ACTIVE COMPONENT TECHNICAL DOSSIER (lg:flex) ── */}
       {activePin && (
-        <div className="absolute top-16 right-4 bottom-16 w-80 sm:w-88 lg:w-96 z-20 flex flex-col justify-between pointer-events-auto backdrop-blur-xl bg-white/92 border border-slate-200/90 rounded-2xl p-4 shadow-xl overflow-y-auto">
+        <div className="hidden lg:flex absolute top-16 right-4 bottom-16 w-96 z-20 flex-col justify-between pointer-events-auto backdrop-blur-xl bg-white/95 border border-slate-200 rounded-xl p-4 shadow-lg overflow-y-auto">
           <div className="space-y-3">
-            {/* Header Badge */}
-            <div className="flex items-center justify-between border-b border-slate-100 pb-2.5">
-              <div className="flex items-center gap-2">
-                <span className="w-7 h-7 rounded-lg bg-emerald-600 text-white font-bold font-mono text-xs flex items-center justify-center shadow-xs">
+            {/* Header */}
+            <div className="flex items-center justify-between border-b border-slate-200 pb-2.5">
+              <div className="flex items-center gap-2.5">
+                <span className="w-7 h-7 rounded-lg bg-emerald-600 text-white font-bold font-mono text-xs flex items-center justify-center shadow-2xs">
                   {activePin.pinNumber}
                 </span>
                 <div>
-                  <span className="text-[9px] font-mono text-emerald-700 block uppercase font-bold">
-                    PIN #{activePin.pinNumber < 10 ? `0${activePin.pinNumber}` : activePin.pinNumber} // {activePin.badge}
+                  <span className="text-[10px] font-mono text-emerald-700 block uppercase font-bold">
+                    PIN #{activePin.pinNumber < 10 ? `0${activePin.pinNumber}` : activePin.pinNumber} • {activePin.badge}
                   </span>
                   <span className="text-xs font-bold font-display text-slate-900">
                     {activePin.shortName}
                   </span>
                 </div>
               </div>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200">
+              <span className="text-[10px] font-mono uppercase text-violet-700 bg-violet-50 border border-violet-200 px-2 py-0.5 rounded-md font-semibold">
                 {activePin.category}
               </span>
             </div>
 
-            {/* Floating 3D Component Model Card */}
-            <div className="rounded-xl overflow-hidden border border-slate-200/90 bg-slate-900/5 shadow-xs">
-              <div className="flex items-center justify-between px-3 py-1.5 bg-slate-100/90 border-b border-slate-200/70">
-                <span className="text-[10px] font-mono uppercase tracking-wider text-emerald-700 font-bold flex items-center gap-1.5">
-                  <Box className="w-3 h-3 text-emerald-600" />
-                  Model 3D Interaktif
+            {/* 3D Component Model Card */}
+            <div className="rounded-lg overflow-hidden border border-slate-200 bg-slate-50">
+              <div className="flex items-center justify-between px-3 py-1.5 bg-slate-100 border-b border-slate-200">
+                <span className="text-[10px] font-mono uppercase tracking-wider text-slate-700 font-bold">
+                  Model 3D Komponen
                 </span>
-                <span className="text-[9px] font-mono text-slate-500 bg-white px-1.5 py-0.5 rounded border border-slate-200">
-                  Bisa Diputar 360°
+                <span className="text-[10px] font-mono text-slate-500">
+                  Interaktif 360°
                 </span>
               </div>
-              <div className="h-36 w-full relative bg-slate-50/70 rounded-b-xl overflow-hidden flex items-center justify-center">
+              <div className="h-36 w-full relative bg-white overflow-hidden flex items-center justify-center">
                 <Component3DViewer
                   type={activePin.threeType || activePin.componentKey || 'cpu'}
                   category={laptop?.category || 'Gaming'}
@@ -581,53 +562,41 @@ export default function LaptopDetail({ laptopId, onNavigate }) {
               </div>
             </div>
 
-            {/* Box Foto Fisik Riil Komponen */}
-            <div className="rounded-xl overflow-hidden border border-slate-200/90 bg-white shadow-xs">
-              <div className="flex items-center justify-between px-3 py-1.5 bg-slate-100/90 border-b border-slate-200/70">
-                <span className="text-[10px] font-mono uppercase tracking-wider text-slate-700 font-bold flex items-center gap-1.5">
-                  <Camera className="w-3 h-3 text-emerald-600" />
-                  Foto Fisik Riil Komponen
+            {/* Foto Fisik Riil Komponen */}
+            <div className="rounded-lg overflow-hidden border border-slate-200 bg-white">
+              <div className="flex items-center justify-between px-3 py-1.5 bg-slate-100 border-b border-slate-200">
+                <span className="text-[10px] font-mono uppercase tracking-wider text-slate-700 font-bold">
+                  Foto Fisik Riil
                 </span>
-                <span className="text-[9px] font-mono text-slate-500">
+                <span className="text-[10px] font-mono text-slate-500">
                   {activePin.imageName || `pin-${activePin.pinNumber}.jpg`}
                 </span>
               </div>
 
               {!photoError ? (
-                <div className="relative group bg-slate-100 flex items-center justify-center min-h-[110px] max-h-[130px] overflow-hidden">
+                <div className="relative bg-slate-100 flex items-center justify-center min-h-[110px] max-h-[130px] overflow-hidden">
                   <img
                     src={`/images/components/${activePin.imageName || `pin-${activePin.pinNumber}.jpg`}`}
                     alt={activePin.shortName}
                     onError={() => setPhotoError(true)}
-                    className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
+                    className="w-full h-full object-cover object-center"
                   />
-                  <div className="absolute bottom-1 right-1.5 bg-black/60 text-white text-[8px] font-mono px-1.5 py-0.5 rounded backdrop-blur-xs">
-                    Foto Asli
-                  </div>
                 </div>
               ) : (
-                <div className="p-3 bg-amber-50/50 border border-dashed border-amber-300/80 rounded-b-xl flex flex-col items-center text-center gap-1.5">
-                  <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center text-amber-700 shrink-0">
-                    <ImageIcon className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <span className="text-[11px] font-bold text-amber-900 block font-sans">
-                      Foto Fisik Belum Dimasukkan
-                    </span>
-                    <span className="text-[9px] font-mono text-slate-600 block mt-0.5">
-                      Simpan file foto di: <code className="bg-amber-100/80 text-amber-950 font-bold px-1 py-0.5 rounded">public/images/components/{activePin.imageName || `pin-${activePin.pinNumber}.jpg`}</code>
-                    </span>
-                  </div>
-                  <p className="text-[9px] text-slate-500 leading-tight">
-                    Format: JPG / PNG (Rasio 16:9). Cek <code className="text-emerald-700">PANDUAN_FOTO_KOMPONEN.md</code>.
-                  </p>
+                <div className="p-3 bg-slate-50 text-center">
+                  <span className="text-xs font-semibold text-slate-700 block">
+                    Foto Fisik Belum Tersedia
+                  </span>
+                  <span className="text-[10px] font-mono text-slate-500 block mt-0.5">
+                    public/images/components/{activePin.imageName || `pin-${activePin.pinNumber}.jpg`}
+                  </span>
                 </div>
               )}
             </div>
 
             {/* Architecture Role */}
-            <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/70">
-              <h5 className="text-[10px] font-mono uppercase tracking-wider text-emerald-700 mb-1 font-semibold">
+            <div className="p-3 rounded-lg bg-slate-50 border border-slate-200">
+              <h5 className="text-[10px] font-mono uppercase tracking-wider text-slate-500 mb-1 font-semibold">
                 Fungsi Arsitektur
               </h5>
               <p className="text-xs text-slate-700 leading-relaxed font-sans">
@@ -635,11 +604,10 @@ export default function LaptopDetail({ laptopId, onNavigate }) {
               </p>
             </div>
 
-            {/* Practical Application in Modern Laptops */}
-            <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/70">
-              <h5 className="text-[10px] font-mono uppercase tracking-wider text-amber-700 mb-1 font-semibold flex items-center gap-1.5">
-                <Cpu className="w-3 h-3 text-amber-600" />
-                <span>Penerapan Pada Laptop Modern</span>
+            {/* Practical Application */}
+            <div className="p-3 rounded-lg bg-slate-50 border border-slate-200">
+              <h5 className="text-[10px] font-mono uppercase tracking-wider text-slate-500 mb-1 font-semibold">
+                Penerapan Pada Laptop Modern
               </h5>
               <p className="text-xs text-slate-600 leading-relaxed font-sans">
                 {activePin.laptopComparison}
@@ -649,63 +617,237 @@ export default function LaptopDetail({ laptopId, onNavigate }) {
             {/* Hardware Specs Matrix */}
             <div>
               <h5 className="text-[10px] font-mono uppercase tracking-wider text-slate-500 mb-1.5 font-semibold">
-                Spesifikasi Bus & Elektrikal:
+                Spesifikasi Teknis:
               </h5>
               <div className="grid grid-cols-2 gap-1.5 text-[11px] font-mono">
                 {Object.entries(activePin.specs).map(([k, v], i) => (
-                  <div key={i} className="p-2 rounded-lg bg-slate-50 border border-slate-200/60">
+                  <div key={i} className="p-2 rounded-lg bg-slate-50 border border-slate-200">
                     <span className="text-[9px] text-slate-400 block">{k}</span>
                     <span className="text-slate-800 font-semibold truncate block">{v}</span>
                   </div>
                 ))}
               </div>
             </div>
-
-            {/* Educational Insight (if present) */}
-            {activePin.educationalInsight && (
-              <div className="p-2.5 rounded-xl bg-teal-50/70 border border-teal-200 flex items-start gap-2">
-                <ShieldCheck className="w-3.5 h-3.5 text-teal-600 shrink-0 mt-0.5" />
-                <p className="text-[11px] text-teal-800 font-sans leading-tight">
-                  <strong className="font-semibold">Educational Insight:</strong> {activePin.educationalInsight}
-                </p>
-              </div>
-            )}
           </div>
 
-          {/* VR Inspection Observation Tip */}
-          <div className="p-2.5 rounded-xl bg-emerald-50/70 border border-emerald-200 flex items-start gap-2 mt-2">
-            <Eye className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
-            <p className="text-[11px] text-slate-700 font-sans leading-tight">
-              {activePin.vrNote}
+          {/* VR Note */}
+          <div className="p-2.5 rounded-lg bg-slate-50 border border-slate-200 mt-2">
+            <p className="text-[11px] text-slate-600 font-sans leading-tight">
+              <strong className="text-slate-900">Catatan Inspeksi:</strong> {activePin.vrNote}
             </p>
           </div>
         </div>
       )}
 
-      {/* ── BOTTOM FLOATING HOTSPOT PINS QUICK-BAR (Pins 1 to 10) ── */}
-      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1.5 p-1.5 rounded-2xl bg-white/95 border border-slate-200/90 backdrop-blur-xl shadow-xl pointer-events-auto">
-        <span className="text-[10px] font-mono text-slate-400 uppercase tracking-wider px-2 hidden sm:inline font-semibold">
-          HOTSPOT 1–10:
-        </span>
-        {currentPins.map((pin) => {
-          const isSelected = selectedPinNumber === pin.pinNumber;
-          return (
+      {/* ── MOBILE & TABLET COLLAPSIBLE BOTTOM DRAWER (lg:hidden) ── */}
+      {mobilePanel === 'specs' && (
+        <div className="lg:hidden absolute left-2.5 right-2.5 bottom-26 max-h-[54dvh] z-30 backdrop-blur-xl bg-white/98 border border-slate-200 rounded-xl p-3.5 shadow-2xl overflow-y-auto animate-fade-slide-up pointer-events-auto">
+          <div className="flex items-center justify-between border-b border-slate-200 pb-2 mb-2.5">
+            <div>
+              <span className="text-[10px] font-mono text-emerald-700 uppercase font-bold block">
+                {laptop.alias}
+              </span>
+              <h4 className="text-xs font-display font-bold text-slate-900">
+                Daftar Modul Perangkat Keras
+              </h4>
+            </div>
             <button
-              key={pin.id}
-              onClick={() => setSelectedPinNumber(pin.pinNumber)}
-              className={`
-                relative flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-xl font-mono text-xs font-bold transition-all shrink-0
-                ${isSelected
-                  ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/30 scale-110'
-                  : 'bg-slate-100 text-slate-600 border border-slate-200 hover:border-emerald-300 hover:text-emerald-700 hover:bg-slate-50'
-                }
-              `}
-              title={`Pin #${pin.pinNumber}: ${pin.shortName}`}
+              type="button"
+              onClick={() => setMobilePanel('none')}
+              className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-mono font-bold cursor-pointer"
             >
-              <span>{pin.pinNumber}</span>
+              ✕ Tutup
             </button>
-          );
-        })}
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            {specItems.map((spec, idx) => {
+              const isSelected = selectedPinNumber === spec.pinNum;
+              return (
+                <div
+                  key={idx}
+                  onClick={() => {
+                    setSelectedPinNumber(spec.pinNum);
+                    setMobilePanel('dossier');
+                  }}
+                  className={`p-2.5 rounded-lg border transition-all cursor-pointer active:scale-[0.98] ${
+                    isSelected
+                      ? 'bg-emerald-50/70 border-emerald-500 ring-1 ring-emerald-500/20'
+                      : 'bg-slate-50 border-slate-200'
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-0.5">
+                    <span className="text-xs font-display font-bold text-slate-900">
+                      {spec.label}
+                    </span>
+                    <span className="text-[10px] font-mono text-emerald-700 font-bold">
+                      PIN #{spec.pinNum < 10 ? `0${spec.pinNum}` : spec.pinNum}
+                    </span>
+                  </div>
+                  <p className="text-[11px] font-sans text-slate-600 truncate">
+                    {spec.value}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {mobilePanel === 'dossier' && activePin && (
+        <div className="lg:hidden absolute left-2.5 right-2.5 bottom-26 max-h-[56dvh] z-30 backdrop-blur-xl bg-white/98 border border-slate-200 rounded-xl p-3.5 shadow-2xl overflow-y-auto animate-fade-slide-up pointer-events-auto">
+          <div className="flex items-center justify-between border-b border-slate-200 pb-2 mb-3">
+            <div className="flex items-center gap-2 min-w-0">
+              <span className="w-6 h-6 rounded-md bg-emerald-600 text-white font-bold font-mono text-xs flex items-center justify-center shrink-0">
+                {activePin.pinNumber}
+              </span>
+              <div className="min-w-0">
+                <span className="text-[10px] font-mono text-emerald-700 block uppercase font-bold truncate">
+                  PIN #{activePin.pinNumber < 10 ? `0${activePin.pinNumber}` : activePin.pinNumber} • {activePin.category}
+                </span>
+                <span className="text-xs font-bold font-display text-slate-900 truncate block">
+                  {activePin.shortName}
+                </span>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => setMobilePanel('none')}
+              className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-mono font-bold shrink-0 cursor-pointer"
+            >
+              ✕ Tutup
+            </button>
+          </div>
+
+          <div className="space-y-2.5">
+            {/* Compact 3D + Real Photo Grid on Mobile */}
+            <div className="grid grid-cols-2 gap-2">
+              <div className="rounded-lg overflow-hidden border border-slate-200 bg-white">
+                <div className="px-2 py-1 bg-slate-100 border-b border-slate-200 text-[9px] font-mono font-bold text-slate-700 uppercase">
+                  Model 3D
+                </div>
+                <div className="h-28 w-full flex items-center justify-center">
+                  <Component3DViewer
+                    type={activePin.threeType || activePin.componentKey || 'cpu'}
+                    category={laptop?.category || 'Gaming'}
+                    laptopId={laptopId}
+                    autoRotate={true}
+                    heightClass="h-full"
+                    hideControls={true}
+                    hideHint={true}
+                    className="w-full h-full"
+                  />
+                </div>
+              </div>
+
+              <div className="rounded-lg overflow-hidden border border-slate-200 bg-white flex flex-col">
+                <div className="px-2 py-1 bg-slate-100 border-b border-slate-200 text-[9px] font-mono font-bold text-slate-700 uppercase">
+                  Foto Fisik Riil
+                </div>
+                {!photoError ? (
+                  <div className="h-28 w-full bg-slate-100 overflow-hidden">
+                    <img
+                      src={`/images/components/${activePin.imageName || `pin-${activePin.pinNumber}.jpg`}`}
+                      alt={activePin.shortName}
+                      onError={() => setPhotoError(true)}
+                      className="w-full h-full object-cover object-center"
+                    />
+                  </div>
+                ) : (
+                  <div className="h-28 flex items-center justify-center p-2 text-center text-[10px] text-slate-500">
+                    Foto belum tersedia
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="p-2.5 rounded-lg bg-slate-50 border border-slate-200">
+              <h5 className="text-[10px] font-mono uppercase text-slate-500 mb-0.5 font-semibold">
+                Fungsi Arsitektur
+              </h5>
+              <p className="text-xs text-slate-700 leading-relaxed font-sans">
+                {activePin.role}
+              </p>
+            </div>
+
+            <div className="grid grid-cols-2 gap-1.5 text-[11px] font-mono">
+              {Object.entries(activePin.specs).map(([k, v], i) => (
+                <div key={i} className="p-2 rounded-lg bg-slate-50 border border-slate-200">
+                  <span className="text-[9px] text-slate-400 block">{k}</span>
+                  <span className="text-slate-800 font-semibold truncate block">{v}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── BOTTOM HUD: MOBILE PANEL SWITCHER + HOTSPOT PINS BAR (Pins 1 to 10) ── */}
+      <div className="absolute bottom-2.5 sm:bottom-3 left-2.5 right-2.5 sm:left-1/2 sm:right-auto sm:-translate-x-1/2 z-20 flex flex-col items-center gap-1.5 pointer-events-none">
+        
+        {/* Mobile Segmented Panel Switcher (Only on < 1024px) */}
+        <div className="lg:hidden pointer-events-auto inline-flex items-center gap-1 p-1 rounded-xl bg-white/95 border border-slate-200 backdrop-blur-xl shadow-lg w-full max-w-md justify-between">
+          <button
+            type="button"
+            onClick={() => setMobilePanel('none')}
+            className={`flex-1 py-1.5 px-2 rounded-lg text-[11px] font-sans font-semibold transition-all cursor-pointer ${
+              mobilePanel === 'none'
+                ? 'bg-emerald-600 text-white shadow-2xs'
+                : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            Layar 3D Penuh
+          </button>
+          <button
+            type="button"
+            onClick={() => setMobilePanel(mobilePanel === 'specs' ? 'none' : 'specs')}
+            className={`flex-1 py-1.5 px-2 rounded-lg text-[11px] font-sans font-semibold transition-all cursor-pointer ${
+              mobilePanel === 'specs'
+                ? 'bg-emerald-600 text-white shadow-2xs'
+                : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            Daftar Modul
+          </button>
+          <button
+            type="button"
+            onClick={() => setMobilePanel(mobilePanel === 'dossier' ? 'none' : 'dossier')}
+            className={`flex-1 py-1.5 px-2 rounded-lg text-[11px] font-sans font-semibold transition-all cursor-pointer truncate ${
+              mobilePanel === 'dossier'
+                ? 'bg-violet-600 text-white shadow-2xs'
+                : 'text-violet-700 bg-violet-50/70 hover:bg-violet-100'
+            }`}
+          >
+            Info Pin #{selectedPinNumber < 10 ? `0${selectedPinNumber}` : selectedPinNumber}
+          </button>
+        </div>
+
+        {/* Pin 1-10 Selector Bar */}
+        <div className="pointer-events-auto flex items-center justify-start sm:justify-center gap-1 sm:gap-1.5 p-1.5 rounded-xl bg-white/95 border border-slate-200 backdrop-blur-xl shadow-lg overflow-x-auto max-w-full">
+          <span className="text-[10px] font-mono text-slate-500 uppercase tracking-wider px-2 hidden sm:inline font-semibold shrink-0">
+            PIN 1–10:
+          </span>
+          {currentPins.map((pin) => {
+            const isSelected = selectedPinNumber === pin.pinNumber;
+            return (
+              <button
+                key={pin.id}
+                type="button"
+                onClick={() => setSelectedPinNumber(pin.pinNumber)}
+                className={`
+                  relative flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-lg font-mono text-xs font-bold transition-all shrink-0 cursor-pointer
+                  ${isSelected
+                    ? 'bg-emerald-600 text-white shadow-sm shadow-emerald-600/25'
+                    : 'bg-slate-100 text-slate-700 border border-slate-200 hover:border-emerald-400 hover:text-emerald-700 hover:bg-white'
+                  }
+                `}
+                title={`Pin #${pin.pinNumber}: ${pin.shortName}`}
+              >
+                <span>{pin.pinNumber}</span>
+              </button>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
