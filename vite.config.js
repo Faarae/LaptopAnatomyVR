@@ -33,12 +33,27 @@ function saveModelMiddleware() {
 }
 
 // https://vitejs.dev/config/
-export default defineConfig({
-  plugins: [react(), basicSsl(), saveModelMiddleware()],
+export default defineConfig(({ command }) => ({
+  plugins: [
+    react(),
+    ...(command === 'serve' ? [basicSsl(), saveModelMiddleware()] : []),
+  ],
   server: {
     host: true,
     port: 5173,
     open: false,
-    allowedHosts: true
-  }
-})
+    allowedHosts: true,
+  },
+  build: {
+    outDir: 'dist',
+    chunkSizeWarningLimit: 1500,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'react-vendor': ['react', 'react-dom'],
+          'three-vendor': ['three'],
+        },
+      },
+    },
+  },
+}))
