@@ -67,7 +67,22 @@ export default {
         display: ['"Space Grotesk"', 'sans-serif'],
         mono: ['"JetBrains Mono"', 'monospace'],
       },
+      spacing: {
+        '18': '4.5rem',
+        '26': '6.5rem',
+        '68': '17rem',
+        '84': '21rem',
+        '88': '22rem',
+      },
+      borderRadius: {
+        'xs': '0.125rem',
+      },
+      backdropBlur: {
+        'xs': '2px',
+      },
       boxShadow: {
+        '2xs': '0 1px 2px 0 rgba(15, 23, 42, 0.05)',
+        'xs': '0 1px 3px 0 rgba(15, 23, 42, 0.08), 0 1px 2px -1px rgba(15, 23, 42, 0.06)',
         'brand-glow': '0 0 25px -4px rgba(91, 196, 122, 0.28)',
         'teal-glow': '0 0 25px -4px rgba(69, 184, 165, 0.28)',
         'cyan-glow': '0 0 25px -4px rgba(94, 182, 214, 0.28)',

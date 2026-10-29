@@ -452,7 +452,7 @@ export default function LaptopDetail({ laptopId, onNavigate }) {
       </div>
 
       {/* ── DESKTOP LEFT FLOATING PANEL: HARDWARE SPECS SELECTOR (lg:flex) ── */}
-      <div className="hidden lg:flex absolute top-16 left-4 bottom-16 w-84 z-20 flex-col justify-between pointer-events-auto backdrop-blur-xl bg-white/95 border border-slate-200 rounded-xl p-4 shadow-lg overflow-y-auto">
+      <div className="hidden lg:flex absolute top-16 left-4 bottom-16 w-72 xl:w-80 max-w-[320px] z-20 flex-col justify-between pointer-events-auto backdrop-blur-xl bg-white/95 border border-slate-200 rounded-xl p-4 shadow-lg overflow-y-auto">
         <div className="space-y-3">
           <div className="flex items-center justify-between border-b border-slate-200 pb-2">
             <span className="text-[11px] font-mono text-slate-500 uppercase tracking-wider font-semibold">
@@ -516,7 +516,7 @@ export default function LaptopDetail({ laptopId, onNavigate }) {
 
       {/* ── DESKTOP RIGHT FLOATING PANEL: ACTIVE COMPONENT TECHNICAL DOSSIER (lg:flex) ── */}
       {activePin && (
-        <div className="hidden lg:flex absolute top-16 right-4 bottom-16 w-96 z-20 flex-col justify-between pointer-events-auto backdrop-blur-xl bg-white/95 border border-slate-200 rounded-xl p-4 shadow-lg overflow-y-auto">
+        <div className="hidden lg:flex absolute top-16 right-4 bottom-16 w-80 xl:w-88 max-w-[352px] z-20 flex-col justify-between pointer-events-auto backdrop-blur-xl bg-white/95 border border-slate-200 rounded-xl p-4 shadow-lg overflow-y-auto">
           <div className="space-y-3">
             {/* Header */}
             <div className="flex items-center justify-between border-b border-slate-200 pb-2.5">

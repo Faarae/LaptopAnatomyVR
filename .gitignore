@@ -6,6 +6,8 @@ node_modules
 # Production build
 dist
 dist-ssr
+laptop-anatomy-ar/dist
+laptop-anatomy-ar/node_modules
 
 # Environment files
 .env
