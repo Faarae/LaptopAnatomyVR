@@ -1,5 +1,6 @@
 import React from 'react';
 import { ArrowRight } from 'lucide-react';
+import { APP_VERSION, APP_RELEASE_NAME } from '../../constants/version';
 
 /**
  * PAGE 5 — TENTANG PLATFORM (Laptop Anatomy Education)
@@ -116,10 +117,10 @@ export default function About({ onNavigate }) {
             {/* Visual Header */}
             <div className="flex items-center justify-between pb-3 mb-4 border-b border-slate-100">
               <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">
-                Spesifikasi Sistem
+                Spesifikasi Sistem • {APP_VERSION}
               </span>
               <span className="text-xs font-mono font-bold text-emerald-700">
-                VR • WebAR • Challenge
+                {APP_RELEASE_NAME}
               </span>
             </div>
 

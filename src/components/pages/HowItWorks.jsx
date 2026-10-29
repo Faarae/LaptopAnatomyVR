@@ -149,7 +149,7 @@ export default function HowItWorks({ onNavigate }) {
   const theme = STEP_THEMES[curStep.theme] || STEP_THEMES.emerald;
 
   return (
-    <div className="min-h-[calc(100dvh-3.75rem)] lg:h-[calc(100vh-3.75rem)] lg:max-h-[calc(100vh-3.75rem)] lg:overflow-hidden flex flex-col justify-between px-4 sm:px-8 lg:px-10 max-w-7xl mx-auto py-4 gap-4 lg:gap-0 select-none">
+    <div className="min-h-[calc(100dvh-3.75rem)] lg:h-[calc(100vh-3.75rem)] lg:max-h-[calc(100vh-3.75rem)] lg:overflow-hidden flex flex-col justify-between px-4 sm:px-8 lg:px-10 max-w-7xl mx-auto py-4 pb-10 lg:py-4 gap-4 lg:gap-0 select-none">
       
       {/* ─── 1. PAGE HEADER ─── */}
       <div className="text-center shrink-0 pt-0.5 mb-1 sm:mb-2">

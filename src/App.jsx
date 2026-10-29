@@ -10,6 +10,7 @@ import HowItWorks from './components/pages/HowItWorks';
 import About from './components/pages/About';
 import WebARPage from './components/pages/WebARPage';
 import { playClickSfx } from './utils/soundEffects';
+import { APP_VERSION } from './constants/version';
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState('landing');
@@ -131,6 +132,14 @@ export default function App() {
           <WebARPage onNavigate={handleNavigate} />
         )}
       </main>
+
+      {/* Global Bottom-Right Version Indicator */}
+      <div className="fixed bottom-2 right-2.5 sm:bottom-2.5 sm:right-3.5 z-40 pointer-events-none select-none">
+        <div className="inline-flex items-center gap-1.5 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-md bg-white/90 backdrop-blur-md border border-slate-200/90 shadow-2xs text-[10px] font-mono font-bold text-slate-500">
+          <span className="w-1.5 h-1.5 rounded-xs bg-emerald-500" />
+          <span>{APP_VERSION}</span>
+        </div>
+      </div>
     </div>
   );
 }

@@ -210,14 +210,14 @@ export default function DragPlaceGame({
       />
 
       {/* ── TOP FLOATING CONTROL HUD BAR ── */}
-      <div className="absolute top-2.5 sm:top-3 left-2.5 right-2.5 sm:left-4 sm:right-4 z-20 flex flex-wrap items-center justify-between gap-2 pointer-events-none">
+      <div className="absolute top-2.5 sm:top-3 left-2.5 right-2.5 sm:left-4 sm:right-4 z-20 flex items-center justify-between gap-1.5 sm:gap-2 pointer-events-none">
         
         {/* Left: Back button & Mode Badge */}
-        <div className="pointer-events-auto flex items-center gap-2">
+        <div className="pointer-events-auto flex items-center gap-1.5 sm:gap-2 min-w-0">
           {onBackToBriefing && (
             <button
               onClick={onBackToBriefing}
-              className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg bg-white/95 border border-slate-200/90 text-slate-700 text-xs font-mono hover:border-emerald-300 hover:text-emerald-700 transition-all backdrop-blur-md shadow-2xs cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg bg-white/95 border border-slate-200/90 text-slate-700 text-xs font-mono hover:border-emerald-300 hover:text-emerald-700 transition-all backdrop-blur-md shadow-2xs cursor-pointer shrink-0"
               title="Kembali ke Penjelasan Misi"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
@@ -225,18 +225,18 @@ export default function DragPlaceGame({
             </button>
           )}
 
-          <div className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 rounded-lg bg-white/95 border border-slate-200/90 shadow-2xs backdrop-blur-md">
-            <span className="text-xs font-display font-bold text-slate-800">
+          <div className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 rounded-lg bg-white/95 border border-slate-200/90 shadow-2xs backdrop-blur-md min-w-0">
+            <span className="text-xs font-display font-bold text-slate-800 truncate">
               Drag &amp; Place 3D
             </span>
-            <span className="hidden sm:inline px-1.5 py-0.5 rounded-md bg-emerald-50 border border-emerald-200 text-emerald-700 text-[9px] font-mono font-bold">
+            <span className="hidden sm:inline px-1.5 py-0.5 rounded-md bg-emerald-50 border border-emerald-200 text-emerald-700 text-[9px] font-mono font-bold shrink-0">
               ISOMETRIC POV
             </span>
           </div>
         </div>
 
         {/* Right: Actions, Randomizer, and Progress Badge */}
-        <div className="pointer-events-auto flex items-center gap-1.5 sm:gap-2">
+        <div className="pointer-events-auto flex items-center gap-1.5 sm:gap-2 shrink-0">
           
           {/* Randomize / Ganti Komponen Button */}
           <button
@@ -268,7 +268,7 @@ export default function DragPlaceGame({
 
       {/* ── LEFT / MOBILE FLOATING PANEL: ACTIVE QUESTS & COMPONENT STATUS (COLLAPSIBLE) ── */}
       {isQuestPanelOpen ? (
-        <div className="absolute top-14 sm:top-16 left-2.5 right-2.5 sm:right-auto sm:left-4 bottom-auto max-h-[60dvh] sm:max-h-none sm:bottom-14 sm:w-72 z-20 flex flex-col justify-between pointer-events-auto backdrop-blur-xl bg-white/95 border border-slate-200 rounded-xl p-3 shadow-xl overflow-y-auto animate-fade-slide-up">
+        <div className="absolute top-14 sm:top-16 left-2.5 right-2.5 sm:right-auto sm:left-4 bottom-auto max-h-[calc(100dvh-11rem)] sm:max-h-none sm:bottom-14 sm:w-72 z-20 flex flex-col justify-between pointer-events-auto backdrop-blur-xl bg-white/95 border border-slate-200 rounded-xl p-3 shadow-xl overflow-y-auto animate-fade-slide-up">
           
           <div className="space-y-2.5">
             {/* Header with Collapse Button */}

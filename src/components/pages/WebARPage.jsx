@@ -23,6 +23,7 @@ const AR_TARGETS = [
   {
     index: 0,
     code: 'TARGET 01: CPU',
+    shortLabel: 'CPU',
     id: 'cpu',
     name: 'CPU (Central Processing Unit)',
     fullName: 'Intel Core i7-14650HX Mobile Processor',
@@ -49,6 +50,7 @@ const AR_TARGETS = [
   {
     index: 1,
     code: 'TARGET 02: RAM',
+    shortLabel: 'RAM',
     id: 'ram',
     name: 'RAM (Random Access Memory)',
     fullName: 'Dual-Channel DDR5 SO-DIMM System Memory',
@@ -75,6 +77,7 @@ const AR_TARGETS = [
   {
     index: 2,
     code: 'TARGET 03: SSD',
+    shortLabel: 'SSD',
     id: 'ssd',
     name: 'SSD (Solid State Drive)',
     fullName: '1 TB M.2 2280 NVMe PCIe Gen 4.0 x4 SSD',
@@ -102,10 +105,9 @@ const AR_TARGETS = [
 
 /**
  * Edukasi AR — Integrated Workspace / Studio Sub-Page
- * - Streamlined zero-duplication layout:
- *   - Left/Center (8 cols): Dedicated Live WebAR Camera Scanner with scanning laser reticle + single unified 3D Toolbar
- *   - Right (4 cols): 3 Kartu Marker Sasaran (CPU, RAM, SSD) + Technical Dossier (Ikhtisar, Spesifikasi, Peran)
- * - No standalone tab redirect ("Tab Mandiri") and no duplicate floating controls inside the camera iframe.
+ * - Top Action Bar: Unduh & Info Marker | Cara Pindai | Fullscreen
+ * - Right Column ("Kartu Marker Sasaran"): ONLY displays the marker currently detected by camera!
+ * - Technical Dossier below it displays Overview, Specs, and Role for the detected/selected target.
  */
 export default function WebARPage() {
   const containerRef = useRef(null);
@@ -119,10 +121,14 @@ export default function WebARPage() {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [currentScale, setCurrentScale] = useState(1.0);
   const [previewMarker, setPreviewMarker] = useState(null);
+  const [showMarkersModal, setShowMarkersModal] = useState(false);
   const [showGuideModal, setShowGuideModal] = useState(false);
   const [sfxMuted, setSfxMutedState] = useState(() => isSfxMuted());
 
-  const activeTarget = AR_TARGETS[selectedTargetIdx] || AR_TARGETS[0];
+  const detectedTarget =
+    detectedTargetIdx !== null ? AR_TARGETS[detectedTargetIdx] || null : null;
+  const activeTarget =
+    detectedTarget || AR_TARGETS[selectedTargetIdx] || AR_TARGETS[0];
 
   useEffect(() => {
     return subscribeSfxMute((muted) => setSfxMutedState(muted));
@@ -183,7 +189,7 @@ export default function WebARPage() {
   return (
     <div
       ref={containerRef}
-      className="w-full min-h-[calc(100dvh-3.75rem)] lg:h-[calc(100vh-3.75rem)] lg:max-h-[calc(100vh-3.75rem)] flex flex-col lg:overflow-hidden bg-transparent select-none"
+      className="w-full min-h-[calc(100dvh-3.75rem)] lg:h-[calc(100vh-3.75rem)] lg:max-h-[calc(100vh-3.75rem)] flex flex-col lg:overflow-hidden bg-transparent select-none pb-8 lg:pb-0"
     >
       {/* 1. COMPACT STUDIO SUB-HEADER */}
       <div className="bg-white/95 backdrop-blur-md border-b border-slate-200 px-4 sm:px-6 py-2.5 flex flex-wrap items-center justify-between gap-2.5 sm:gap-4 shrink-0">
@@ -200,7 +206,7 @@ export default function WebARPage() {
               {/* Live Camera Detection Indicator */}
               <div
                 className={`inline-flex items-center gap-1.5 sm:gap-2 px-2 sm:px-2.5 py-0.5 rounded-lg border text-[10px] sm:text-[11px] font-mono font-semibold transition-all duration-300 ${
-                  detectedTargetIdx !== null
+                  detectedTarget
                     ? 'bg-emerald-50 border-emerald-400 text-emerald-800 shadow-sm shadow-emerald-500/15'
                     : 'bg-amber-50/70 border-amber-300 text-amber-800'
                 }`}
@@ -208,18 +214,18 @@ export default function WebARPage() {
                 <span className="relative flex h-2 w-2 shrink-0">
                   <span
                     className={`animate-ping absolute inline-flex h-full w-full rounded-xs opacity-75 ${
-                      detectedTargetIdx !== null ? 'bg-emerald-500' : 'bg-amber-400'
+                      detectedTarget ? 'bg-emerald-500' : 'bg-amber-400'
                     }`}
                   />
                   <span
                     className={`relative inline-flex rounded-xs h-2 w-2 ${
-                      detectedTargetIdx !== null ? 'bg-emerald-500' : 'bg-amber-500'
+                      detectedTarget ? 'bg-emerald-500' : 'bg-amber-500'
                     }`}
                   />
                 </span>
                 <span>
-                  {detectedTargetIdx !== null
-                    ? `TERDETEKSI: ${AR_TARGETS[detectedTargetIdx]?.code}`
+                  {detectedTarget
+                    ? `TERDETEKSI: ${detectedTarget.code}`
                     : 'ARAHKAN KAMERA KE MARKER'}
                 </span>
               </div>
@@ -227,8 +233,16 @@ export default function WebARPage() {
           </div>
         </div>
 
-        {/* Clean Action Controls: Quick Guide Modal + Fullscreen */}
-        <div className="inline-flex items-center gap-2">
+        {/* Clean Action Controls Row: Unduh & Info Marker + Cara Pindai + Fullscreen */}
+        <div className="inline-flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setShowMarkersModal(true)}
+            className="px-2.5 sm:px-3.5 py-1.5 rounded-lg border border-emerald-600 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-sans font-semibold transition-all active:scale-95 cursor-pointer inline-flex items-center gap-1.5 shadow-2xs"
+          >
+            <span>Unduh &amp; Info Marker</span>
+          </button>
+
           <button
             type="button"
             onClick={() => setShowGuideModal(true)}
@@ -260,12 +274,12 @@ export default function WebARPage() {
       <div className="flex-1 min-h-0 max-w-7xl w-full mx-auto p-3.5 sm:p-5 grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-5 lg:overflow-hidden">
         
         {/* LEFT / CENTER COLUMN: LIVE CAMERA VIEWPORT & SINGLE 3D CONTROL TOOLBAR (lg:col-span-8) */}
-        <div className="lg:col-span-8 flex flex-col gap-3 min-h-0">
+        <div className="lg:col-span-8 flex flex-col gap-3 min-h-0 shrink-0">
           
           {/* Main Interactive Camera Viewport Container */}
           <div
-            className={`h-[46dvh] sm:h-[52dvh] lg:h-auto lg:flex-1 min-h-[260px] rounded-xl border bg-slate-900 overflow-hidden relative flex flex-col transition-all duration-300 ${
-              detectedTargetIdx !== null
+            className={`h-[44dvh] sm:h-[50dvh] lg:h-auto lg:flex-1 min-h-[260px] rounded-xl border bg-slate-900 overflow-hidden relative flex flex-col transition-all duration-300 ${
+              detectedTarget
                 ? 'border-emerald-500 ring-2 ring-emerald-500/25 shadow-lg shadow-emerald-500/15'
                 : 'border-slate-300 shadow-sm'
             }`}
@@ -396,103 +410,109 @@ export default function WebARPage() {
 
         </div>
 
-        {/* RIGHT COLUMN: TARGET MARKER SELECTOR & COMPONENT INSPECTOR (lg:col-span-4) */}
-        <div className="lg:col-span-4 flex flex-col gap-3.5 min-h-0 overflow-y-auto">
+        {/* RIGHT COLUMN: DETECTED MARKER CARD & COMPONENT INSPECTOR (lg:col-span-4) */}
+        <div className="lg:col-span-4 flex flex-col gap-3.5 min-h-0 lg:overflow-y-auto">
           
-          {/* 1. Target Marker Cards Selector */}
+          {/* 1. Kartu Marker Sasaran (ONLY displays the currently detected marker!) */}
           <div className="rounded-xl border border-slate-200 bg-white p-4 shrink-0 shadow-2xs">
             <div className="flex items-center justify-between mb-2.5">
               <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">
                 Kartu Marker Sasaran
               </span>
-              <span className="text-[11px] font-mono font-semibold text-violet-700">
-                {detectedTargetIdx !== null
-                  ? `Aktif: Target 0${detectedTargetIdx + 1}`
-                  : 'Klik untuk Perbesar / Pindai'}
+              <span
+                className={`text-[11px] font-mono font-bold ${
+                  detectedTarget ? 'text-emerald-700' : 'text-amber-600'
+                }`}
+              >
+                {detectedTarget ? '1 Marker Terdeteksi' : 'Menunggu Kamera'}
               </span>
             </div>
 
-            <div className="space-y-2">
-              {AR_TARGETS.map((target) => {
-                const isSelected = selectedTargetIdx === target.index;
-                const isDetected = detectedTargetIdx === target.index;
-                return (
-                  <div
-                    key={target.id}
-                    onClick={() => handleSelectTarget(target.index)}
-                    className={`p-2.5 rounded-lg border transition-all duration-200 cursor-pointer flex items-center gap-3 active:scale-[0.99] ${
-                      isSelected
-                        ? `${target.accentBorder} ring-2 shadow-xs`
-                        : 'bg-white border-slate-200 hover:border-emerald-400/60 hover:bg-slate-50'
-                    }`}
-                  >
-                    <img
-                      src={target.markerImg}
-                      alt={target.name}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setPreviewMarker(target);
-                      }}
-                      title="Klik untuk memperbesar gambar marker"
-                      className="w-12 h-14 object-cover rounded-md border border-slate-200 bg-slate-900 shrink-0 hover:opacity-90 transition-opacity"
-                    />
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between">
-                        <span className={`text-[10px] font-mono font-bold ${target.accentText}`}>
-                          {target.code}
-                        </span>
-                        <span className="inline-flex items-center gap-1.5 text-[10px] font-mono font-bold">
-                          {(isSelected || isDetected) && (
-                            <span className="relative flex h-2 w-2">
-                              <span className="animate-ping absolute inline-flex h-full w-full rounded-xs bg-emerald-400 opacity-75" />
-                              <span className="relative inline-flex rounded-xs h-2 w-2 bg-emerald-500" />
-                            </span>
-                          )}
-                          <span className={isDetected ? 'text-emerald-700' : 'text-slate-400'}>
-                            {isDetected ? 'TERDETEKSI' : isSelected ? 'DIPILIH' : 'SIAP'}
-                          </span>
-                        </span>
-                      </div>
-                      <h3 className="text-xs font-bold font-display text-slate-900 truncate">
-                        {target.name}
-                      </h3>
-                      <div className="flex items-center gap-2.5 mt-1">
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setPreviewMarker(target);
-                          }}
-                          className="px-2 py-0.5 rounded-md bg-emerald-600 hover:bg-emerald-500 text-white text-[10px] font-sans font-semibold cursor-pointer transition-colors"
-                        >
-                          Perbesar Marker
-                        </button>
-                        <a
-                          href={target.markerImg}
-                          download={`marker-${target.id}.png`}
-                          onClick={(e) => e.stopPropagation()}
-                          className="text-[11px] font-sans font-semibold text-slate-600 hover:text-emerald-700"
-                        >
-                          Unduh PNG
-                        </a>
-                      </div>
-                    </div>
+            {detectedTarget ? (
+              /* ONLY the currently detected marker card is rendered here */
+              <div
+                className={`p-3 rounded-lg border-2 ${detectedTarget.accentBorder} ring-2 shadow-xs flex items-center gap-3.5 animate-fade-slide-up`}
+              >
+                <img
+                  src={detectedTarget.markerImg}
+                  alt={detectedTarget.name}
+                  className="w-14 h-16 object-cover rounded-md border border-slate-200 bg-slate-900 shrink-0"
+                />
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between mb-0.5">
+                    <span className={`text-[10px] font-mono font-bold ${detectedTarget.accentText}`}>
+                      {detectedTarget.code}
+                    </span>
+                    <span className="inline-flex items-center gap-1.5 text-[10px] font-mono font-bold text-emerald-700">
+                      <span className="relative flex h-2 w-2">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-xs bg-emerald-400 opacity-75" />
+                        <span className="relative inline-flex rounded-xs h-2 w-2 bg-emerald-500" />
+                      </span>
+                      <span>TERDETEKSI</span>
+                    </span>
                   </div>
-                );
-              })}
-            </div>
+                  <h3 className="text-xs sm:text-sm font-bold font-display text-slate-900 truncate">
+                    {detectedTarget.name}
+                  </h3>
+                  <p className="text-[11px] font-mono text-slate-600 truncate mt-0.5">
+                    {detectedTarget.fullName}
+                  </p>
+                </div>
+              </div>
+            ) : (
+              /* Waiting state when no marker is currently in front of the camera */
+              <div className="rounded-lg border border-dashed border-slate-300 bg-slate-50/70 p-4 text-center">
+                <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-md bg-amber-50 border border-amber-200 text-[11px] font-mono font-bold text-amber-800 mb-2">
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-xs bg-amber-400 opacity-75" />
+                    <span className="relative inline-flex rounded-xs h-2 w-2 bg-amber-500" />
+                  </span>
+                  <span>MEMINDAI AREA KAMERA...</span>
+                </div>
+                <p className="text-xs text-slate-600 font-sans leading-relaxed mb-3">
+                  Arahkan kamera ke kartu marker <strong>CPU</strong>, <strong>RAM</strong>, atau <strong>SSD</strong>. Kartu marker sasaran akan otomatis muncul di sini saat terdeteksi.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setShowMarkersModal(true)}
+                  className="px-3.5 py-1.5 rounded-lg bg-white hover:bg-emerald-50 text-emerald-700 border border-emerald-300 text-xs font-sans font-semibold transition-all active:scale-95 cursor-pointer shadow-2xs"
+                >
+                  Buka Unduh &amp; Info Marker →
+                </button>
+              </div>
+            )}
           </div>
 
           {/* 2. Active Target Technical Dossier */}
           <div className="rounded-xl border border-slate-200 bg-white p-4 flex-1 flex flex-col justify-between shadow-2xs">
             <div>
-              <div className="border-b border-slate-200 pb-2.5 mb-2.5">
-                <span className={`text-[10px] font-mono font-bold uppercase tracking-wider ${activeTarget.accentText} block`}>
-                  {activeTarget.code} • DATA EDUKASI
-                </span>
-                <h2 className="text-sm font-bold font-display text-slate-900 mt-0.5">
-                  {activeTarget.fullName}
-                </h2>
+              <div className="flex items-start justify-between gap-2 border-b border-slate-200 pb-2.5 mb-2.5">
+                <div className="min-w-0">
+                  <span className={`text-[10px] font-mono font-bold uppercase tracking-wider ${activeTarget.accentText} block`}>
+                    {activeTarget.code} • DATA EDUKASI
+                  </span>
+                  <h2 className="text-sm font-bold font-display text-slate-900 mt-0.5 truncate">
+                    {activeTarget.fullName}
+                  </h2>
+                </div>
+
+                {/* Compact Target Switcher for reading specs manually when needed */}
+                <div className="inline-flex items-center rounded-lg border border-slate-200 bg-slate-100 p-0.5 shrink-0">
+                  {AR_TARGETS.map((t) => (
+                    <button
+                      key={t.id}
+                      type="button"
+                      onClick={() => handleSelectTarget(t.index)}
+                      className={`px-2 py-0.5 rounded-md text-[10px] font-mono font-bold transition-all cursor-pointer ${
+                        activeTarget.index === t.index
+                          ? 'bg-white text-slate-900 shadow-2xs'
+                          : 'text-slate-500 hover:text-slate-800'
+                      }`}
+                    >
+                      {t.shortLabel}
+                    </button>
+                  ))}
+                </div>
               </div>
 
               {/* Segmented Inspector Tabs */}
@@ -567,11 +587,126 @@ export default function WebARPage() {
 
       </div>
 
-      {/* MODAL 1: PREVIEW KARTU MARKER UNTUK DIPINDAI DARI LAYAR */}
+      {/* MODAL 1: UNDUH & INFO KARTU MARKER SASARAN (3 MARKERS: CPU, RAM, SSD) */}
+      {showMarkersModal && (
+        <div
+          onClick={() => setShowMarkersModal(false)}
+          className="fixed inset-0 z-50 bg-slate-900/65 backdrop-blur-xs flex items-center justify-center p-4 animate-fade-slide-up"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="bg-white rounded-xl border border-slate-200 max-w-2xl w-full max-h-[90dvh] overflow-y-auto p-5 sm:p-6 shadow-2xl"
+          >
+            <div className="flex items-center justify-between pb-3 mb-4 border-b border-slate-200">
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-wider text-emerald-700">
+                  Katalog Marker MindAR • 3 Komponen Sasaran
+                </p>
+                <h3 className="text-lg font-bold font-display text-slate-900">
+                  Unduh Kartu Marker &amp; Informasi Target
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowMarkersModal(false)}
+                className="p-1.5 rounded-lg border border-slate-200 text-slate-500 hover:text-slate-900 cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <p className="text-xs text-slate-600 font-sans leading-relaxed mb-4">
+              Unduh kartu marker dalam format PNG untuk dicetak, atau klik <strong>Perbesar Marker</strong> untuk menampilkannya di layar perangkat kedua/smartphone lalu arahkan ke kamera WebAR.
+            </p>
+
+            <div className="space-y-3 mb-5">
+              {AR_TARGETS.map((target) => {
+                const isDetected = detectedTargetIdx === target.index;
+                return (
+                  <div
+                    key={target.id}
+                    className={`p-3.5 rounded-xl border transition-all flex flex-col sm:flex-row sm:items-center gap-3.5 ${
+                      isDetected
+                        ? `${target.accentBorder} ring-2`
+                        : 'bg-slate-50/70 border-slate-200 hover:border-slate-300'
+                    }`}
+                  >
+                    <img
+                      src={target.markerImg}
+                      alt={target.name}
+                      onClick={() => setPreviewMarker(target)}
+                      className="w-16 h-20 object-cover rounded-lg border border-slate-200 bg-slate-900 shrink-0 cursor-pointer hover:opacity-90"
+                    />
+
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className={`text-[10px] font-mono font-bold ${target.accentText}`}>
+                          {target.code}
+                        </span>
+                        {isDetected && (
+                          <span className="px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800 text-[10px] font-mono font-bold">
+                            SEDANG TERDETEKSI
+                          </span>
+                        )}
+                      </div>
+                      <h4 className="text-sm font-bold font-display text-slate-900 mt-0.5">
+                        {target.name} — {target.fullName}
+                      </h4>
+                      <p className="text-xs text-slate-600 font-sans mt-1 leading-relaxed">
+                        {target.description}
+                      </p>
+                      <div className="text-[11px] font-mono font-semibold text-slate-700 mt-1.5">
+                        {target.specsHighlight}
+                      </div>
+
+                      <div className="flex flex-wrap items-center gap-2 mt-3">
+                        <button
+                          type="button"
+                          onClick={() => setPreviewMarker(target)}
+                          className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-sans font-semibold cursor-pointer transition-all active:scale-95"
+                        >
+                          Perbesar Marker
+                        </button>
+                        <a
+                          href={target.markerImg}
+                          download={`marker-${target.id}.png`}
+                          className="px-3 py-1.5 rounded-lg bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 text-xs font-sans font-semibold transition-all active:scale-95"
+                        >
+                          Unduh PNG
+                        </a>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            handleSelectTarget(target.index);
+                            setShowMarkersModal(false);
+                          }}
+                          className="px-3 py-1.5 rounded-lg bg-violet-50 hover:bg-violet-100 text-violet-700 border border-violet-200 text-xs font-sans font-semibold cursor-pointer transition-all active:scale-95"
+                        >
+                          Lihat Data Edukasi
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setShowMarkersModal(false)}
+              className="w-full py-2.5 px-4 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-display font-semibold active:scale-95 transition-all cursor-pointer"
+            >
+              Tutup Katalog Marker
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL 2: PREVIEW KARTU MARKER LAYAR PENUH UNTUK DIPINDAI */}
       {previewMarker && (
         <div
           onClick={() => setPreviewMarker(null)}
-          className="fixed inset-0 z-50 bg-slate-900/70 backdrop-blur-xs flex items-center justify-center p-4 animate-fade-slide-up"
+          className="fixed inset-0 z-50 bg-slate-900/75 backdrop-blur-xs flex items-center justify-center p-4 animate-fade-slide-up"
         >
           <div
             onClick={(e) => e.stopPropagation()}
@@ -614,7 +749,7 @@ export default function WebARPage() {
         </div>
       )}
 
-      {/* MODAL 2: PANDUAN CEPAT PEMINDAIAN WEBAR */}
+      {/* MODAL 3: PANDUAN CEPAT PEMINDAIAN WEBAR */}
       {showGuideModal && (
         <div
           onClick={() => setShowGuideModal(false)}
@@ -654,19 +789,19 @@ export default function WebARPage() {
 
               <div className="p-3.5 rounded-lg bg-violet-50/50 border border-violet-200">
                 <span className="text-xs font-mono font-bold text-violet-700 block mb-0.5">
-                  02 / SIAPKAN &amp; ARAHKAN KARTU MARKER
+                  02 / BUKA MENU UNDUH &amp; INFO MARKER
                 </span>
                 <p className="text-xs text-slate-600 leading-relaxed">
-                  Klik tombol <strong>Perbesar Marker</strong> pada panel kanan untuk menampilkan marker di layar kedua/HP, lalu arahkan ke depan kamera pada jarak 20–35 cm.
+                  Klik tombol <strong>Unduh &amp; Info Marker</strong> di deretan tombol kanan atas untuk mengunduh atau memperbesar marker di layar kedua/HP, lalu arahkan ke depan kamera pada jarak 20–35 cm.
                 </p>
               </div>
 
               <div className="p-3.5 rounded-lg bg-amber-50/50 border border-amber-200">
                 <span className="text-xs font-mono font-bold text-amber-700 block mb-0.5">
-                  03 / MANIPULASI 3D &amp; AUDIO NARASI
+                  03 / DETEKSI OTOMATIS &amp; AUDIO NARASI
                 </span>
                 <p className="text-xs text-slate-600 leading-relaxed">
-                  Saat status berubah menjadi <strong>TERDETEKSI</strong>, gunakan toolbar di bawah kamera untuk mengatur skala (0.25x–2.5x), rotasi 360°, serta mendengarkan penjelasan suara TTS.
+                  Saat marker dikenali kamera, kartu sasaran akan otomatis muncul pada panel <strong>Kartu Marker Sasaran</strong> beserta data edukasinya. Gunakan toolbar di bawah kamera untuk mengatur skala, rotasi 360°, dan suara TTS.
                 </p>
               </div>
             </div>

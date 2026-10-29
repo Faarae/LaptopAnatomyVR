@@ -112,6 +112,7 @@ body.is-embedded .hero-wrapper {
   padding: 24px;
 }
 
+body.hide-internal-hud #landingView,
 body.hide-internal-hud .top-hud-bar,
 body.hide-internal-hud .controls-dock,
 body.hide-internal-hud .bottom-sheet {

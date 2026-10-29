@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ChallengeCard from './ChallengeCard';
 import GamePreview from './GamePreview';
 
@@ -86,10 +86,21 @@ export const CHALLENGES_LIST = [
 /**
  * ChallengeLabHub — Vibrant Tritone Evaluation & Gamification Hub
  * - Uses Emerald, Violet, and Radiant Gold/Amber accents from DESKRIPSI_UI.md
- * - 3-Column zero-scroll layout with interactive 3D & live mini-simulation preview
+ * - Single-instance conditional rendering (Desktop 3-Column vs Mobile Stacked) so cards and 3D previews are never duplicated in DOM
  */
 export default function ChallengeLabHub({ onSelectGame }) {
   const [selectedGameId, setSelectedGameId] = useState('quiz');
+  const [isDesktop, setIsDesktop] = useState(() =>
+    typeof window !== 'undefined' ? window.innerWidth >= 1024 : true
+  );
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsDesktop(window.innerWidth >= 1024);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const selectedChallenge =
     CHALLENGES_LIST.find((c) => c.id === selectedGameId) || CHALLENGES_LIST[0];
@@ -102,7 +113,7 @@ export default function ChallengeLabHub({ onSelectGame }) {
   };
 
   return (
-    <div className="w-full min-h-[calc(100dvh-3.75rem)] lg:h-[calc(100vh-3.75rem)] lg:max-h-[calc(100vh-3.75rem)] max-w-7xl mx-auto flex flex-col justify-between py-3 px-4 sm:px-6 lg:px-8 gap-3 lg:gap-0 select-none lg:overflow-hidden">
+    <div className="w-full min-h-[calc(100dvh-3.75rem)] lg:h-[calc(100vh-3.75rem)] lg:max-h-[calc(100vh-3.75rem)] max-w-7xl mx-auto flex flex-col justify-between py-3.5 pb-10 lg:pb-3 px-4 sm:px-6 lg:px-8 gap-4 lg:gap-0 select-none lg:overflow-hidden">
       
       {/* 1. COMPACT PAGE HEADER WITH TRITONE ACCENTS */}
       <section className="text-center pt-0.5 mb-1 sm:mb-2 shrink-0">
@@ -119,53 +130,13 @@ export default function ChallengeLabHub({ onSelectGame }) {
         </p>
       </section>
 
-      {/* 2. DESKTOP 3-COLUMN CORE LAYOUT */}
-      <div className="hidden lg:grid lg:grid-cols-12 gap-4 items-stretch my-auto flex-1 min-h-0 py-1">
-        
-        {/* LEFT COLUMN: Cards 01, 03, 05 */}
-        <div className="lg:col-span-3 flex flex-col justify-between gap-3">
-          {leftChallenges.map((card) => (
-            <ChallengeCard
-              key={card.id}
-              {...card}
-              isSelected={selectedGameId === card.id}
-              onSelect={setSelectedGameId}
-            />
-          ))}
-        </div>
-
-        {/* CENTER COLUMN: Interactive GamePreview */}
-        <div className="lg:col-span-6 flex flex-col justify-between min-h-0">
-          <GamePreview
-            challenge={selectedChallenge}
-            onLaunchGame={handleLaunch}
-          />
-        </div>
-
-        {/* RIGHT COLUMN: Cards 02, 04, 06 */}
-        <div className="lg:col-span-3 flex flex-col justify-between gap-3">
-          {rightChallenges.map((card) => (
-            <ChallengeCard
-              key={card.id}
-              {...card}
-              isSelected={selectedGameId === card.id}
-              onSelect={setSelectedGameId}
-            />
-          ))}
-        </div>
-
-      </div>
-
-      {/* 3. RESPONSIVE MOBILE & TABLET LAYOUT */}
-      <div className="lg:hidden flex flex-col gap-4 my-auto">
-        <div>
-          <div className="flex items-center justify-between text-xs font-mono text-slate-500 mb-2 px-1 font-semibold">
-            <span>DAFTAR MISI (6 MODUL):</span>
-            <span className="text-emerald-700">KETUK UNTUK PRATINJAU</span>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5 sm:gap-3">
-            {CHALLENGES_LIST.map((card) => (
+      {isDesktop ? (
+        /* 2. DESKTOP 3-COLUMN CORE LAYOUT (Mounted ONLY on >= 1024px) */
+        <div className="grid grid-cols-12 gap-4 items-stretch my-auto flex-1 min-h-0 py-1">
+          
+          {/* LEFT COLUMN: Cards 01, 03, 05 */}
+          <div className="col-span-3 flex flex-col justify-between gap-3">
+            {leftChallenges.map((card) => (
               <ChallengeCard
                 key={card.id}
                 {...card}
@@ -174,18 +145,60 @@ export default function ChallengeLabHub({ onSelectGame }) {
               />
             ))}
           </div>
-        </div>
 
-        <div className="w-full">
-          <GamePreview
-            challenge={selectedChallenge}
-            onLaunchGame={handleLaunch}
-          />
+          {/* CENTER COLUMN: Interactive GamePreview */}
+          <div className="col-span-6 flex flex-col justify-between min-h-0">
+            <GamePreview
+              challenge={selectedChallenge}
+              onLaunchGame={handleLaunch}
+            />
+          </div>
+
+          {/* RIGHT COLUMN: Cards 02, 04, 06 */}
+          <div className="col-span-3 flex flex-col justify-between gap-3">
+            {rightChallenges.map((card) => (
+              <ChallengeCard
+                key={card.id}
+                {...card}
+                isSelected={selectedGameId === card.id}
+                onSelect={setSelectedGameId}
+              />
+            ))}
+          </div>
+
         </div>
-      </div>
+      ) : (
+        /* 3. RESPONSIVE MOBILE & TABLET LAYOUT (Mounted ONLY on < 1024px — Zero Duplication!) */
+        <div className="flex flex-col gap-4 shrink-0">
+          <div className="w-full">
+            <GamePreview
+              challenge={selectedChallenge}
+              onLaunchGame={handleLaunch}
+            />
+          </div>
+
+          <div>
+            <div className="flex items-center justify-between text-xs font-mono text-slate-500 mb-2 px-1 font-semibold">
+              <span>PILIH MISI LAINNYA (6 MODUL):</span>
+              <span className="text-emerald-700">KETUK UNTUK PRATINJAU</span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {CHALLENGES_LIST.map((card) => (
+                <ChallengeCard
+                  key={card.id}
+                  {...card}
+                  isSelected={selectedGameId === card.id}
+                  onSelect={setSelectedGameId}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* 4. FOOTER STATUS BAR */}
-      <div className="flex flex-wrap items-center justify-center gap-6 py-1 text-xs font-mono text-slate-500 shrink-0">
+      <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 py-1 text-xs font-mono text-slate-500 shrink-0">
         <span className="inline-flex items-center gap-1.5">
           <span className="w-2 h-2 rounded-xs bg-emerald-500" />
           <span>6 Misi Interaktif 3D</span>
@@ -193,7 +206,7 @@ export default function ChallengeLabHub({ onSelectGame }) {
         <span className="text-slate-300">•</span>
         <span className="inline-flex items-center gap-1.5">
           <span className="w-2 h-2 rounded-xs bg-violet-500" />
-          <span>Simulasi Langsung di Pratinjau Tengah</span>
+          <span>Simulasi Langsung di Pratinjau</span>
         </span>
         <span className="text-slate-300">•</span>
         <span className="inline-flex items-center gap-1.5 text-amber-700 font-bold">

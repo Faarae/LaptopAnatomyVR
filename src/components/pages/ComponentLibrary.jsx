@@ -31,7 +31,7 @@ export default function ComponentLibrary({ onNavigate }) {
   };
 
   return (
-    <div className="min-h-[calc(100dvh-3.75rem)] lg:h-[calc(100vh-3.75rem)] lg:max-h-[calc(100vh-3.75rem)] lg:overflow-hidden flex flex-col justify-between px-4 sm:px-8 lg:px-10 max-w-7xl mx-auto py-4 sm:py-5 gap-4 lg:gap-0 select-none">
+    <div className="min-h-[calc(100dvh-3.75rem)] lg:h-[calc(100vh-3.75rem)] lg:max-h-[calc(100vh-3.75rem)] lg:overflow-hidden flex flex-col justify-between px-4 sm:px-8 lg:px-10 max-w-7xl mx-auto py-4 pb-10 lg:py-5 gap-4 lg:gap-0 select-none">
       
       {/* 1. PAGE HEADER (Plain Eyebrow Text, No Capsule Pill) */}
       <div className="text-center pt-1 shrink-0">

@@ -74,6 +74,9 @@ export default {
         '84': '21rem',
         '88': '22rem',
       },
+      opacity: {
+        '98': '0.98',
+      },
       borderRadius: {
         'xs': '0.125rem',
       },
