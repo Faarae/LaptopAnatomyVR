@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <link rel="icon" type="image/svg+xml" href="/LAVR-logo.svg" />
+  <title>Laptop Anatomy AR - Marker-Based WebAR</title>
+  
+  <!-- A-Frame and MindAR Libraries via CDN -->
+  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+
+  <!-- ======================================================================
+       VIEW 1: LANDING PAGE (ALIGNED WITH LAPTOP ANATOMY VR)
+       ====================================================================== -->
+  <div id="landingView" class="app-view">
+    
+    <!-- Unified Top Navigation Bar -->
+    <header class="vr-navbar">
+      <div class="vr-brand">
+        <img src="/LAVR-logo.svg" alt="Laptop Anatomy VR Logo" class="vr-logo" />
+        <span class="vr-title">Laptop Anatomy VR</span>
+      </div>
+      <div>
+        <span class="vr-nav-badge">
+          <span>⚡</span>
+          <span>WebAR Edition</span>
+        </span>
+      </div>
+    </header>
+
+    <!-- Main Hero Wrapper -->
+    <div class="hero-wrapper">
+      
+      <!-- Fullscreen Exploded Laptop Hero Background on Right -->
+      <div class="hero-exploded-bg">
+        <img 
+          src="/images/laptop-exploded-hero.jpg" 
+          alt="Exploded Laptop Hardware Architecture" 
+          class="hero-exploded-img"
+        />
+        <div class="hero-mask-gradient"></div>
+        <div class="orb-emerald"></div>
+        <div class="orb-purple"></div>
+        <div class="orb-amber"></div>
+      </div>
+
+      <!-- Left Hero Content -->
+      <div class="hero-content">
+        
+        <h1 class="hero-headline">
+          Pelajari Anatomi<br>
+          Komponen di Dalam<br>
+          <span class="hero-gradient-text">Laptop Anda via AR</span>
+        </h1>
+
+        <p class="hero-desc">
+          Eksplorasi susunan motherboard, pendingin termal ganda, dan arsitektur silikon chip komputer melalui visualisasi Augmented Reality interaktif langsung di kamera browser Anda.
+        </p>
+
+        <!-- Action Buttons -->
+        <div class="hero-actions">
+          <button id="btnStartScan" class="btn-vr-primary">
+            <span>📷</span>
+            <span>Buka Scanner WebAR</span>
+          </button>
+          <button id="btnViewMarkers" class="btn-vr-secondary">
+            <span>🖼️</span>
+            <span>3 Kartu Marker Icon</span>
+          </button>
+          <button id="btnViewGuides" class="btn-vr-secondary">
+            <span>📖</span>
+            <span>Panduan Tugas</span>
+          </button>
+        </div>
+
+        <!-- Badges Row -->
+        <div class="hero-badges-row">
+          <span class="pill-badge"><span>🎯</span> 3 Target Marker Icon</span>
+          <span class="pill-badge"><span>💎</span> Model 3D Asli &lt; 80 KB</span>
+          <span class="pill-badge"><span>🔄</span> Scale &amp; Rotate 360°</span>
+          <span class="pill-badge"><span>🔊</span> Narasi Audio TTS</span>
+        </div>
+
+        <!-- 3 Marker Cards Showcase -->
+        <div class="marker-showcase">
+          <div class="marker-showcase-title">Pilih Marker Sasaran Untuk Memindai:</div>
+          <div class="marker-cards-grid">
+            <!-- CPU Card -->
+            <div class="clean-marker-card" data-index="0">
+              <img src="/markers/marker-cpu.png" alt="Marker CPU Icon" class="clean-marker-img" />
+              <div style="display: flex; flex-direction: column;">
+                <span class="clean-marker-tag" style="color: #00f0ff;">Target 01</span>
+                <span class="clean-marker-title">CPU Processor</span>
+                <span style="font-size: 0.74rem; color: #64748B;">Core i7-14650HX</span>
+              </div>
+            </div>
+
+            <!-- RAM Card -->
+            <div class="clean-marker-card" data-index="1">
+              <img src="/markers/marker-ram.png" alt="Marker RAM Icon" class="clean-marker-img" />
+              <div style="display: flex; flex-direction: column;">
+                <span class="clean-marker-tag" style="color: #10b981;">Target 02</span>
+                <span class="clean-marker-title">RAM DDR5</span>
+                <span style="font-size: 0.74rem; color: #64748B;">SO-DIMM 5600 MT/s</span>
+              </div>
+            </div>
+
+            <!-- SSD Card -->
+            <div class="clean-marker-card" data-index="2">
+              <img src="/markers/marker-ssd.png" alt="Marker SSD Icon" class="clean-marker-img" />
+              <div style="display: flex; flex-direction: column;">
+                <span class="clean-marker-tag" style="color: #f59e0b;">Target 03</span>
+                <span class="clean-marker-title">NVMe SSD</span>
+                <span style="font-size: 0.74rem; color: #64748B;">1TB PCIe Gen 4</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- ======================================================================
+       VIEW 2: AR SCANNER VIEW (CAMERA + A-FRAME + TRANSPARENT HUD)
+       ====================================================================== -->
+  <div id="scannerView" class="app-view view-hidden">
+    
+    <!-- A-Frame 3D Scene with MindAR Image Tracking -->
+    <div id="aframeContainer">
+      <a-scene
+        id="aframeScene"
+        mindar-image="imageTargetSrc: /targets.mind; autoStart: false; uiLoading: no; uiError: no; filterMinCF: 0.0001; filterBeta: 0.001;"
+        embedded
+        color-space="sRGB"
+        renderer="colorManagement: true; antialias: true;"
+        vr-mode-ui="enabled: false"
+        device-orientation-permission-ui="enabled: false">
+        
+        <a-assets timeout="15000">
+          <a-asset-item id="cpuModel" src="/models/cpu.glb"></a-asset-item>
+          <a-asset-item id="ramModel" src="/models/ram.glb"></a-asset-item>
+          <a-asset-item id="ssdModel" src="/models/ssd.glb"></a-asset-item>
+        </a-assets>
+
+        <!-- Multi-Directional Bright Lighting for Realistic Metallic Highlights -->
+        <a-light type="ambient" color="#ffffff" intensity="1.8"></a-light>
+        <a-light type="directional" color="#ffffff" intensity="2.5" position="0 3 4"></a-light>
+        <a-light type="directional" color="#ffffff" intensity="1.5" position="0 -2 3"></a-light>
+        <a-light type="point" color="#ffffff" intensity="1.2" position="0 0 2"></a-light>
+
+        <!-- Target 0: CPU -->
+        <a-entity mindar-image-target="targetIndex: 0" id="target-cpu">
+          <a-ring material="shader: flat; color: #00f0ff; opacity: 0.85; side: double;" radius-inner="0.38" radius-outer="0.43" position="0 0 0.02"></a-ring>
+          <a-gltf-model
+            id="model-cpu"
+            src="#cpuModel"
+            position="0 0 0.14"
+            scale="0.52 0.52 0.52"
+            rotation="55 0 0">
+          </a-gltf-model>
+        </a-entity>
+
+        <!-- Target 1: RAM -->
+        <a-entity mindar-image-target="targetIndex: 1" id="target-ram">
+          <a-ring material="shader: flat; color: #10b981; opacity: 0.85; side: double;" radius-inner="0.38" radius-outer="0.43" position="0 0 0.02"></a-ring>
+          <a-gltf-model
+            id="model-ram"
+            src="#ramModel"
+            position="0 0 0.14"
+            scale="0.38 0.38 0.38"
+            rotation="55 0 0">
+          </a-gltf-model>
+        </a-entity>
+
+        <!-- Target 2: SSD -->
+        <a-entity mindar-image-target="targetIndex: 2" id="target-ssd">
+          <a-ring material="shader: flat; color: #f59e0b; opacity: 0.85; side: double;" radius-inner="0.38" radius-outer="0.43" position="0 0 0.02"></a-ring>
+          <a-gltf-model
+            id="model-ssd"
+            src="#ssdModel"
+            position="0 0 0.14"
+            scale="0.44 0.44 0.44"
+            rotation="55 0 0">
+          </a-gltf-model>
+        </a-entity>
+
+        <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+      </a-scene>
+    </div>
+
+    <!-- Scanner HUD & Overlay Controls -->
+    <div class="scanner-hud">
+      
+      <!-- Top Navigation & Status Bar -->
+      <div class="top-hud-bar">
+        <button id="btnBackToLanding" class="btn-hud-icon" title="Kembali ke Beranda">
+          <span>←</span>
+        </button>
+
+        <div id="statusPill" class="status-pill status-searching">
+          <span class="status-dot"></span>
+          <span id="statusText">Arahkan kamera ke kartu marker...</span>
+        </div>
+
+        <button id="btnHelp" class="btn-hud-icon" title="Bantuan" onclick="document.getElementById('instructionsModal').classList.add('modal-open')">
+          <span>?</span>
+        </button>
+      </div>
+
+      <!-- Center Reticle (Target Finder Crosshairs) -->
+      <div id="reticleContainer" class="reticle-container">
+        <div class="corner-bracket cb-tl"></div>
+        <div class="corner-bracket cb-tr"></div>
+        <div class="corner-bracket cb-bl"></div>
+        <div class="corner-bracket cb-br"></div>
+        <div class="reticle-center"></div>
+      </div>
+
+      <!-- Floating Controls Dock (Right Side) -->
+      <div class="controls-dock">
+        <!-- Scale Up (+) -->
+        <button id="btnScaleUp" class="btn-action-round" title="Perbesar (Scale +)">
+          <span>+</span>
+        </button>
+        <!-- Scale Down (-) -->
+        <button id="btnScaleDown" class="btn-action-round" title="Perkecil (Scale −)">
+          <span>−</span>
+        </button>
+        <!-- Reset Scale -->
+        <button id="btnResetScale" class="btn-action-round" title="Reset Ukuran (1.0x)">
+          <span>↺</span>
+        </button>
+        <!-- Rotate Left -->
+        <button id="btnRotLeft" class="btn-action-round" title="Putar Kiri">
+          <span>↶</span>
+        </button>
+        <!-- Rotate Right -->
+        <button id="btnRotRight" class="btn-action-round" title="Putar Kanan">
+          <span>↷</span>
+        </button>
+        <!-- Auto Rotate Toggle -->
+        <button id="btnAutoRotate" class="btn-action-round" title="Auto-Rotate On/Off">
+          <span>⚡</span>
+        </button>
+        <!-- Audio TTS Button -->
+        <button id="btnTTS" class="btn-action-round" title="Dengarkan Narasi Audio (TTS)">
+          <span>🔊</span>
+        </button>
+        <!-- Toggle Info Bottom Sheet -->
+        <button id="btnToggleInfo" class="btn-action-round" title="Buka/Tutup Kartu Informasi">
+          <span>ℹ</span>
+        </button>
+      </div>
+
+      <!-- Educational Bottom Sheet -->
+      <div id="bottomSheet" class="bottom-sheet sheet-collapsed">
+        <div id="sheetHandle" class="sheet-handle"></div>
+        
+        <div class="sheet-header">
+          <div class="sheet-title-group">
+            <span id="sheetBadge" class="sheet-badge">Brain of System</span>
+            <h3 id="sheetTitle" class="sheet-title">CPU (Central Processing Unit)</h3>
+          </div>
+          <div class="sheet-header-actions">
+            <button id="sheetHeaderTTS" class="btn-vr-secondary" style="min-height: 36px; padding: 6px 14px; font-size: 0.8rem; background: rgba(255,255,255,0.15); color: #fff; border-color: rgba(255,255,255,0.2);">
+              <span>🔊 Dengarkan</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="sheet-body">
+          <div class="sheet-tabs">
+            <button id="tabOverview" class="tab-btn tab-active">Ikhtisar &amp; Fungsi</button>
+            <button id="tabSpecs" class="tab-btn">Spesifikasi Teknis</button>
+            <button id="tabRole" class="tab-btn">Peran di Laptop</button>
+          </div>
+
+          <div id="contentOverview" class="tab-content tab-content-active"></div>
+          <div id="contentSpecs" class="tab-content"></div>
+          <div id="contentRole" class="tab-content"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ======================================================================
+       MODAL 1: LIHAT & UNDUH 3 KARTU MARKER ICON
+       ====================================================================== -->
+  <div id="markersModal" class="modal-backdrop">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">3 Kartu Marker Icon Siap Scan</h3>
+        <button class="btn-close-modal">&times;</button>
+      </div>
+
+      <p style="font-size: 0.88rem; color: #475569; line-height: 1.5;">
+        Berikut adalah 3 kartu marker icon beresolusi tinggi dengan bingkai fiducial yang sudah terkompilasi ke dalam file <code>targets.mind</code>. Tampilkan kartu ini di layar laptop/HP kedua atau cetak di kertas:
+      </p>
+
+      <div style="display: flex; flex-direction: column; gap: 14px;">
+        <!-- Marker 01: CPU -->
+        <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 12px; padding: 12px; display: flex; gap: 14px; align-items: center;">
+          <img src="/markers/marker-cpu.png" style="width: 76px; height: 95px; object-fit: cover; border-radius: 8px; border: 1px solid #CBD5E1;" alt="CPU" />
+          <div style="flex: 1;">
+            <div style="font-size: 0.72rem; color: #059669; font-weight: 800;">TARGET INDEX 0</div>
+            <h4 style="font-size: 0.95rem; color: #0F172A; font-weight: 700;">Marker 01: CPU Processor</h4>
+            <div style="margin-top: 6px;">
+              <a href="/markers/marker-cpu.png" target="_blank" download="marker-cpu.png" class="btn-vr-secondary" style="display: inline-block; padding: 5px 12px; font-size: 0.78rem; text-decoration: none;">
+                Unduh Kartu PNG
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Marker 02: RAM -->
+        <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 12px; padding: 12px; display: flex; gap: 14px; align-items: center;">
+          <img src="/markers/marker-ram.png" style="width: 76px; height: 95px; object-fit: cover; border-radius: 8px; border: 1px solid #CBD5E1;" alt="RAM" />
+          <div style="flex: 1;">
+            <div style="font-size: 0.72rem; color: #7c3aed; font-weight: 800;">TARGET INDEX 1</div>
+            <h4 style="font-size: 0.95rem; color: #0F172A; font-weight: 700;">Marker 02: RAM DDR5 SO-DIMM</h4>
+            <div style="margin-top: 6px;">
+              <a href="/markers/marker-ram.png" target="_blank" download="marker-ram.png" class="btn-vr-secondary" style="display: inline-block; padding: 5px 12px; font-size: 0.78rem; text-decoration: none;">
+                Unduh Kartu PNG
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Marker 03: SSD -->
+        <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 12px; padding: 12px; display: flex; gap: 14px; align-items: center;">
+          <img src="/markers/marker-ssd.png" style="width: 76px; height: 95px; object-fit: cover; border-radius: 8px; border: 1px solid #CBD5E1;" alt="SSD" />
+          <div style="flex: 1;">
+            <div style="font-size: 0.72rem; color: #d97706; font-weight: 800;">TARGET INDEX 2</div>
+            <h4 style="font-size: 0.95rem; color: #0F172A; font-weight: 700;">Marker 03: M.2 NVMe SSD</h4>
+            <div style="margin-top: 6px;">
+              <a href="/markers/marker-ssd.png" target="_blank" download="marker-ssd.png" class="btn-vr-secondary" style="display: inline-block; padding: 5px 12px; font-size: 0.78rem; text-decoration: none;">
+                Unduh Kartu PNG
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn-vr-primary btn-close-modal" style="width: 100%; margin-top: 6px;">
+        Tutup &amp; Mulai Memindai
+      </button>
+    </div>
+  </div>
+
+  <!-- ======================================================================
+       MODAL 2: PANDUAN PENGUJIAN & TUGAS
+       ====================================================================== -->
+  <div id="instructionsModal" class="modal-backdrop">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">Panduan Pengujian WebAR</h3>
+        <button class="btn-close-modal">&times;</button>
+      </div>
+
+      <div style="font-size: 0.88rem; color: #475569; line-height: 1.6; display: flex; flex-direction: column; gap: 14px;">
+        <div>
+          <h4 style="color: #059669; font-weight: 700; margin-bottom: 4px;">1. Pengujian di Smartphone (Android / iPhone)</h4>
+          <p>
+            Pastikan Anda membuka URL dengan <strong>HTTPS</strong> (misalnya <code>https://192.168.x.x:5173/</code>). Izinkan akses kamera saat diminta browser.
+          </p>
+        </div>
+
+        <div>
+          <h4 style="color: #7c3aed; font-weight: 700; margin-bottom: 4px;">2. Metode Pengujian Dua Layar</h4>
+          <p>
+            Buka file kartu marker di layar laptop Anda (misal <code>marker-cpu.png</code>), lalu hadapkan kamera HP Anda ke layar laptop pada jarak sekitar 20–35 cm.
+          </p>
+        </div>
+
+        <div>
+          <h4 style="color: #d97706; font-weight: 700; margin-bottom: 4px;">3. Interaksi Saat Model Muncul</h4>
+          <p>
+            Gunakan tombol <strong>+</strong> dan <strong>−</strong> untuk zoom, tombol rotasi untuk memutar, tombol petir <strong>⚡</strong> untuk Auto-Rotate 360°, dan tombol speaker <strong>🔊</strong> untuk narasi suara.
+          </p>
+        </div>
+      </div>
+
+      <button class="btn-vr-primary btn-close-modal" style="width: 100%; margin-top: 6px;">
+        Saya Mengerti
+      </button>
+    </div>
+  </div>
+
+  <!-- Floating Toast Notification -->
+  <div id="toast" class="toast-msg">Notifikasi</div>
+
+  <!-- AR Application Controller Script -->
+  <script type="module" src="./ar-app.js"></script>
+
+</body>
+</html>
+
